@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Genera index.html con un listado de todas tus webs HTML del repositorio."""
+import html
+import re
+from pathlib import Path
+from urllib.parse import quote
+
+ROOT = Path(__file__).parent
+SKIP_DIRS = {"node_modules", "assets", "static"}  # carpetas que no se listan
+
+
+def read_meta(path):
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    t = re.search(r"<title[^>]*>(.*?)</title>", text, re.I | re.S)
+    d = re.search(
+        r'<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']',
+        text, re.I | re.S,
+    )
+    title = html.unescape(t.group(1).strip()) if t else ""
+    desc = html.unescape(d.group(1).strip()) if d else ""
+    return title, desc
+
+
+def pretty(name):
+    return name.replace("-", " ").replace("_", " ").strip().capitalize()
+
+
+def collect():
+    items = []
+    for p in sorted(ROOT.rglob("*.html")):
+        rel = p.relative_to(ROOT)
+        if rel.as_posix() == "index.html":
+            continue
+        if any(part.startswith(".") or part in SKIP_DIRS for part in rel.parts):
+            continue
+        if p.name == "index.html":          # carpeta/index.html -> enlace a carpeta/
+            href = quote(rel.parent.as_posix()) + "/"
+            fallback = pretty(rel.parent.name)
+        else:                               # fichero suelto
+            href = quote(rel.as_posix())
+            fallback = pretty(p.stem)
+        title, desc = read_meta(p)
+        items.append({
+            "href": href,
+            "title": title or fallback,
+            "desc": desc,
+            "path": rel.as_posix(),
+        })
+    items.sort(key=lambda i: i["title"].lower())
+    return items
+
+
+PAGE = """<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis webs</title>
+<style>
+  :root {{
+    --bg: #fafaf8; --card: #ffffff; --text: #1d1d1b; --muted: #6b6b66;
+    --border: #e4e4df; --accent: #2a6df4;
+  }}
+  @media (prefers-color-scheme: dark) {{
+    :root {{
+      --bg: #161614; --card: #1f1f1d; --text: #ecece8; --muted: #9a9a94;
+      --border: #333330; --accent: #7aa2ff;
+    }}
+  }}
+  * {{ box-sizing: border-box; }}
+  body {{
+    margin: 0; padding: 2rem 1rem 4rem; background: var(--bg); color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }}
+  main {{ max-width: 960px; margin: 0 auto; }}
+  h1 {{ margin: 0 0 .25rem; font-size: 2rem; }}
+  .sub {{ color: var(--muted); margin: 0 0 1.5rem; }}
+  input {{
+    width: 100%; padding: .75rem 1rem; font: inherit; color: var(--text);
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }}
+  .grid {{ display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }}
+  a.card {{
+    display: block; padding: 1.1rem 1.2rem; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; color: inherit;
+    text-decoration: none; transition: border-color .15s, transform .15s;
+  }}
+  a.card:hover {{ border-color: var(--accent); transform: translateY(-2px); }}
+  .card h2 {{ margin: 0 0 .3rem; font-size: 1.05rem; color: var(--accent); }}
+  .card p {{ margin: 0 0 .5rem; color: var(--muted); font-size: .92rem; }}
+  .card code {{ font-size: .78rem; color: var(--muted); }}
+  .empty {{ color: var(--muted); }}
+</style>
+</head>
+<body>
+<main>
+  <h1>Mis webs</h1>
+  <p class="sub">{count} proyectos</p>
+  <input id="q" type="search" placeholder="Buscar…" aria-label="Buscar">
+  <div class="grid" id="grid">
+{cards}
+  </div>
+  <p class="empty" id="empty" hidden>No hay resultados.</p>
+</main>
+<script>
+  const q = document.getElementById('q');
+  const cards = [...document.querySelectorAll('.card')];
+  const empty = document.getElementById('empty');
+  q.addEventListener('input', () => {{
+    const s = q.value.toLowerCase();
+    let n = 0;
+    cards.forEach(c => {{
+      const show = c.textContent.toLowerCase().includes(s);
+      c.hidden = !show;
+      if (show) n++;
+    }});
+    empty.hidden = n > 0;
+  }});
+</script>
+</body>
+</html>
+"""
+
+CARD = """    <a class="card" href="{href}">
+      <h2>{title}</h2>
+      {desc}<code>{path}</code>
+    </a>"""
+
+
+def main():
+    items = collect()
+    cards = "\n".join(
+        CARD.format(
+            href=i["href"],
+            title=html.escape(i["title"]),
+            desc=f'<p>{html.escape(i["desc"])}</p>\n      ' if i["desc"] else "",
+            path=html.escape(i["path"]),
+        )
+        for i in items
+    )
+    (ROOT / "index.html").write_text(
+        PAGE.format(count=len(items), cards=cards), encoding="utf-8"
+    )
+    print(f"index.html generado con {len(items)} webs")
+
+
+if __name__ == "__main__":
+    main()
