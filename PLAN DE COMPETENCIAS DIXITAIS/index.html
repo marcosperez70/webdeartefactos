@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="gl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competencias Dixitais · Primaria e ESO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#ffffff;
+    --paper:#f6faf7;
+    --ink:#122720;
+    --ink-soft:#3d5c4e;
+    --green-900:#123527;
+    --green-800:#175033;
+    --green-700:#1e6b42;
+    --green-600:#2c8354;
+    --green-500:#3f9c66;
+    --green-300:#a8dabd;
+    --green-200:#cdead8;
+    --green-100:#e6f5ec;
+    --line:#cdeadb;
+    --shadow: 0 10px 30px -14px rgba(18,55,39,0.25);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', serif;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'Space Mono', monospace;}
+  a{color:inherit;}
+  img,svg{display:block;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background: radial-gradient(120% 140% at 12% 0%, #1f6b42 0%, #12402c 55%, #0d2e20 100%);
+    color:var(--white);
+    padding: 64px 24px 40px;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(255,255,255,0.08) 0, transparent 45%),
+      radial-gradient(circle at 8% 90%, rgba(255,255,255,0.06) 0, transparent 40%);
+    pointer-events:none;
+  }
+  .hero-inner{
+    max-width:1080px; margin:0 auto; position:relative; z-index:2;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Space Mono', monospace;
+    font-size:12.5px; text-transform:uppercase; letter-spacing:0.14em;
+    color:var(--green-300);
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    padding:6px 14px; border-radius:999px;
+    margin-bottom:22px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--green-300);}
+  .hero h1{
+    font-size:clamp(32px, 5.4vw, 54px);
+    font-weight:600;
+    line-height:1.05;
+    max-width:820px;
+  }
+  .hero h1 em{ font-style:italic; color:var(--green-300); font-weight:500;}
+  .hero p.lede{
+    margin-top:18px;
+    max-width:620px;
+    font-size:17px;
+    line-height:1.6;
+    color:rgba(255,255,255,0.82);
+  }
+
+  /* growth path (signature element) */
+  .growth-path{
+    margin-top:44px;
+    display:flex;
+    align-items:flex-end;
+    gap:0;
+    max-width:900px;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+  .growth-path::-webkit-scrollbar{height:0px;}
+  .gp-node{
+    flex:1 1 0;
+    min-width:110px;
+    text-align:center;
+    position:relative;
+    padding-top:26px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .gp-node .stem{
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background:rgba(255,255,255,0.22);
+  }
+  .gp-node:first-child .stem{ left:50%; }
+  .gp-node:last-child .stem{ right:50%; }
+  .gp-node .leaf{
+    width:14px; height:14px; margin:0 auto;
+    background:var(--green-300);
+    border-radius:60% 0 60% 0;
+    border:2px solid rgba(255,255,255,0.9);
+    position:relative; top:-7px;
+    transition:transform .25s ease, background .25s ease;
+  }
+  .gp-node.big .leaf{ width:20px; height:20px; top:-10px; }
+  .gp-node:hover .leaf, .gp-node.active .leaf{
+    transform:scale(1.25);
+    background:#fff;
+  }
+  .gp-node .gp-label{
+    display:block; margin-top:8px;
+    font-family:'Space Mono', monospace;
+    font-size:12px; letter-spacing:.03em;
+    color:rgba(255,255,255,0.65);
+  }
+  .gp-node.active .gp-label{ color:#fff; }
+  .gp-node .gp-sub{
+    display:block; font-size:10.5px; color:rgba(255,255,255,0.45);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+
+  /* CD legend chips */
+  .legend{
+    margin-top:34px;
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .legend .chip{
+    display:flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.16);
+    padding:8px 14px 8px 10px;
+    border-radius:12px;
+    font-size:13px;
+  }
+  .legend .chip .ic{
+    width:22px;height:22px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.14);
+    border-radius:7px;
+  }
+  .legend .chip .ic svg{width:13px;height:13px;stroke:#eafff3;}
+  .legend .chip b{ font-family:'Space Mono', monospace; font-weight:700; color:var(--green-300); font-size:12px;}
+
+  /* ---------- LEVEL SECTIONS ---------- */
+  .level{
+    padding: 56px 24px 64px;
+    position:relative;
+  }
+  .level.primaria{ background:var(--white); }
+  .level.eso{ background:var(--green-900); color:var(--white); }
+  .level-inner{ max-width:1080px; margin:0 auto; }
+
+  .level-head{
+    display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;
+    gap:24px; margin-bottom:8px;
+  }
+  .level-tag{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px; text-transform:uppercase; letter-spacing:.14em;
+    color:var(--green-600);
+  }
+  .level.eso .level-tag{ color:var(--green-300); }
+  .level h2{ font-size:clamp(26px,3.6vw,38px); font-weight:600; margin-top:6px; }
+  .level .level-desc{
+    max-width:560px; font-size:15px; line-height:1.65; color:var(--ink-soft);
+  }
+  .level.eso .level-desc{ color:rgba(255,255,255,0.72); }
+
+  /* tabs */
+  .tabs{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin:30px 0 26px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:0;
+  }
+  .level.eso .tabs{ border-bottom-color:rgba(255,255,255,0.16); }
+  .tab-btn{
+    appearance:none; border:none; background:transparent; cursor:pointer;
+    font-family:'Fraunces', serif; font-size:16px; font-weight:600;
+    padding:10px 4px; margin-right:22px;
+    color:var(--ink-soft);
+    border-bottom:2.5px solid transparent;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .level.eso .tab-btn{ color:rgba(255,255,255,0.55); }
+  .tab-btn:hover{ color:var(--green-700); }
+  .level.eso .tab-btn:hover{ color:#fff; }
+  .tab-btn.active{ color:var(--green-800); border-bottom-color:var(--green-600); }
+  .level.eso .tab-btn.active{ color:#fff; border-bottom-color:var(--green-300); }
+
+  .course-intro{
+    font-size:15.5px; line-height:1.7; color:var(--ink-soft);
+    max-width:720px; margin-bottom:26px;
+  }
+  .level.eso .course-intro{ color:rgba(255,255,255,0.78); }
+
+  /* subject grid */
+  .subject-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
+    gap:14px;
+  }
+  .subject-card{
+    background:var(--green-100);
+    border:1px solid var(--green-200);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    cursor:pointer;
+    transition: box-shadow .2s ease, transform .15s ease, background .2s ease;
+  }
+  .level.eso .subject-card{
+    background:rgba(255,255,255,0.05);
+    border-color:rgba(255,255,255,0.14);
+  }
+  .subject-card:hover{ box-shadow:var(--shadow); transform:translateY(-2px); }
+  .subject-card .sc-top{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .subject-card h4{
+    font-size:16.5px; font-weight:600; letter-spacing:0.01em;
+  }
+  .subject-card .chev{
+    width:20px;height:20px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    background:var(--white);
+    border:1px solid var(--green-300);
+    transition:transform .2s ease;
+  }
+  .level.eso .subject-card .chev{ background:transparent; border-color:rgba(255,255,255,0.35); }
+  .subject-card.open .chev{ transform:rotate(45deg); }
+  .subject-card .chev svg{ width:10px; height:10px; stroke:var(--green-700);}
+  .level.eso .subject-card .chev svg{ stroke:#fff; }
+
+  .sc-badges{ display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+  .badge{
+    width:24px;height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace; font-weight:700; font-size:11px;
+    background:var(--green-600); color:#fff;
+  }
+  .badge.b1{background:#1e6b42;}
+  .badge.b2{background:#2c8354;}
+  .badge.b3{background:#3f9c66;}
+  .badge.b4{background:#2f7a56;}
+  .badge.b5{background:#0f4b30;}
+  .badge.plain{
+    border-radius:8px; padding:0 8px; width:auto; font-size:10px; background:var(--ink-soft);
+  }
+
+  .sc-detail{
+    max-height:0; overflow:hidden;
+    transition: max-height .32s ease;
+  }
+  .subject-card.open .sc-detail{ max-height:900px; }
+  .sc-detail-inner{ padding-top:14px; margin-top:12px; border-top:1px dashed var(--green-300); }
+  .level.eso .sc-detail-inner{ border-top-color:rgba(255,255,255,0.22); }
+  .sc-row{ margin-bottom:12px; }
+  .sc-row:last-child{ margin-bottom:0; }
+  .sc-row .sc-row-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Space Mono', monospace; font-size:11.5px; font-weight:700;
+    color:var(--green-800); margin-bottom:4px;
+  }
+  .level.eso .sc-row .sc-row-tag{ color:var(--green-300); }
+  .sc-row p{ margin:0; font-size:13.8px; line-height:1.55; color:var(--ink); }
+  .level.eso .sc-row p{ color:rgba(255,255,255,0.85); }
+  .subject-card .blurb{
+    font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.5;
+  }
+  .level.eso .subject-card .blurb{ color:rgba(255,255,255,0.6); }
+
+  /* callouts */
+  .callout{
+    margin-top:34px;
+    background:var(--white);
+    border:1px solid var(--green-200);
+    border-left:5px solid var(--green-600);
+    border-radius:14px;
+    padding:22px 24px;
+  }
+  .level.eso .callout{
+    background:rgba(255,255,255,0.06);
+    border-color:rgba(255,255,255,0.14);
+    border-left-color:var(--green-300);
+  }
+  .callout h5{
+    font-family:'Space Mono', monospace; text-transform:uppercase; letter-spacing:.1em;
+    font-size:12px; color:var(--green-700); margin-bottom:10px;
+  }
+  .level.eso .callout h5{ color:var(--green-300); }
+  .callout ul{ margin:0; padding-left:18px; }
+  .callout li{ font-size:14.5px; line-height:1.65; margin-bottom:8px; color:var(--ink); }
+  .level.eso .callout li{ color:rgba(255,255,255,0.85); }
+  .callout li:last-child{ margin-bottom:0; }
+  .callout li b{ color:var(--green-800); }
+  .level.eso .callout li b{ color:#fff; }
+  .callout .metaphor{
+    margin-top:14px; padding-top:14px; border-top:1px dashed var(--green-200);
+    font-style:italic; font-size:14px; color:var(--ink-soft); line-height:1.65;
+  }
+  .level.eso .callout .metaphor{ border-top-color:rgba(255,255,255,0.16); color:rgba(255,255,255,0.65); }
+
+  footer{
+    text-align:center; padding:34px 20px 48px;
+    font-size:12.5px; color:var(--ink-soft);
+    background:var(--paper);
+  }
+
+  @media (max-width:640px){
+    .hero{padding:44px 18px 30px;}
+    .level{padding:40px 18px 48px;}
+    .tab-btn{margin-right:14px; font-size:14.5px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span> Plan de Competencias Dixitais</span>
+    <h1>Que se traballa, en <em>que curso</em> e en <em>que materia</em>.</h1>
+    <p class="lede">Clasificación completa das competencias dixitais (CD1–CD5) desenvolvidas en cada curso, dende 5º de Primaria ata 4º da ESO, coa materia responsable de cada unha.</p>
+
+    <div class="growth-path" id="growthPath"></div>
+
+    <div class="legend" id="legend"></div>
+  </div>
+</header>
+
+<main>
+  <section class="level primaria" id="level-primaria">
+    <div class="level-inner">
+      <div class="level-head">
+        <div>
+          <span class="level-tag">Parte 1 · Educación Primaria</span>
+          <h2>5º e 6º de Primaria</h2>
+        </div>
+        <p class="level-desc">A base: busca de información sinxela, manexo básico de ferramentas de creación e primeiros pasos en seguridade e colaboración.</p>
+      </div>
+
+      <div class="tabs" id="tabs-primaria"></div>
+      <p class="course-intro" id="intro-primaria"></p>
+      <div class="subject-grid" id="grid-primaria"></div>
+      <div class="callout" id="callout-primaria"></div>
+    </div>
+  </section>
+
+  <section class="level eso" id="level-eso">
+    <div class="level-inner">
+      <div class="level-head">
+        <div>
+          <span class="level-tag">Parte 2 · Educación Secundaria Obrigatoria</span>
+          <h2>1º a 4º da ESO</h2>
+        </div>
+        <p class="level-desc">A especialización: programación, propiedade intelectual, cidadanía dixital activa e uso avanzado e crítico das ferramentas.</p>
+      </div>
+
+      <div class="tabs" id="tabs-eso"></div>
+      <p class="course-intro" id="intro-eso"></p>
+      <div class="subject-grid" id="grid-eso"></div>
+      <div class="callout" id="callout-eso"></div>
+    </div>
+  </section>
+</main>
+
+<footer>Clasificación elaborada a partir do documento de Competencias Dixitais por curso e materia · CD1 Información · CD2 Creación de contidos · CD3 Comunicación e colaboración · CD4 Seguridade · CD5 Resolución de problemas</footer>
+
+<script id="course-data" type="application/json">{"order": ["5º PRIMARIA", "6º PRIMARIA", "1º ESO", "2º ESO", "3º ESO", "4º ESO"], "courses": {"5º PRIMARIA": {"intro": ["O 5º de Primaria establece as bases para a identificación de motores de busca e o uso básico de documentos e follas de cálculo."], "subjects": [{"name": "LENGUA", "blurb": "", "rows": [["CD1", "Abórdase o coñecemento dos principais motores de busca, a realización de busca sinxela, e outros tipos de buscas, como imaxes e vídeos. Tamén se traballa a definición, funcionamento e xestión dos marcadores."], ["CD2", "Uso sinxelo de Documentos de Google."], ["CD3", "Uso básico de ferramentas de compartición de Google."], ["CD4", "Creación de contrasinais seguras e configuración de opcións de privacidade."]]}, {"name": "MATEMÁTICAS", "blurb": "", "rows": [["CD1", "Cobre a definición de motores de busca e a busca sinxela (operadores básicos)."], ["CD2", "Trabállase o uso sinxelo de Documentos de Google e o uso sinxelo de Follas de cálculo de Google."], ["CD3", "Inclúe a Plataforma educativa do centro, o uso básico e avanzado de ferramentas de compartición de Google."], ["CD4", "Ensínase o concepto de Huella dixital e a súa importancia, xunto coa configuración de opcións de privacidade."], ["CD5", "Introduce e contextualiza o coñecemento do pensamento e linguaxe computacional."]]}, {"name": "MÚSICA", "blurb": "", "rows": [["CD1", "Principais motores de busca, busca sinxela e outros tipos de buscas."], ["CD2", "Inclúe a definición do Entorno Persoal de Aprendizaxe (PLE) e o uso de ferramentas sinxelas para a súa creación. Abórdase o uso avanzado de Follas de cálculo de Google e Presentacións de Google, ademais do uso sinxelo de Google Vids, Canva ou Edpuzzle."], ["CD5", "Cobre o desenvolvemento de ferramentas sostibles."]]}, {"name": "INGLÉS", "blurb": "", "rows": [["CD1", "Defínense os motores de busca, identifícanse os principais motores, e realízase busca sinxela e outros tipos de buscas."], ["CD2", "Uso sinxelo de Documentos de Google."], ["CD3", "Uso básico de ferramentas de compartición de Google."]]}, {"name": "SOCIALES/GH", "blurb": "", "rows": [["CD1", "Búsqueda sinxela, incluir a bibliografía en documentos de traballo, e xestión de marcadores."], ["CD2", "Uso sinxelo de Documentos de Google, uso sinxelo de Follas de cálculo de Google, e uso sinxelo de Google Vids, Canva ou Edpuzzle."], ["CD3", "Uso básico de ferramentas de compartición de Google."], ["CD4", "Creación de contrasinais seguras."]]}, {"name": "C NAT./BIOLOXÍA", "blurb": "", "rows": [["CD1", "Outros tipos de buscas, inclusión de bibliografía e xestión de marcadores."], ["CD2", "Uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Uso básico de ferramentas de compartición de Google."]]}, {"name": "EF", "blurb": "", "rows": [["CD2", "Ferramentas sinxelas para a creación do PLE, uso avanzado de Documentos de Google, e uso avanzado de Google Vids, Canva ou Edpuzzle."], ["CD3", "Uso básico de ferramentas de compartición de Google."], ["CD4", "Coñecemento e análise do impacto ambiental dos dispositivos dixitais (consumo de enerxía e residuos electrónicos)."]]}, {"name": "RELIGIÓN", "blurb": "", "rows": [["CD1", "Principais motores de busca, busca sinxela, e outros tipos de buscas."], ["CD2", "Ferramentas sinxelas para a creación do PLE, uso sinxelo de Follas de cálculo, uso sinxelo de Presentacións, e uso sinxelo de Google Vids, Canva ou Edpuzzle."], ["CD3", "Uso básico de ferramentas de compartición de Google."], ["CD4", "Huella dixital e configuración de opcións de privacidade."]]}, {"name": "GALLEGO", "blurb": "", "rows": [["CD1", "Búsqueda sinxela."]]}, {"name": "PLÁSTICA", "blurb": "", "rows": [["CD1", "Principais motores de busca, busca sinxela, e outros tipos de buscas."], ["CD3", "Uso básico de ferramentas de compartición de Google."]]}], "conclusion": [], "metaphor": []}, "6º PRIMARIA": {"intro": ["O 6º de Primaria afonda na colaboración, a inclusión de bibliografía, e introduce a programación básica e a sostibilidade."], "subjects": [{"name": "MÚSICA", "blurb": "", "rows": [["CD1", "Principais motores de busca, busca sinxela, e outros tipos de buscas."], ["CD2", "Traballo extensivo no Entorno Persoal de Aprendizaxe (PLE): concepto, categorización de ferramentas, e ferramentas sinxelas. Uso sinxelo e avanzado de Google Sites."], ["CD3", "Plataforma educativa do centro e uso básico de ferramentas de compartición de Google."], ["CD5", "Desenvolvemento de ferramentas sostibles e realización de retroalimentación (coavaliación) entre os alumnos."]]}, {"name": "MATEMÁTICAS", "blurb": "", "rows": [["CD1", "Definición de motores de busca e busca sinxela."], ["CD2", "Uso sinxelo de Documentos de Google, uso sinxelo de Follas de cálculo de Google, e uso sinxelo de Google Vids, Canva ou Edpuzzle."], ["CD3", "Plataforma educativa do centro, roles principais para a colaboración, e uso básico de ferramentas de compartición de Google."], ["CD4", "Identificación de riscos básicos para os dispositivos (virus, spam, roubo de contrasinais) e configuración de opcións de privacidade."], ["CD5", "Programación por bloques (Code, Scratch) e Programación de alto nivel (C++, Python)."]]}, {"name": "SOCIALES/GH", "blurb": "", "rows": [["CD1", "Definición de motores de busca, busca sinxela, outros tipos de buscas, e inclusión de bibliografía."], ["CD2", "Uso avanzado de Documentos de Google e uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Roles principais para a colaboración (lector, editor, propietario)."]]}, {"name": "LENGUA", "blurb": "", "rows": [["CD1", "Definición de motores de busca, inclusión de bibliografía, e manexo de marcadores (definición e sincronización)."], ["CD2", "Uso avanzado de Documentos de Google e uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Plataforma educativa do centro e uso de outras ferramentas avanzadas de compartición (chat, foros)."]]}, {"name": "C NAT./BIOLOXÍA", "blurb": "", "rows": [["CD1", "Busca sinxela, outros tipos de buscas, e xestión de marcadores."], ["CD2", "Uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Roles principais para a colaboración e uso básico de ferramentas de compartición de Google."], ["CD4", "Identificación de riscos básicos para os dispositivos."]]}, {"name": "GALLEGO", "blurb": "", "rows": [["CD1", "Outros tipos de buscas e inclusión de bibliografía."], ["CD2", "Uso avanzado de Documentos de Google e uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Plataforma educativa do centro e uso básico de ferramentas de compartición de Google."]]}, {"name": "INGLÉS", "blurb": "", "rows": [["CD1", "Outros tipos de buscas."], ["CD2", "Uso sinxelo de Presentacións de Google e Canva."]]}, {"name": "EF", "blurb": "", "rows": [["CD1", "Principales motores de busca, outros tipos de buscas e inclusión de bibliografía."], ["CD2", "Ferramentas sinxelas para a creación do PLE e uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Uso básico de ferramentas de compartición de Google."]]}], "conclusion": ["Conclusión do Nivel de Primaria (5º e 6º)", "Os dous últimos cursos de Primaria serven como unha etapa de introdución e consolidación do manexo de ferramentas e conceptos de seguridade básica:", "CD1 (Información): O foco está na busca sinxela e a identificación dos principais motores de busca. A inclusión de bibliografía comeza a ser relevante en 5º (C. Naturais, Sociais) e 6º (Lingua, Galego, Sociais).", "CD2 (Creación): Hai un uso xeneralizado das ferramentas de Google (Documentos, Follas de cálculo, Presentacións). O concepto de Entorno Persoal de Aprendizaxe (PLE) introdúcese en Música (5º e 6º).", "CD4 e CD5 (Seguridade e Desenvolvemento): Matemáticas e Relixión en 5º Primaria introducen conceptos fundamentais como a Huella dixital e a configuración de privacidade. Matemáticas en 6º é o principal vehículo para a Programación por bloques e de alto nivel. As materias de Música (5º e 6º) e EF (5º) contribúen á sostibilidade co Desenvolvemento de ferramentas sostibles ou o Análise do impacto ambiental.", "Esta fase educativa actúa como a base, onde as competencias son abordadas de maneira funcional e aplicativa, preparando aos alumnos para a complexidade da ESO.", "Pode imaxinar a Primaria como a aprendizaxe de manexar unha bicicleta: adquiren a estabilidade básica (ferramentas de Google e busca sinxela), e en 6º, engádese o engrenaxe de cambio (programación e colaboración), que lles permitirá afrontar rutas máis longas e complexas na ESO."], "metaphor": []}, "1º ESO": {"intro": ["Primeiro curso da Educación Secundaria Obrigatoria (1º ESO). Esta etapa marca o inicio da aplicación de competencias dixitais máis avanzadas, destacando a materia de Tecnoloxía como o eixe central para a programación e a Plástica para a xestión da propiedade intelectual.", "A continuación, preséntase a análise detallada por materia e competencia, baseada nos datos proporcionados na táboa.", "ANÁLISE DETALLADA POR CURSO E MATERIA: 1º ESO"], "subjects": [{"name": "TECNOLOXÍA", "blurb": "Esta materia é o principal foco para as competencias máis avanzadas e introduce a programación e a sostibilidade.", "rows": [["CD1", "Cobre a busca sinxela e outros tipos de buscas. Introduce a busca de información en bases de datos académicas. Tamén se traballa o manexo de marcadores: definición, funcionamento e xestión, e xestores de marcadores e sincronización."], ["CD2", "Dedícase á categorización das ferramentas necesarias na aprendizaxe (buscar, organizar, crear, etc.) e ao uso de ferramentas sinxelas para a creación do Entorno Persoal de Aprendizaxe (PLE). Utiliza o uso sinxelo de Documentos de Google, o uso sinxelo e avanzado de Follas de cálculo de Google, o uso sinxelo de Presentacións de Google e Canva, e o uso sinxelo de Google Vids, Canva ou Edpuzzle."], ["CD3", "Céntrase na Plataforma educativa do centro e no uso da Netiqueta (normas de comportamento en liña). Tamén cobre o uso reflexivo e cívico de internet (ciberbullying, sexting, phishing, grooming) e as ferramentas de compartición en internet."], ["CD4", "Aborda a creación de contrasinais seguras, o mantemento dos dispositivos (actualizacións de SO, antivirus), e a identificación dos riscos básicos para os dispositivos (virus, spam, roubo de contrasinais)."], ["CD5", "É o eixo da programación neste curso, incluíndo a introdución e contextualización do pensamento e linguaxe computacional, o pensamento computacional a través de actividades \"desenchufadas\", a programación por bloques (Code, Scratch), a programación alto nivel (C++, Python), e o uso de ferramentas creativas como simuladores e Tinkercad. Tamén contempla o desenvolvemento de ferramentas sostibles (como ecosia)."]]}, {"name": "LENGUA", "blurb": "Lingua céntrase na curación de contidos, a referenciación e a cidadanía dixital.", "rows": [["CD1", "Cobre os principais motores de busca, a curación de contidos (establecer criterios básicos, fake news), a inclusión da bibliografía en documentos de traballo, os protocolos de seguridade en internet, e a xestión de marcadores."], ["CD2", "Define o Entorno Persoal de Aprendizaxe (PLE) e utiliza ferramentas sinxelas para a súa creación. Inclúe o uso sinxelo de Documentos, Presentacións e Google Vids."], ["CD3", "Uso da Plataforma educativa do centro, uso de ferramentas avanzadas de compartición (chat, foros), uso básico de ferramentas de compartición de Google, uso reflexivo e cívico de internet, e Normas Netiqueta."], ["CD4", "O mantemento dos dispositivos (actualizacións de SO) e a comprensión do funcionamento dos sistemas de seguridade (firewall, cifrado)."]]}, {"name": "PLÁSTICA", "blurb": "Plástica destaca na aplicación da propiedade intelectual e no uso das ferramentas de creación para publicación.", "rows": [["CD1", "Outros tipos de buscas (imaxes, vídeos, etc.), explicación dos protocolos de seguridade en internet, e a inserción nas súas producións da licenza que crean conveniente."], ["CD2", "Uso sinxelo de Documentos, Presentacións, e Google Vids. Uso avanzado e sinxelo de Google Sites."], ["CD3", "Os roles principais para a colaboración (lector, editor, propietario), e o uso básico e avanzado de ferramentas de compartición de Google (Drive, Classroom, Calendar, Meet)."], ["CD4", "O mantemento dos dispositivos (actualizacións de SO)."], ["CD5", "O desenvolvemento de ferramentas sostibles."]]}, {"name": "GALLEGO", "blurb": "Galego enfócase na busca básica, a curación de contidos e a inclusión de referenciación.", "rows": [["CD1", "Cobre a definición de motores de busca, os principais motores, a busca sinxela, outros tipos de buscas, a curación de contidos (fake news), a inclusión da bibliografía, e os protocolos de seguridade."], ["CD2", "Uso de ferramentas sinxelas para a creación do PLE. Uso sinxelo de Documentos e Presentacións."]]}, {"name": "SOCIALES/GH", "blurb": "Sociais/GH aborda a busca de información e o benestar dixital.", "rows": [["CD1", "Definición de motores de busca, principais motores de busca, e busca sinxela."], ["CD2", "Uso de ferramentas sinxelas para a creación do PLE e uso sinxelo de Documentos de Google."], ["CD4", "Creación dunha guía do benestar persoal (uso de pantallas, hixiene postural, tempos de uso, descansos)."]]}, {"name": "MATEMÁTICAS", "blurb": "Matemáticas céntrase case exclusivamente no uso de ferramentas de cálculo e presentación.", "rows": [["CD2", "Uso sinxelo de Documentos, uso sinxelo e avanzado de Follas de cálculo, e uso sinxelo de Presentacións e Google Vids."]]}, {"name": "C NAT./BIOLOXÍA", "blurb": "C. Naturais/Bioloxía focalízase na busca, o traballo con follas de cálculo e a compartición.", "rows": [["CD1", "Busca sinxela, outros tipos de buscas, e inclusión da bibliografía en documentos de traballo."], ["CD2", "Uso sinxelo de Follas de cálculo e Presentacións."], ["CD3", "Uso básico de ferramentas de compartición de Google (Drive, Classroom, Calendar, Meet)."]]}, {"name": "RELIGIÓN", "blurb": "Relixión, xunto con Sociais, contribúe á formación en busca e benestar dixital.", "rows": [["CD1", "Definición de motores de busca, principais motores, busca sinxela, e outros tipos de buscas."], ["CD4", "Creación dunha guía do benestar persoal (uso de pantallas, hixiene postural, tempos de uso, descansos)."]]}, {"name": "FRANCÉS", "blurb": "Francés enfoca as súas competencias dixitais na curación de contidos e na colaboración básica.", "rows": [["CD1", "Establecer criterios básicos para a curación de contidos."], ["CD2", "Uso sinxelo de Documentos e Presentacións."], ["CD3", "Plataforma educativa do centro."]]}, {"name": "TUTORÍA", "blurb": "Tutoría ten unha función específica na área de comunicación e colaboración.", "rows": [["CD3", "Ferramentas de compartición en internet."]]}], "conclusion": ["Puntos Clave de 1º ESO", "O 1º ESO actúa como unha porta de entrada onde:", "Tecnoloxía domina a CD5: É a única materia que aborda de forma significativa a Programación (por bloques e alto nivel) e o pensamento computacional.", "Seguridade e Benestar Dixital: O concepto de Guía do benestar persoal é introducido por Sociais/GH e Relixión.", "Curación e Protocolo: Lingua e Galego introducen activamente a necesidade de curar contidos (filtrar fake news) e entender os protocolos de seguridade.", "Pode entenderse 1º ESO como un kit de ferramentas expandido. Mentres que en Primaria aprendeuse a usar as ferramentas básicas (o martelo e o desaparafusador), en 1º ESO as materias especializadas (como Tecnoloxía e Plástica) proporcionan o caderno de instrucións (propiedade intelectual, netiqueta) e o manual de enxeñaría (programación), preparando ao alumnado para proxectos máis complexos."], "metaphor": []}, "2º ESO": {"intro": ["2º curso da Educación Secundaria Obrigatoria (ESO), coa listaxe das competencias específicas (C1, C2, C3...) dentro de cada materia.", "A análise a seguir detalla as materias de 2º ESO e as competencias específicas que se desenvolven en cada unha delas, de acordo coa fonte.", "ANÁLISE DETALLADA POR CURSO E MATERIA: 2º ESO"], "subjects": [{"name": "MÚSICA", "blurb": "A materia de Música é unha das máis activas en 2º ESO, cubrindo o desenvolvemento do Entorno Persoal de Aprendizaxe (PLE), a propiedade intelectual e as competencias de benestar dixital.", "rows": [["CD1", "Principais motores de búsqueda, Búsqueda sencilla, Outros tipos de buscas, Incluír a bibliografía en documentos de traballo, Diferentes tipos de propiedades intelectuais, Inserir nas súas producións a licenza que cren conveniente."], ["CD2", "Entorno persoal de aprendizaxe (PLE): concepto, Categorizar as ferramentas necesarias, Ferramentas sinxelas para a creación do PLE, Uso sinxelo de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso sinxelo de Presentacións de Google e Canva, Uso sinxelo de Google Vids, Canva, Edpuzzle, Uso avanzado de Google Sites."], ["CD3", "Plataforma educativa do centro, Uso básico de ferramentas de compartición de Google."], ["CD4", "Creación dunha guía do benestar persoal (uso de pantallas, hixiene postural, tempos de uso, descansos...), Desenvolver habilidades de mecanografía."], ["CD5", "Desenvolvemento de ferramentas sostibles."]]}, {"name": "RELIGIÓN", "blurb": "Relixión enfócase notablemente na busca básica de información, a referenciación e o coñecemento dos dereitos de autor (propiedade intelectual).", "rows": [["CD1", "Motores de búsqueda: definición, Principais motores de búsqueda, Outros tipos de buscas, Incluír a bibliografía en documentos de traballo, Normativa referente á bibliografía: APA, Diferentes tipos de propiedades intelectuais, Grupos de pestañas."], ["CD2", "Uso sinxelo de Documentos de Google, Uso avanzado de Google Vids, Canva, Edpuzzle."]]}, {"name": "TUTORÍA", "blurb": "Tutoría asume o rol principal no desenvolvemento das competencias de cidadanía dixital e seguridade na rede.", "rows": [["CD3", "Ferramentas de compartición en internet, Uso reflexivo e cívico de internet (ciberbullying, sexting, phishing, grooming), Uso responsable das RRSS en función da idade."], ["CD4", "Plataformas sobre seguridade na rede: Incibe."]]}, {"name": "LENGUA", "blurb": "Lengua céntrase na referenciación, o uso do Entorno Persoal de Aprendizaxe e a comunicación a través da plataforma do centro.", "rows": [["CD1", "Incluír a bibliografía en documentos de traballo, Normativa referente á bibliografía: APA."], ["CD2", "Ferramentas sinxelas para a creación do PLE, Uso sinxelo de Documentos de Google, Uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Plataforma educativa do centro, Ferramentas de compartición en internet."]]}, {"name": "MATEMÁTICAS", "blurb": "Matemáticas enfoca as competencias na creación de contidos e na xestión de datos mediante follas de cálculo.", "rows": [["CD1", "Outros tipos de buscas, Incluír a bibliografía en documentos de traballo."], ["CD2", "Uso sinxelo de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso sinxelo de Presentacións de Google e Canva."], ["CD3", "Plataforma educativa do centro."]]}, {"name": "FÍSICA E QUÍMICA", "blurb": "Física e Química céntrase na aplicación avanzada de follas de cálculo e na identificación de riscos de seguridade.", "rows": [["CD1", "Incluír a bibliografía en documentos de traballo."], ["CD2", "Uso sinxelo de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso sinxelo de Presentacións de Google e Canva, Uso sinxelo de Google Vids, Canva, Edpuzzle."], ["CD3", "Plataforma educativa do centro."], ["CD4", "Identificación dos riscos básicos para os dispositivos (virus, troyanos, spam, roubo de contrasinais)."]]}, {"name": "INGLÉS", "blurb": "Inglés destaca no uso de licenzas (CD1) e no uso avanzado de varias ferramentas de creación de contidos (CD2).", "rows": [["CD1", "Inserir nas súas producións a licenza que crean conveniente."], ["CD2", "Ferramentas sinxelas para a creación do PLE, Uso avanzado de Documentos de Google, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle."]]}, {"name": "GALLEGO", "blurb": "Galego enfoca as competencias na creación avanzada de documentos e follas de cálculo, e na colaboración avanzada.", "rows": [["CD1", "Incluír a bibliografía en documentos de traballo."], ["CD2", "Uso avanzado de Documentos de Google, Uso avanzado de Follas de cálculo de Google."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."]]}, {"name": "FRANCÉS", "blurb": "Francés tamén contribúe á referenciación e ao uso avanzado de ferramentas.", "rows": [["CD1", "Incluír a bibliografía en documentos de traballo, Grupos de pestañas."], ["CD2", "Uso avanzado de Documentos de Google, Uso avanzado de Presentacións de Google."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."]]}, {"name": "SOCIALES/GH", "blurb": "Sociais/GH céntrase na busca de información básica.", "rows": [["CD1", "Principais motores de búsqueda, Outros tipos de buscas."]]}], "conclusion": ["Conclusión do Nivel 2º ESO", "O 2º ESO caracterízase pola maduración das competencias éticas e de colaboración:", "Énfase na Propiedade Intelectual (CD1): Varias materias, especialmente Música e Relixión, profundan no coñecemento e a aplicación das licenzas Creative Commons e os tipos de propiedades intelectuais, superando a simple inclusión da bibliografía.", "Cidadanía e Benestar (CD3 e CD4): Tutoría centraliza o traballo contra o ciberbullying e sobre o uso responsable das redes sociais, mentres que Música introduce a Guía do benestar persoal e a mecanografía.", "Creación e Xestión Avanzada (CD2): Existe unha demanda xeneralizada polo uso avanzado de follas de cálculo (Matemáticas, Física e Química, Galego, Música) e documentos/presentacións, consolidando a capacidade do alumnado para producir contidos máis complexos.", "Este curso reflicte o paso da aprendizaxe funcional da ferramenta (1º ESO) á aplicación responsable e especializada da tecnoloxía."], "metaphor": []}, "3º ESO": {"intro": ["3º curso da ESO, desglosando as competencias dixitais (CD) e as subcompetencias específicas traballadas dentro de cada materia.", "Esta fase educativa intensifica o traballo coa busca académica, a propiedade intelectual avanzada e o desenvolvemento de contidos multimedia, como se pode ver na seguinte análise baseada na fonte.", "ANÁLISE DETALLADA POR CURSO E MATERIA: 3º ESO"], "subjects": [{"name": "PLÁSTICA", "blurb": "Plástica é a materia máis activa na creación e a sostibilidade neste curso, destacando na xestión de licenzas e na coavaliación.", "rows": [["CD1", "Búsqueda sencilla, Outro tipo de búsquedas: imaxes, vídeos, Inserir nas súas producións a licenza que crean conveniente."], ["CD2", "Ferramentas avanzadas para a creación do PLE (symbaloo, piktochart), Uso sinxelo de Documentos de Google, Uso avanzado de Documentos de Google, Uso sinxelo de Follas de cálculo de Google, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle, Uso sinxelo de Google Sites."], ["CD3", "Plataforma educativa do centro, Roles principales para a colaboración, Uso avanzado de ferramentas de compartición de Google."], ["CD4", "Mantenimiento dos dispositivos (Actualizacións de SO, antivirus)."], ["CD5", "Desenvolvemento de ferramentas sostibles, Realizar retroalimentación (coavaliación) entre os alumnos."]]}, {"name": "MÚSICA", "blurb": "Música actúa como un eixe transversal que combina creación de contidos avanzados, manexo de propiedade intelectual e promoción do benestar dixital.", "rows": [["CD1", "Principales motores de búsqueda, Búsqueda sencilla, Outro tipo de búsquedas: imaxes, vídeos, Incluír a bibliografía en documentos de traballo, Diferentes tipos de propiedades intelectuais, Inserir nas súas producións a licenza que crean conveniente."], ["CD2", "Entorno persoal de aprendizaxe (PLE): concepto, Categorizar as ferramentas necesarias, Ferramentas avanzadas para a creación do PLE, Uso sinxelo de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso sinxelo de Presentacións de Google e Canva, Uso avanzado de Google Vids, Canva, Edpuzzle."], ["CD3", "Plataforma educativa do centro, Uso básico de ferramentas de compartición de Google."], ["CD4", "Creación dunha guía do benestar persoal, Desenvolver habilidades de mecanografía."]]}, {"name": "SOCIALES/GH", "blurb": "Esta materia é a principal responsable de introducir a busca avanzada e a reflexión sobre o impacto das TICs neste curso.", "rows": [["CD1", "Motores de búsqueda: definición, Principales motores de búsqueda, Búsqueda sencilla, Outro tipo de búsquedas: imaxes, vídeos, Búsqueda avanzada (criterios de documento, data, licenza)."], ["CD2", "Uso sinxelo de Presentacións de Google e Canva."], ["CD4", "Creación dunha guía do benestar persoal, Desenvolver habilidades de mecanografía."], ["CD5", "Reflexión sobre o impacto das TIC: social, económico."]]}, {"name": "ORATORIA", "blurb": "Oratoria céntrase na busca de información académica e na aplicación da normativa APA.", "rows": [["CD1", "Búsqueda sencilla, Outro tipo de búsquedas, Búsqueda de información en bases de datos académicas, Incluír a bibliografía en documentos de traballo, Normativa referente á bibliografía: APA."], ["CD2", "Uso sinxelo de Documentos de Google."], ["CD4", "Creación dunha guía do benestar persoal."], ["CD5", "Desenvolvemento de ferramentas sostibles."]]}, {"name": "C NATURALES/BIOLOGÍA", "blurb": "C. Naturais/Bioloxía utiliza as competencias dixitais para a investigación académica e o manexo avanzado de contidos.", "rows": [["CD1", "Búsqueda de información en bases de datos académicas."], ["CD2", "Uso avanzado de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle, Uso sinxelo de Google Sites."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."]]}, {"name": "RELIGIÓN", "blurb": "Relixión contribúe ao uso avanzado de ferramentas de creación de contidos e ao coñecemento legal da propiedade intelectual.", "rows": [["CD1", "Diferentes tipos de propiedades intelectuais."], ["CD2", "Ferramentas avanzadas para a creación do PLE, Uso sinxelo de Documentos de Google, Uso avanzado de Documentos de Google, Uso sinxelo de Presentacións de Google e Canva, Uso avanzado de Google Vids, Canva, Edpuzzle."], ["CD3", "Uso básico de ferramentas de compartición de Google."]]}, {"name": "GALLEGO", "blurb": "Galego enfoca as competencias na creación de contidos avanzados e na aplicación da ética dixital.", "rows": [["CD1", "Outro tipo de búsquedas, Incluír a bibliografía en documentos de traballo."], ["CD2", "Uso avanzado de Documentos de Google, Uso sinxelo de Presentacións de Google e Canva, Uso avanzado de Google Vids, Canva, Edpuzzle."], ["CD3", "Uso reflexivo e cívico de internet."]]}, {"name": "MATEMÁTICAS", "blurb": "Matemáticas céntrase no uso avanzado das ferramentas de cálculo e presentación.", "rows": [["CD2", "Uso sinxelo de Follas de cálculo de Google, Uso avanzado de Follas de cálculo de Google, Uso sinxelo de Presentacións de Google e Canva, Uso sinxelo de Google Vids, Canva, Edpuzzle."]]}, {"name": "INGLÉS", "blurb": "Inglés utiliza as CD para a busca de información académica e a colaboración avanzada.", "rows": [["CD1", "Búsqueda de información en bases de datos académicas."], ["CD2", "Uso sinxelo de Documentos de Google, Uso avanzado de Presentacións de Google."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."]]}, {"name": "FRANCÉS", "blurb": "Francés contribúe á busca académica, a colaboración e o benestar dixital.", "rows": [["CD1", "Búsqueda de información en bases de datos académicas."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."], ["CD4", "Creación dunha guía do benestar persoal."]]}, {"name": "FÍSICA E QUÍMICA", "blurb": "Participación puntual en 3º ESO, centrada no uso de follas de cálculo.", "rows": [["CD2", "Uso avanzado de Documentos de Google, Uso sinxelo de Follas de cálculo de Google, Uso avanzado de Follas de cálculo de Google."]]}, {"name": "LENGUA", "blurb": "Participación puntual en 3º ESO, centrada na compartición de ferramentas.", "rows": [["CD3", "Uso avanzado de ferramentas de compartición de Google."]]}, {"name": "ED VALORES", "blurb": "Participación puntual en 3º ESO, centrada na busca de información e compartición básica.", "rows": [["CD1", "Outro tipo de búsquedas: imaxes, vídeos."], ["CD3", "Uso básico de ferramentas de compartición de Google."]]}], "conclusion": [], "metaphor": ["O 3º de ESO pode verse como un laboratorio dixital. O alumnado xa ten as ferramentas básicas (adquiridas en Primaria e 1º ESO) e agora, baixo a supervisión das materias especializadas, traballan para producir solucións éticas e sostibles (CD5, a través de Plástica e Oratoria) e investigar con rigor académico (CD1, con Oratoria, C. Naturais, Inglés e Francés). Xa non se trata só de usar a tecnoloxía, senón de producir contido de calidade, referenciado e legalmente protexido."]}, "4º ESO": {"intro": ["4º curso da Educación Secundaria Obrigatoria (ESO), que funciona como o nivel de máxima esixencia na aplicación de competencias dixitais avanzadas. Neste curso, as materias profundizan na análise crítica da información (CD1), a cidadanía dixital activa (CD3), e a programación e sostibilidade (CD5).", "A continuación, preséntase a análise detallada por materia e competencia, baseada nos datos fornecidos na táboa.", "ANÁLISE DETALLADA POR CURSO E MATERIA: 4º ESO"], "subjects": [{"name": "TECNOLOXÍA", "blurb": "Tecnoloxía en 4º ESO é o principal vehículo para as competencias de seguridade, benestar, e especialmente, a resolución de problemas e a programación (CD4 e CD5).", "rows": [["CD4", "Creación dunha guía do benestar persoal, Desenvolver habilidades de mecanografía, Reflexión sobre o impacto das TIC: social, económico, Coñecemento e análise do impacto ambiental dos dispositivos dixitais (consumo de enerxía, residuos electrónicos), Participación en iniciativas para reducir o impacto ambiental das tecnoloxías dixitais (punto limpo, reciclaxe, consumo responsable)."], ["CD5", "Introdución e contextualización ao coñecemento do pensamento e linguaxe computacional, Programación por bloques (Code, AdBlocks, App Inventor e Scratch), Programación alto nivel (C++, Python), Programación básica con plataformas de robótica (microbit, arduino), Programación avanzada con plataformas de robótica (microbit, arduino), Ferramentas creativas (simuladores, Tinkercad), Coñecer ferramentas dixitais: IA, Realizar retroalimentación (coavaliación) entre os alumnos."]]}, {"name": "LENGUA", "blurb": "Lengua (Lingua) ten o maior rango de competencias en CD1 e CD3, centrándose na curación de contidos, a referenciación e a cidadanía dixital avanzada.", "rows": [["CD1", "Búsqueda avanzada (criterios de documento, data, licenza), Búsqueda de información en bases de datos académicas, Establecer criterios básicos para a curación de contidos en internet (fake news), Verificar que a web contén certificados de seguridade, Incluír a bibliografía en documentos de traballo, Manexo de Marcadores, Normativa referente á bibliografía: APA, Diferentes tipos de propiedades intelectuais, Inserir nas súas producións a licenza que crean conveniente."], ["CD2", "Uso sinxelo de Documentos de Google, Uso avanzado de Presentacións de Google, Uso sinxelo de Google Vids, Canva, Edpuzzle."], ["CD3", "Plataforma educativa do centro, Uso sinxelo e avanzado de Gmail, Ferramentas de compartición en internet, Uso reflexivo e cívico de internet (ciberbullying, sexting, phishing, grooming), Normas Netiqueta, Uso responsable das RRSS en función da idade."], ["CD4", "Comprensión do funcionamento dos sistemas de seguridade (firewall, cifrado), Identificación dos riscos en internet (roubo de contas, fraudes)."], ["CD5", "Desenvolvemento de ferramentas sostibles."]]}, {"name": "PLÁSTICA", "blurb": "Plástica destaca na creación avanzada de contidos multimedia (PLE e Google Sites) e a aplicación práctica da propiedade intelectual e a sostibilidade.", "rows": [["CD1", "Outro tipo de búsquedas: imaxes, vídeos, Inserir nas súas producións a licenza que crean conveniente."], ["CD2", "Ferramentas avanzadas para a creación do PLE (symbaloo, piktochart), Uso avanzado de Documentos de Google, Uso sinxelo de Follas de cálculo de Google, Uso sinxelo de Presentacións de Google e Canva, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle, Uso avanzado de Google Sites."], ["CD3", "Plataforma educativa do centro, Roles principales para a colaboración, Uso avanzado de ferramentas de compartición de Google."], ["CD4", "Mantenimiento dos dispositivos (Actualizacións de SO, antivirus)."], ["CD5", "Desenvolvemento de ferramentas sostibles."]]}, {"name": "C NATURALES/BIOLOGÍA", "blurb": "C. Naturais/Bioloxía céntrase na creación de contidos e na xestión avanzada da información, ademais de participar activamente nas competencias de sostibilidade e benestar.", "rows": [["CD1", "Diferentes tipos de propiedades intelectuais."], ["CD2", "Uso avanzado de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle, Uso avanzado de Google Sites."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."], ["CD4", "Creación dunha guía do benestar persoal, Reflexión sobre o impacto das TIC, Coñecemento e análise do impacto ambiental dos dispositivos dixitais, Participación en iniciativas para reducir o impacto ambiental."], ["CD5", "Desenvolvemento de ferramentas sostibles."]]}, {"name": "LATÍN", "blurb": "Latín enfoca as súas competencias en CD1, contribuíndo á busca avanzada e académica, xunto coa referenciación rigorosa.", "rows": [["CD1", "Búsqueda avanzada (criterios de documento, data, licenza), Búsqueda de información en bases de datos académicas, Incluír a bibliografía en documentos de traballo."], ["CD2", "Uso avanzado de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle."], ["CD5", "Desenvolvemento de ferramentas sostibles."]]}, {"name": "C. CLÁSICA", "blurb": "Cultura Clásica tamén contribúe á busca avanzada e á xestión da información, incluíndo o coñecemento da propiedade intelectual.", "rows": [["CD1", "Búsqueda sencilla, Outro tipo de búsquedas, Búsqueda avanzada, Búsqueda de información en bases de datos académicas, Incluír a bibliografía en documentos de traballo, Diferentes tipos de propiedades intelectuais."], ["CD2", "Ferramentas sinxelas para a creación do PLE, Uso avanzado de Documentos de Google, Uso avanzado de Presentacións de Google."]]}, {"name": "INGLÉS", "blurb": "Inglés céntrase na referenciación e no uso avanzado de ferramentas de creación, incluíndo plataformas de publicación web.", "rows": [["CD1", "Incluír a bibliografía en documentos de traballo."], ["CD2", "Uso avanzado de Documentos de Google, Uso avanzado de Follas de cálculo de Google, Uso avanzado de Presentacións de Google, Uso avanzado de Google Vids, Canva, Edpuzzle, Uso sinxelo de Google Sites, Outras ferramentas avanzadas."]]}, {"name": "GALLEGO", "blurb": "Participación puntual en 4º ESO.", "rows": [["CD1", "Principais motores de búsqueda."], ["CD3", "Uso avanzado de ferramentas de compartición de Google."]]}, {"name": "MATEMÁTICAS", "blurb": "Participación puntual en 4º ESO, centrada en follas de cálculo.", "rows": [["CD2", "Uso avanzado de Follas de cálculo de Google."]]}, {"name": "RELIGIÓN", "blurb": "Sen competencias dixitais específicas rexistradas neste curso.", "rows": [["NINGUNHA", "Non se rexistra o traballo con ningunha competencia dixital específica neste curso para esta materia."]]}, {"name": "EF", "blurb": "Sen competencias dixitais específicas rexistradas neste curso.", "rows": [["NINGUNHA", "Non se rexistra o traballo con ningunha competencia dixital específica neste curso para esta materia."]]}], "conclusion": ["Conclusión do Nivel 4º ESO", "O 4º ESO marca a culminación das competencias dixitais na ESO, distinguíndose pola súa profundidade:", "Rigor e Crítica (CD1): A busca avanzada e o coñecemento de certificados de seguridade e a normativa APA son competencias esenciais, impulsadas principalmente por Lengua, Latín e C. Clásica. Lengua abrangue ademais a curación crítica de contidos (fake news).", "Sostibilidade e Tecnoloxía Aplicada (CD4 e CD5): Tecnoloxía e C. Naturais/Bioloxía levan o liderado en avaliar o impacto ambiental das TICs e a participación en iniciativas de sostibilidade. Tecnoloxía tamén monopoliza a programación avanzada e o coñecemento de Intelixencia Artificial (IA).", "Cidadanía Activa (CD3): Lengua consolida a formación sobre a Netiqueta, o uso responsable das RRSS e a reflexión cívica sobre o uso de internet.", "Este curso prepára aos estudantes para un uso totalmente autónomo, crítico e ético da tecnoloxía, superando a mera operación de ferramentas e enfocándose na súa responsabilidade como cidadáns dixitais."], "metaphor": []}}}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('course-data').textContent);
+const ORDER = DATA.order;
+const COURSES = DATA.courses;
+
+const ICONS = {
+  CD1: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><line x1="21" y1="21" x2="15" y2="15"/></svg>',
+  CD2: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  CD3: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5.5A8.38 8.38 0 0 1 3 11.5 8.5 8.5 0 0 1 11.5 3a8.38 8.38 0 0 1 9.5 8.5z"/></svg>',
+  CD4: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5.2 3.4 9.8 8 11 4.6-1.2 8-5.8 8-11V5Z"/></svg>',
+  CD5: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+};
+const CD_NAMES = {
+  CD1: 'Información e Datos',
+  CD2: 'Creación de Contidos',
+  CD3: 'Comunicación e Colaboración',
+  CD4: 'Seguridade',
+  CD5: 'Resolución de Problemas'
+};
+
+const LEVELS = {
+  primaria: { courses: ['5º PRIMARIA','6º PRIMARIA'], big: false },
+  eso: { courses: ['1º ESO','2º ESO','3º ESO','4º ESO'], big: true }
+};
+
+function shortLabel(name){
+  return name.split(' ')[0];
+}
+function subLabel(name){
+  return name.includes('PRIMARIA') ? 'Primaria' : 'ESO';
+}
+
+// --- Growth path (hero nav) ---
+const gp = document.getElementById('growthPath');
+ORDER.forEach((name, i) => {
+  const node = document.createElement('div');
+  node.className = 'gp-node' + (name.includes('ESO') ? ' big' : '');
+  node.dataset.course = name;
+  node.innerHTML = `<span class="stem"></span><span class="leaf"></span><span class="gp-label">${shortLabel(name)}</span><span class="gp-sub">${subLabel(name)}</span>`;
+  node.addEventListener('click', () => {
+    const level = name.includes('PRIMARIA') ? 'primaria' : 'eso';
+    document.getElementById('level-' + level).scrollIntoView({behavior:'smooth', block:'start'});
+    setActiveCourse(level, name);
+  });
+  gp.appendChild(node);
+});
+
+// --- CD legend ---
+const legend = document.getElementById('legend');
+Object.keys(CD_NAMES).forEach(cd => {
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  chip.innerHTML = `<span class="ic">${ICONS[cd]}</span><span><b>${cd}</b> · ${CD_NAMES[cd]}</span>`;
+  legend.appendChild(chip);
+});
+
+function badgeClass(cd){
+  return { CD1:'b1', CD2:'b2', CD3:'b3', CD4:'b4', CD5:'b5' }[cd] || 'plain';
+}
+
+function renderCourse(level, courseName){
+  const data = COURSES[courseName];
+
+  // intro
+  document.getElementById('intro-' + level).textContent = data.intro.join(' ');
+
+  // grid
+  const grid = document.getElementById('grid-' + level);
+  grid.innerHTML = '';
+  data.subjects.forEach(subj => {
+    const card = document.createElement('div');
+    card.className = 'subject-card';
+    const badges = subj.rows.map(r => {
+      const cd = r[0];
+      const isCd = /^CD[1-5]$/.test(cd);
+      return `<span class="badge ${badgeClass(isCd ? cd : '')}" title="${isCd ? (cd + ': ' + CD_NAMES[cd]) : cd}">${isCd ? cd.replace('CD','') : '•'}</span>`;
+    }).join('');
+    const rowsHtml = subj.rows.map(r => {
+      const cd = r[0];
+      const isCd = /^CD[1-5]$/.test(cd);
+      const label = isCd ? (cd + ' · ' + CD_NAMES[cd]) : cd;
+      return `<div class="sc-row"><div class="sc-row-tag">${isCd ? ICONS[cd] : ''}${label}</div><p>${r[1]}</p></div>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="sc-top">
+        <h4>${subj.name}</h4>
+        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+      </div>
+      ${subj.blurb ? `<div class="blurb">${subj.blurb}</div>` : ''}
+      <div class="sc-badges">${badges}</div>
+      <div class="sc-detail"><div class="sc-detail-inner">${rowsHtml}</div></div>
+    `;
+    card.addEventListener('click', () => card.classList.toggle('open'));
+    grid.appendChild(card);
+  });
+
+  // callout (conclusion + metaphor)
+  const callout = document.getElementById('callout-' + level);
+  let conclusion = data.conclusion;
+  let metaphor = data.metaphor;
+  // Primaria conclusion is shared across 5º/6º and lives on 6º PRIMARIA
+  if (level === 'primaria') {
+    conclusion = COURSES['6º PRIMARIA'].conclusion;
+    metaphor = [];
+  }
+  if (conclusion && conclusion.length) {
+    const title = conclusion[0];
+    const items = conclusion.slice(1);
+    callout.style.display = 'block';
+    callout.innerHTML = `<h5>${title}</h5><ul>${items.map(it => {
+      const m = it.match(/^([^:]{3,60}):\s*(.*)$/);
+      return m ? `<li><b>${m[1]}:</b> ${m[2]}</li>` : `<li>${it}</li>`;
+    }).join('')}</ul>${metaphor && metaphor.length ? `<div class="metaphor">${metaphor.join(' ')}</div>` : ''}`;
+  } else {
+    callout.style.display = 'none';
+    callout.innerHTML = '';
+  }
+}
+
+function setActiveCourse(level, courseName){
+  document.querySelectorAll(`#tabs-${level} .tab-btn`).forEach(b => {
+    b.classList.toggle('active', b.dataset.course === courseName);
+  });
+  document.querySelectorAll('.gp-node').forEach(n => {
+    n.classList.toggle('active', n.dataset.course === courseName);
+  });
+  renderCourse(level, courseName);
+}
+
+function buildTabs(level){
+  const tabWrap = document.getElementById('tabs-' + level);
+  LEVELS[level].courses.forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+    btn.dataset.course = name;
+    btn.textContent = name;
+    btn.addEventListener('click', () => setActiveCourse(level, name));
+    tabWrap.appendChild(btn);
+  });
+}
+
+buildTabs('primaria');
+buildTabs('eso');
+setActiveCourse('primaria', LEVELS.primaria.courses[0]);
+setActiveCourse('eso', LEVELS.eso.courses[0]);
+</script>
+</body>
+</html>
