@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Curso de Competencia Digital · Iniciación</title>
+  <!-- Google Fonts & Tailwind CSS CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+            vedruna: { blue: '#1f4f86', light: '#2b6cb0', soft: '#e6eef8' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --tx: #0f172a;
+      --mu: #64748b;
+      --ac: #2563eb;
+      --ac2: #1e40af;
+      --bd: #e2e8f0;
+      --ok: #16a34a;
+      --ko: #dc2626;
+      --okb: #dcfce7;
+      --kob: #fee2e2;
+      --soft: #f1f5f9;
+    }
+    .dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --tx: #f8fafc;
+      --mu: #94a3b8;
+      --ac: #38bdf8;
+      --ac2: #7dd3fc;
+      --bd: #334155;
+      --ok: #4ade80;
+      --ko: #f87171;
+      --okb: #064e3b;
+      --kob: #7f1d1d;
+      --soft: #1e293b;
+    }
+    body { background-color: var(--bg); color: var(--tx); }
+    /* Custom UI Components */
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.65rem 0.95rem;
+      border-radius: 0.65rem;
+      border: 1.5px solid var(--bd);
+      background-color: var(--card);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      display: block;
+      font-size: 0.94rem;
+    }
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--ac);
+      background-color: var(--soft);
+    }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.ok, .flag.ok, .row.ok {
+      background-color: var(--okb) !important;
+      border-color: var(--ok) !important;
+      color: var(--tx) !important;
+    }
+    .opt-btn.ko, .flag.ko, .row.ko {
+      background-color: var(--kob) !important;
+      border-color: var(--ko) !important;
+      color: var(--tx) !important;
+    }
+    .flag.sel, .tg.sel {
+      background-color: var(--soft);
+      border-color: var(--ac);
+      box-shadow: 0 0 0 2px var(--ac);
+    }
+    .locked {
+      pointer-events: none;
+      opacity: 0.85;
+    }
+    .locked button, .locked input, .locked select {
+      pointer-events: none !important;
+    }
+    /* Hide scrollbar for clean nav bar */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-700 to-indigo-900 flex items-center justify-center text-white shadow-md font-bold text-2xl tracking-wider">
+          VD
+        </div>
+        <div>
+          <span class="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-blue-400">Fundación Vedruna Educación</span>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Competencia Digital · Iniciación</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 self-end sm:self-auto">
+        <button id="themeToggle" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 transition" title="Cambiar tema">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-blue-50 dark:bg-slate-800/60 border border-blue-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">👤</span>
+        <span class="text-sm font-semibold text-slate-700 dark:text-slate-200" id="who">Alumno/a: No registrado</span>
+      </div>
+      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 w-fit">Curso 2026-27 · Intento único</span>
+    </div>
+
+    <!-- Stats summary grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" id="stats">
+      <!-- Generated via JS -->
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mb-1 shadow-inner">
+      <div id="bar" class="h-full bg-gradient-to-r from-blue-600 to-emerald-500 transition-all duration-500 w-0"></div>
+    </div>
+    <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+      <span id="pt">0 de 23 actividades evaluables</span>
+      <span id="pcent">0%</span>
+    </div>
+  </header>
+
+  <!-- Navigation sticky pills -->
+  <nav class="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-y border-slate-200 dark:border-slate-800 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-2.5 flex gap-2 overflow-x-auto no-scrollbar">
+      <a href="#inicio" data-s="inicio" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">Inicio</a>
+      <a href="#buscar" data-s="buscar" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">1. Buscar</a>
+      <a href="#fuentes" data-s="fuentes" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">2. Fuentes</a>
+      <a href="#seguridad" data-s="seguridad" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">3. Seguridad</a>
+      <a href="#crear" data-s="crear" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">4. Crear</a>
+      <a href="#comunicar" data-s="comunicar" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">5. Comunicar</a>
+      <a href="#colaborar" data-s="colaborar" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">6. Colaborar</a>
+      <a href="#avanzado" data-s="avanzado" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">Retos avanzados</a>
+      <a href="#examen" data-s="examen" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">📝 Examen final</a>
+      <a href="#logros" data-s="logros" class="nav-link px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">🏆 Mis logros</a>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 flex-1">
+
+    <!-- SECCIÓN INICIO -->
+    <section id="inicio" class="space-y-6">
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">¡Bienvenido/a al Curso!</h2>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+          En este entorno interactivo aprenderás a desenvolverte en internet con criterio, seguridad y responsabilidad. Cada módulo combina teoría esencial en apartados desplegables y prácticas evaluables. Todas las actividades y el examen final son de <b>un único intento</b> para reflejar tu nivel real.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 mb-2">⭐ Nivel 1</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Quiz de Buscadores</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Conceptos de motor de búsqueda vs. navegador e internet.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 mb-2">⭐⭐ Nivel 2</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Operadores de Búsqueda</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Domina comillas, exclusión con guion, OR y filetype.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 mb-2">⭐⭐⭐ Nivel 3</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Detective de Fuentes</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Reconoce las señales de alarma y bulos en la red.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300 mb-2">⭐⭐⭐⭐ Nivel 4</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Laboratorio de Claves</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Genera una contraseña robusta cumpliendo 6 normas.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 mb-2">⭐⭐ Nivel 2</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Herramientas y Suites</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Elegir entre Docs, Sheets, Canva, Sites o Formularios.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 mb-2">🏁 Evaluación</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1">Examen de 30 Pruebas</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Preguntas test y ordenación lógica con diploma descargable.</p>
+          </div>
+        </div>
+
+        <a href="#buscar" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shadow-md hover:shadow-lg">
+          Comenzar Módulo 1 →
+        </a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 1: BUSCAR -->
+    <section id="buscar" class="space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">🔍 Módulo 1 · Buscar en internet</h2>
+      </div>
+
+      <div class="space-y-3">
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition" open>
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>¿Qué es un motor de búsqueda?</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Es un software que rastrea la web, almacena la información en un índice gigantesco y presenta los resultados más pertinentes cuando haces una consulta. <b>No debe confundirse con un navegador</b>: Chrome, Safari o Firefox sirven para visualizar páginas; Google, Bing o DuckDuckGo sirven para localizarlas.
+          </p>
+        </details>
+
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition">
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>¿Cómo funciona internet? (Modelo cliente-servidor)</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Tu ordenador, móvil o tableta actúa como <b>cliente</b>: solicita un recurso. Un <b>servidor</b> (computadora remota de alto rendimiento) procesa tu petición y te envía los datos de vuelta. Este proceso ocurre en cuestión de milisegundos cada vez que navegas.
+          </p>
+        </details>
+
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition">
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>Operadores booleanos y filtros clave</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <li><code class="px-2 py-0.5 rounded bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-mono">“frase exacta”</code> : Busca las palabras unidas en el orden literal indicado.</li>
+            <li><code class="px-2 py-0.5 rounded bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-mono">-término</code> : Excluye del listado cualquier página que contenga esa palabra.</li>
+            <li><code class="px-2 py-0.5 rounded bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-mono">OR</code> : Encuentra páginas que contengan una opción o la otra.</li>
+            <li><code class="px-2 py-0.5 rounded bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-mono">filetype:pdf</code> : Limita los resultados exclusivamente a documentos en formato PDF.</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- Actividad 1 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a1">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">⭐ Nivel 1</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 1 · Quiz de buscadores</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Elige la opción correcta para cada pregunta. Necesitas al menos 3 aciertos sobre 4.</p>
+        <div id="q1" class="space-y-4"></div>
+      </div>
+
+      <!-- Actividad 2 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a2">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">⭐⭐ Nivel 2</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 2 · Domina los operadores</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Relaciona cada sintaxis de búsqueda con su resultado correspondiente.</p>
+        <div id="q2" class="space-y-3"></div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c2">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r2"></p>
+      </div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#inicio" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Inicio</a>
+        <a href="#fuentes" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Siguiente: Fuentes fiables →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: FUENTES FIABLES -->
+    <section id="fuentes" class="space-y-6 hidden">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">🕵️ Módulo 2 · Fuentes fiables</h2>
+
+      <div class="space-y-3">
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition" open>
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>Criterios para evaluar la fiabilidad de una página</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <li><b>Autoría:</b> ¿Quién firma el artículo? ¿Tiene experiencia contrastada en la materia?</li>
+            <li><b>Actualización:</b> ¿Se incluye la fecha de publicación o última revisión?</li>
+            <li><b>Citas y referencias:</b> ¿De dónde provienen los datos y afirmaciones?</li>
+            <li><b>Intencionalidad:</b> ¿Busca informar con neutralidad o venderte un producto/generar clics rápidos?</li>
+            <li><b>Contraste:</b> ¿Medios o instituciones científicas reconocidas afirman lo mismo?</li>
+          </ul>
+        </details>
+
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition">
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>El candado de seguridad (HTTPS)</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            El protocolo <code>https://</code> garantiza que la comunicación entre tu navegador y el servidor está cifrada. <b>Atención:</b> un sitio fraudulento también puede contar con candado. El candado asegura la privacidad del canal, no la veracidad del contenido.
+          </p>
+        </details>
+      </div>
+
+      <!-- Actividad 3 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a3">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">⭐⭐⭐ Nivel 3</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 3 · Detective de fuentes</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+          Una web asegura que "un remedio casero cura la gripe en 1 hora". Pulsa <b>únicamente las señales de alarma</b> que despiertan sospechas y luego comprueba.
+        </p>
+        <div id="q3" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c3">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r3"></p>
+      </div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#buscar" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Módulo 1</a>
+        <a href="#seguridad" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Siguiente: Seguridad →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: SEGURIDAD -->
+    <section id="seguridad" class="space-y-6 hidden">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">🔐 Módulo 3 · Protege tus datos y privacidad</h2>
+
+      <div class="space-y-3">
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition" open>
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>Riesgos habituales: Phishing e ingeniería social</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            El <b>Phishing</b> consiste en suplantar la identidad de una entidad (un banco, tu colegio, una red social) a través de correos o mensajes urgentes con enlaces fraudulentos. Su objetivo es robar tus credenciales. Nunca introduzcas contraseñas desde enlaces de mensajes no verificados.
+          </p>
+        </details>
+      </div>
+
+      <!-- Actividad 4 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200">⭐⭐⭐⭐ Nivel 4</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 4 · Laboratorio de contraseñas</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+          Escribe una contraseña simulada que cumpla todas las condiciones de seguridad. <b>No uses una clave real</b>.
+        </p>
+        <div class="space-y-3">
+          <input type="text" id="pw" placeholder="Ejemplo: MiPerro#ComeFruta2026" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none" autocomplete="off">
+          <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+            <div id="pm" class="h-full bg-red-500 transition-all duration-300 w-0"></div>
+          </div>
+          <div id="pr" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium pt-2"></div>
+          <p class="res text-sm font-semibold pt-1" id="r4"></p>
+        </div>
+      </div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#fuentes" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Módulo 2</a>
+        <a href="#crear" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Siguiente: Crear contenidos →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: CREAR CONTENIDOS -->
+    <section id="crear" class="space-y-6 hidden">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">📝 Módulo 4 · Crear contenidos digitales</h2>
+
+      <div class="space-y-3">
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition" open>
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>Herramientas digitales según el propósito</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <li><b>Documentos de Google:</b> Ideal para redactar informes estructurados con títulos, párrafos y notas al pie.</li>
+            <li><b>Hojas de cálculo:</b> Perfectas para organizar tablas numéricas y cálculos automáticos mediante fórmulas (<code class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">=SUMA()</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">=PROMEDIO()</code>).</li>
+            <li><b>Canva y Presentaciones:</b> Comunicación visual con diseño limpio, tipografías legibles y poco texto por diapositiva.</li>
+            <li><b>Google Sites:</b> Creación de sitios web escolares intuitivos mediante bloques sin programar código.</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- Actividad 5 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">⭐⭐ Nivel 2</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 5 · ¿Qué herramienta uso?</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Selecciona la aplicación idónea para cada situación.</p>
+        <div id="q5" class="space-y-3"></div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c5">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r5"></p>
+      </div>
+
+      <!-- Actividad 6 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a6">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">⭐⭐⭐ Nivel 3</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 6 · Mi primera hoja de cálculo</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+          A continuación se muestran las calificaciones de una alumna. Escribe las fórmulas estándar de hoja de cálculo usando el rango <code>B2:B5</code>.
+        </p>
+        <div id="sh" class="overflow-x-auto mb-4"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Suma total de notas:</label>
+            <input type="text" id="f1" placeholder="Ej: =SUMA(B2:B5)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nota media (promedio):</label>
+            <input type="text" id="f2" placeholder="Ej: =PROMEDIO(B2:B5)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off">
+          </div>
+        </div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c6">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r6"></p>
+      </div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#seguridad" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Módulo 3</a>
+        <a href="#comunicar" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Siguiente: Comunicación →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: COMUNICACIÓN -->
+    <section id="comunicar" class="space-y-6 hidden">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">💬 Módulo 5 · Comunicación digital</h2>
+
+      <div class="space-y-3">
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition" open>
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>Uso formal del correo y etiquetas</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <li><b>Para:</b> Destinatarios principales requeridos para responder o actuar.</li>
+            <li><b>CC (Copia carbón):</b> Personas que deben estar informadas de manera visible.</li>
+            <li><b>CCO (Copia oculta):</b> Mantiene privadas las direcciones en envíos masivos o colectivos.</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- Actividad 7 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a7">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">⭐⭐ Nivel 2</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 7 · Mi primer correo</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Responde con criterio sobre comunicación respetuosa y segura.</p>
+        <div id="q7" class="space-y-4"></div>
+      </div>
+
+      <!-- Actividad 8 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a8">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">⭐⭐⭐ Nivel 3</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 8 · Organiza una reunión en Calendar</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">
+          Deseas convocar un evento con Google Meet para un trabajo en equipo. Revisa la disponibilidad de cada miembro:
+        </p>
+        <div class="p-3.5 bg-blue-50 dark:bg-slate-700/50 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 mb-4 space-y-1">
+          <p><b>Ana:</b> Lunes 16:00, Martes 17:00, Miércoles 16:00 y 17:00</p>
+          <p><b>Biel:</b> Lunes 17:00, Martes 17:00, Miércoles 17:00</p>
+          <p><b>Carla:</b> Martes 16:00 y 17:00, Miércoles 16:00</p>
+        </div>
+        <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">¿Qué franja horaria permite que asistan las tres personas?</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="sl"></div>
+        <p class="res text-sm font-semibold mt-3" id="r8"></p>
+      </div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#crear" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Módulo 4</a>
+        <a href="#colaborar" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Siguiente: Colaborar →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 6: COLABORAR -->
+    <section id="colaborar" class="space-y-6 hidden">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">🤝 Módulo 6 · Colaboración y ciudadanía digital</h2>
+
+      <div class="space-y-3">
+        <details class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition" open>
+          <summary class="font-semibold text-slate-800 dark:text-slate-200 cursor-pointer flex justify-between items-center">
+            <span>Roles y permisos en el trabajo colaborativo</span>
+            <span class="text-blue-500 transition group-open:rotate-180">▼</span>
+          </summary>
+          <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <li><b>Lector:</b> Solo puede visualizar y consultar el archivo.</li>
+            <li><b>Comentador:</b> Puede dejar comentarios y sugerencias sin alterar el texto original.</li>
+            <li><b>Editor:</b> Puede modificar, añadir y borrar contenido directamente.</li>
+            <li><b>Propietario:</b> Gestiona los permisos de todos y puede transferir o eliminar el recurso.</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- Actividad 9 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a9">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">⭐⭐ Nivel 2</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 9 · Roles al colaborar</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Asigna el rol idóneo según la necesidad de cada persona.</p>
+        <div id="q9" class="space-y-3"></div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c9">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r9"></p>
+      </div>
+
+      <!-- Actividad 10 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a10">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">⭐⭐⭐ Nivel 3</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 10 · Mi primer formulario</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Elige el tipo de campo de formulario de Google más apropiado.</p>
+        <div id="q10" class="space-y-3"></div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c10">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r10"></p>
+      </div>
+
+      <!-- Actividad 11 -->
+      <div class="act bg-white dark:bg-slate-800 border-2 border-blue-400 dark:border-blue-500 rounded-2xl p-5 shadow-sm" id="act-a11">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200">⭐⭐⭐⭐ Nivel 4</span>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Actividad 11 · Reto final: IA y colaboración ética</h3>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">Marca <b>únicamente las buenas prácticas</b> en el uso de IA y colaboración.</p>
+        <div id="q11" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        <button class="mt-4 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition" id="c11">Comprobar</button>
+        <p class="res text-sm font-semibold mt-2" id="r11"></p>
+      </div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#comunicar" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Módulo 5</a>
+        <a href="#avanzado" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Siguiente: Retos avanzados →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN RETOS AVANZADOS -->
+    <section id="avanzado" class="space-y-6 hidden">
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🧩 Retos avanzados</h2>
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Actividades de ordenación lógica, clasificación de ciberseguridad, cacería de errores técnicos, redacción de fórmulas complejas y resolución de casos reales.
+        </p>
+      </div>
+
+      <div id="avbox" class="space-y-6"></div>
+
+      <div class="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+        <a href="#colaborar" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Colaborar</a>
+        <a href="#examen" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Ir al Examen Final →</a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EXAMEN FINAL -->
+    <section id="examen" class="space-y-6 hidden">
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">📝 Examen final de competencia digital</h2>
+        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4">
+          Consta de <b>30 pruebas</b> transversales: <b>15 preguntas de opción múltiple</b> y <b>15 procesos de ordenación de pasos</b>. Se requiere un mínimo de <b>21 aciertos (70%)</b> para superar la prueba. Dispones de <b>un único intento definitivo</b>.
+        </p>
+        <div class="act border-2 border-indigo-400 dark:border-indigo-500 rounded-2xl p-6 bg-slate-50 dark:bg-slate-800/80" id="act-ex">
+          <div id="exam-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN MIS LOGROS Y DIPLOMA -->
+    <section id="logros" class="space-y-6 hidden">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">🏆 Mis logros y acreditación</h2>
+
+      <!-- Tarjeta resumen diploma -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm" id="lg-banner">
+        <div id="lg"></div>
+      </div>
+
+      <!-- Valoración por competencias -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">Valoración competencial (Marco DigComp)</h3>
+        <div id="cpv" class="space-y-4"></div>
+      </div>
+
+      <!-- Descarga e impresión -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">📜 Acreditación oficial del curso</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+          Al completar el examen final se activa tu diploma individualizado con el desglose detallado de competencias y aciertos.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <button id="dl" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shadow disabled:opacity-50" hidden>
+            ⬇️ Descargar diploma (.html)
+          </button>
+          <button id="prn" class="px-5 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 font-semibold hover:bg-slate-900 transition shadow disabled:opacity-50" hidden>
+            🖨️ Imprimir / Guardar en PDF
+          </button>
+        </div>
+        <p class="res text-sm font-semibold mt-2" id="dlr"></p>
+      </div>
+
+      <!-- Botón de reinicio asistido -->
+      <div class="pt-4 text-center">
+        <button id="rs-btn" class="px-4 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-800 border border-rose-200 dark:border-rose-900 transition">
+          ⚠️ Reiniciar todo el progreso (Modo docente/prueba)
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para Nombre de Alumno (Gate) -->
+  <div id="gateModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl">
+      <div class="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-900 text-white font-extrabold text-3xl flex items-center justify-center mb-4 shadow-md">
+        VD
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Antes de empezar</h2>
+      <p class="text-sm text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
+        Este curso acredita tu nivel de competencia digital. Cada actividad y el examen disponen de <b>un único intento</b>. Escribe tu nombre y apellidos para generar tu informe y diploma final.
+      </p>
+      <input type="text" id="gn" placeholder="Nombre y apellidos del alumno/a" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-center font-medium focus:ring-2 focus:ring-blue-500 outline-none mb-4" autocomplete="name">
+      <button id="gb" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition shadow-lg">
+        Acceder al curso
+      </button>
+      <p id="ge" class="text-xs font-semibold text-rose-500 mt-2 min-h-[1.2rem]"></p>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación para reiniciar (Evita confirm() nativo) -->
+  <div id="confirmModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">¿Reiniciar progreso?</h3>
+      <p class="text-xs text-slate-600 dark:text-slate-300 mb-5">
+        Se borrarán todas las respuestas, notas del examen y certificados guardados en este dispositivo.
+      </p>
+      <div class="flex gap-3">
+        <button id="cfCancel" class="flex-1 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-300 transition text-sm">Cancelar</button>
+        <button id="cfAccept" class="flex-1 py-2 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition text-sm">Sí, borrar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="w-full border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+    Curso de Competencia Digital · Fundación Vedruna Educación · Conforme al Marco Europeo DigComp
+  </footer>
+
+<script>
+/* ==========================================================================
+   GESTIÓN DE ESTADO Y ALMACENAMIENTO PERSISTENTE
+   ========================================================================== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+// Estado de la sesión
+let zS = { r: {}, e: null, n: '' };
+try { Object.assign(zS, JSON.parse(localStorage.getItem('cdr') || '{}')); } catch(e) {}
+let done = {};
+try { done = JSON.parse(localStorage.getItem('cdp') || '{}'); } catch(e) {}
+
+const RR = zS.r;
+const zsv = () => { try { localStorage.setItem('cdr', JSON.stringify(zS)); } catch(e) {} };
+const dsv = () => { try { localStorage.setItem('cdp', JSON.stringify(done)); } catch(e) {} };
+
+// Registro de bloques para bloqueo tras intento
+const zB = {};
+const reg = (el, id) => { if(el && el.closest) zB[id] = el.closest('.act') || el; };
+
+// Lista oficial de actividades puntuables
+const ACTS = [
+  ['a1','Actividad 1 · Quiz de buscadores'],
+  ['a2','Actividad 2 · Operadores'],
+  ['a3','Actividad 3 · Detective de fuentes'],
+  ['a4','Actividad 4 · Laboratorio de contraseñas'],
+  ['a5','Actividad 5 · ¿Qué herramienta uso?'],
+  ['a6','Actividad 6 · Mi primera hoja de cálculo'],
+  ['a7','Actividad 7 · Mi primer correo'],
+  ['a8','Actividad 8 · Organiza una reunión'],
+  ['a9','Actividad 9 · Roles al colaborar'],
+  ['a10','Actividad 10 · Mi primer formulario'],
+  ['a11','Actividad 11 · Reto final'],
+  ['s_docs','10 retos · Documentos'],
+  ['s_sheets','10 retos · Hojas de cálculo'],
+  ['s_canva','10 retos · Canva'],
+  ['s_sites','10 retos · Sites'],
+  ['s_gmail','10 retos · Gmail'],
+  ['s_cal','10 retos · Calendar'],
+  ['ex','Examen final (30 preguntas)']
+];
+
+function win(id) {
+  done[id] = 1;
+  dsv();
+  prog();
+}
+
+function lockUI(id, fresh) {
+  const b = zB[id];
+  if (!b) return;
+  b.classList.add('locked');
+  const ok = RR[id] === 1;
+  const existingBadge = b.querySelector('.bdg-status');
+  if (existingBadge) existingBadge.remove();
+  b.insertAdjacentHTML('beforeend', `
+    <div class="bdg-status mt-4 p-3 rounded-xl flex items-center gap-2 text-sm font-semibold ${ok ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200 border border-rose-300'}">
+      <span>${ok ? '✅' : '❌'}</span>
+      <span>${ok ? 'Prueba superada con éxito' : 'Prueba no superada'} · Intento único registrado.</span>
+    </div>
+  `);
+}
+
+// Navegación hash
+const SECTIONS = ['inicio','buscar','fuentes','seguridad','crear','comunicar','colaborar','avanzado','examen','logros'];
+function showSection() {
+  let h = location.hash.slice(1);
+  if (!SECTIONS.includes(h)) h = 'inicio';
+  SECTIONS.forEach(s => {
+    const el = $('#' + s);
+    if (el) el.classList.toggle('hidden', s !== h);
+    const link = $(`[data-s="${s}"]`);
+    if (link) {
+      if (s === h) {
+        link.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+        link.classList.add('bg-blue-600', 'text-white', 'dark:bg-blue-600', 'dark:text-white', 'shadow');
+      } else {
+        link.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-600', 'dark:text-white', 'shadow');
+        link.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+      }
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.addEventListener('hashchange', showSection);
+
+// Control de tema claro/oscuro
+const themeToggle = $('#themeToggle');
+const themeIcon = $('#themeIcon');
+if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+  themeIcon.textContent = '☀️';
+} else {
+  document.documentElement.classList.remove('dark');
+  themeIcon.textContent = '🌙';
+}
+themeToggle.onclick = () => {
+  const isDark = document.documentElement.classList.toggle('dark');
+  localStorage.theme = isDark ? 'dark' : 'light';
+  themeIcon.textContent = isDark ? '☀️' : '🌙';
+};
+
+/* ==========================================================================
+   MÓDULOS Y ACTIVIDADES INTERACTIVAS 1 A 11
+   ========================================================================== */
+
+/* --- Actividad 1: Quiz de buscadores --- */
+const QS = [
+  { q: '¿Qué es un motor de búsqueda?', o: ['Un programa que guarda un índice de páginas web y muestra resultados según tu consulta', 'Un programa para escribir documentos', 'Una red social', 'Un antivirus'], a: 0, e: 'Rastrea la web, la indexa y ordena los resultados.' },
+  { q: '¿Cuál de estos es un motor de búsqueda?', o: ['Gmail', 'DuckDuckGo', 'Chrome', 'Canva'], a: 1, e: 'Chrome es un navegador; DuckDuckGo es un buscador.' },
+  { q: 'Cuando abres una web en tu móvil, ¿qué modelo se aplica?', o: ['Tu dispositivo (cliente) pide la página a un servidor, que se la envía', 'La web aparece sola sin conexión', 'Un técnico la copia a mano en cada visita', 'Se descarga todo internet en tu memoria'], a: 0, e: 'Es el modelo cliente-servidor.' },
+  { q: 'Un resultado empieza por http:// y no tiene candado. ¿Qué haces?', o: ['Escribo mis contraseñas rápidamente', 'Desconfío y nunca introduzco datos personales', 'Lo comparto en redes sociales como seguro', 'Descargo inmediatamente cualquier archivo'], a: 1, e: 'Sin HTTPS la conexión no viaja cifrada.' }
+];
+
+function draw1() {
+  let ans = {}, ok = 0;
+  const el = $('#q1');
+  reg(el, 'a1');
+  el.innerHTML = QS.map((x, i) => `
+    <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+      <p class="font-semibold text-sm mb-2"><b>${i + 1}.</b> ${x.q}</p>
+      <div class="space-y-1.5">
+        ${x.o.map((o, j) => `<button class="opt-btn" data-i="${i}" data-j="${j}">${o}</button>`).join('')}
+      </div>
+      <p class="fb text-xs font-medium mt-2 min-h-[1.2rem]"></p>
+    </div>
+  `).join('') + '<p class="res font-bold text-sm mt-3"></p>';
+
+  el.onclick = e => {
+    const b = e.target.closest('.opt-btn');
+    if (!b || b.disabled) return;
+    const i = +b.dataset.i, j = +b.dataset.j, x = QS[i], p = b.parentNode.parentNode, g = (j === x.a);
+    ans[i] = 1;
+    if (g) ok++;
+    b.classList.add(g ? 'ok' : 'ko');
+    p.querySelectorAll('.opt-btn')[x.a].classList.add('ok');
+    p.querySelectorAll('.opt-btn').forEach(o => o.disabled = true);
+    p.querySelector('.fb').innerHTML = (g ? '✅ ¡Correcto! ' : '❌ Incorrecto. ') + x.e;
+
+    if (Object.keys(ans).length === QS.length) {
+      const passed = ok >= 3;
+      el.querySelector('.res').innerHTML = `Resultado final: ${ok}/${QS.length}. ${passed ? '🎉 ¡Actividad superada!' : '❌ No superada.'}`;
+      RR['a1'] = passed ? 1 : 2;
+      zsv();
+      if (passed) win('a1');
+      lockUI('a1', 1);
+    }
+  };
+}
+
+/* --- Actividad 2: Operadores --- */
+const OP = [['receta tortilla -cebolla', 1], ['“cambio climático”', 0], ['energía filetype:pdf', 2], ['gato OR perro', 3]];
+const MN = ['Busca exactamente esa frase literal', 'Excluye los resultados con la palabra cebolla', 'Solo muestra documentos en formato PDF', 'Muestra resultados de una palabra o de la otra'];
+
+function draw2() {
+  const el = $('#q2');
+  reg(el, 'a2');
+  el.innerHTML = OP.map((x, i) => `
+    <div class="row flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+      <code class="font-mono text-sm font-semibold text-blue-700 dark:text-blue-300">${x[0]}</code>
+      <select data-i="${i}" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm">
+        <option value="">Selecciona el significado…</option>
+        ${MN.map((m, j) => `<option value="${j}">${m}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+  $('#r2').textContent = '';
+}
+
+$('#c2').onclick = () => {
+  let ok = 0;
+  $$('#q2 select').forEach(s => {
+    const g = (+s.value === OP[+s.dataset.i][1] && s.value !== '');
+    if (g) ok++;
+    s.parentNode.classList.remove('ok', 'ko');
+    s.parentNode.classList.add(g ? 'ok' : 'ko');
+  });
+  const passed = (ok === 4);
+  $('#r2').textContent = passed ? '🎉 ¡Perfecto! Actividad superada.' : `${ok} de 4 correctas.`;
+  RR['a2'] = passed ? 1 : 2;
+  zsv();
+  if (passed) win('a2');
+  lockUI('a2', 1);
+};
+
+/* --- Actividad 3: Detective de fuentes --- */
+const FL = [
+  ['Titular sensacionalista: “¡IMPACTANTE! Lo que los médicos ocultan”', 1],
+  ['Firmado por una especialista con fecha reciente', 0],
+  ['No aparece ningún autor responsable ni fecha', 1],
+  ['Enlaza a los estudios científicos originales citados', 0],
+  ['Dirección web insegura sin HTTPS (http://)', 1],
+  ['Organismos sanitarios oficiales confirman la información', 0],
+  ['Mensaje de urgencia: “¡Reenvíalo a 10 contactos antes de que lo borren!”', 1],
+  ['Dominio oficial verificado con candado HTTPS válido', 0]
+];
+
+function draw3() {
+  const el = $('#q3');
+  reg(el, 'a3');
+  el.innerHTML = FL.map((x, i) => `
+    <button class="flag opt-btn text-xs sm:text-sm font-medium" data-i="${i}">${x[0]}</button>
+  `).join('');
+  $('#r3').textContent = '';
+}
+
+$('#q3').onclick = e => {
+  const b = e.target.closest('.flag');
+  if (b) b.classList.toggle('sel');
+};
+
+$('#c3').onclick = () => {
+  let ok = 0;
+  $$('#q3 .flag').forEach(b => {
+    const isFlagAlarm = !!FL[+b.dataset.i][1];
+    const isSelected = b.classList.contains('sel');
+    const g = (isSelected === isFlagAlarm);
+    if (g) ok++;
+    b.classList.remove('ok', 'ko');
+    b.classList.add(g ? 'ok' : 'ko');
+  });
+  const passed = (ok >= 7);
+  $('#r3').textContent = passed ? `🎉 ${ok}/8 aciertos. ¡Gran ojo crítico! Actividad superada.` : `${ok}/8 aciertos. No superada.`;
+  RR['a3'] = passed ? 1 : 2;
+  zsv();
+  if (passed) win('a3');
+  lockUI('a3', 1);
+};
+
+/* --- Actividad 4: Laboratorio de contraseñas --- */
+const RU = [
+  ['Al menos 12 caracteres', v => v.length >= 12],
+  ['Al menos una mayúscula', v => /[A-ZÁÉÍÓÚÑ]/.test(v)],
+  ['Al menos una minúscula', v => /[a-záéíóúñ]/.test(v)],
+  ['Al menos un número (0-9)', v => /\d/.test(v)],
+  ['Al menos un símbolo (!, @, #, $, %, etc.)', v => /[^\wáéíóúñÁÉÍÓÚÑ]|_/.test(v)],
+  ['Sin palabras comunes (password, 1234, admin, qwerty)', v => v.length > 0 && !/password|1234|qwerty|contraseña|admin/i.test(v)]
+];
+
+function chkPw() {
+  if (RR['a4']) {
+    $('#pw').value = '****************';
+    const m = $('#pm');
+    m.style.width = '100%';
+    m.className = 'h-full transition-all duration-300 bg-emerald-500';
+    $('#r4').textContent = '🎉 ¡Contraseña segura y robusta! Actividad superada.';
+    $('#pr').innerHTML = '';
+    return;
+  }
+  const v = $('#pw').value;
+  const r = RU.map(x => x[1](v));
+  const n = r.filter(Boolean).length;
+  $('#pr').innerHTML = RU.map((x, i) => `
+    <div class="${r[i] ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500'} flex items-center gap-1.5">
+      <span>${r[i] ? '✅' : '⚪'}</span> <span>${x[0]}</span>
+    </div>
+  `).join('');
+  const m = $('#pm');
+  m.style.width = (n / 6 * 100) + '%';
+  m.className = 'h-full transition-all duration-300 ' + (n <= 2 ? 'bg-red-500' : n <= 5 ? 'bg-amber-500' : 'bg-emerald-500');
+
+  if (n === 6 && !RR['a4']) {
+    $('#r4').textContent = '🎉 ¡Contraseña segura y robusta! Actividad superada.';
+    RR['a4'] = 1;
+    zsv();
+    win('a4');
+    lockUI('a4', 1);
+  }
+}
+$('#pw').oninput = chkPw;
+
+/* --- Actividad 5: ¿Qué herramienta uso? --- */
+const TL = ['Documentos de Google', 'Hojas de cálculo de Google', 'Presentaciones de Google / Canva', 'Google Sites'];
+const SC = [
+  ['Redactar una memoria académica con portada, estilos de título e índice dinámico', 0],
+  ['Gestionar notas numéricas, ponderaciones y calcular medias de la clase', 1],
+  ['Exponer una investigación ante el aula con diapositivas visuales y síntesis', 2],
+  ['Publicar el portafolio escolar digital del equipo accesible mediante navegador', 3]
+];
+
+function draw5() {
+  const el = $('#q5');
+  reg(el, 'a5');
+  el.innerHTML = SC.map((x, i) => `
+    <div class="row flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+      <span class="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200">${x[0]}</span>
+      <select data-i="${i}" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm">
+        <option value="">Selecciona herramienta…</option>
+        ${TL.map((m, j) => `<option value="${j}">${m}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+  $('#r5').textContent = '';
+}
+
+$('#c5').onclick = () => {
+  let ok = 0;
+  $$('#q5 select').forEach(s => {
+    const g = (s.value !== '' && +s.value === SC[+s.dataset.i][1]);
+    if (g) ok++;
+    s.parentNode.classList.remove('ok', 'ko');
+    s.parentNode.classList.add(g ? 'ok' : 'ko');
+  });
+  const passed = (ok === 4);
+  $('#r5').textContent = passed ? '🎉 ¡Elección perfecta de herramientas! Actividad superada.' : `${ok} de 4 correctas.`;
+  RR['a5'] = passed ? 1 : 2;
+  zsv();
+  if (passed) win('a5');
+  lockUI('a5', 1);
+};
+
+/* --- Actividad 6: Fórmulas de hoja de cálculo --- */
+const NT = [['Matemáticas', 7], ['Lengua Castellana', 8], ['Lengua Extranjera', 6], ['Ciencias Naturales', 9]];
+
+function draw6() {
+  reg($('#f1'), 'a6');
+  $('#sh').innerHTML = `
+    <table class="w-full max-w-sm mx-auto text-center border-collapse border border-slate-300 dark:border-slate-600 text-xs sm:text-sm">
+      <thead class="bg-blue-100 dark:bg-slate-700">
+        <tr><th class="p-2 border border-slate-300 dark:border-slate-600"></th><th class="p-2 border border-slate-300 dark:border-slate-600">A</th><th class="p-2 border border-slate-300 dark:border-slate-600">B</th></tr>
+      </thead>
+      <tbody>
+        ${NT.map((x, i) => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+            <td class="p-2 border border-slate-300 dark:border-slate-600 font-bold bg-slate-100 dark:bg-slate-800">${i + 2}</td>
+            <td class="p-2 border border-slate-300 dark:border-slate-600 text-left">${x[0]}</td>
+            <td class="p-2 border border-slate-300 dark:border-slate-600 font-semibold">${x[1]}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  $('#f1').value = '';
+  $('#f2').value = '';
+  $('#r6').textContent = '';
+}
+
+const normFormula = v => v.toUpperCase().replace(/\s/g, '');
+$('#c6').onclick = () => {
+  const f1 = normFormula($('#f1').value);
+  const f2 = normFormula($('#f2').value);
+  const okSum = /^=(SUM|SUMA)\(B2:B5\)$/.test(f1);
+  const okAvg = /^=(AVERAGE|PROMEDIO)\(B2:B5\)$|^=(SUM|SUMA)\(B2:B5\)\/4$/.test(f2);
+  const passed = okSum && okAvg;
+  $('#r6').innerHTML = `
+    Suma: ${okSum ? '✅ Correcto (= 30)' : '❌ Revisa la sintaxis =SUMA(B2:B5)'}<br>
+    Media: ${okAvg ? '✅ Correcto (= 7.5)' : '❌ Revisa la sintaxis =PROMEDIO(B2:B5)'}
+  `;
+  RR['a6'] = passed ? 1 : 2;
+  zsv();
+  if (passed) win('a6');
+  lockUI('a6', 1);
+};
+
+/* --- Actividad 7: Mi primer correo --- */
+const GQ = [
+  { q: '¿Cuál es el asunto más conveniente para solicitar una reunión a tu tutora?', o: ['Hola', '¡¡URGENTE RESPONDER YA!!', 'Solicitud de tutoría sobre el proyecto de Ciencias', '(sin asunto)'], a: 2, e: 'El asunto debe resumir de forma concisa el motivo del mensaje.' },
+  { q: 'Quieres avisar a 30 familias sin exponer públicamente sus direcciones privadas:', o: ['CCO (Copia oculta)', 'CC (Copia visible)', 'Para', 'Escribirlas en el cuerpo del mensaje'], a: 0, e: 'CCO garantiza la protección de datos entre destinatarios.' },
+  { q: 'Recibes un correo de "tu banco" exigiendo claves urgentes mediante un enlace:', o: ['Hago clic de inmediato para evitar problemas', 'No pulso el enlace, lo marco como phishing y aviso a un adulto', 'Lo reenvío a mis contactos', 'Respondo indicando mis datos'], a: 1, e: 'Las entidades jamás solicitan contraseñas por correo.' }
+];
+
+function draw7() {
+  let ans = {}, ok = 0;
+  const el = $('#q7');
+  reg(el, 'a7');
+  el.innerHTML = GQ.map((x, i) => `
+    <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+      <p class="font-semibold text-sm mb-2"><b>${i + 1}.</b> ${x.q}</p>
+      <div class="space-y-1.5">
+        ${x.o.map((o, j) => `<button class="opt-btn text-xs sm:text-sm" data-i="${i}" data-j="${j}">${o}</button>`).join('')}
+      </div>
+      <p class="fb text-xs font-medium mt-2 min-h-[1.2rem]"></p>
+    </div>
+  `).join('') + '<p class="res font-bold text-sm mt-3"></p>';
+
+  el.onclick = e => {
+    const b = e.target.closest('.opt-btn');
+    if (!b || b.disabled) return;
+    const i = +b.dataset.i, j = +b.dataset.j, x = GQ[i], p = b.parentNode.parentNode, g = (j === x.a);
+    ans[i] = 1;
+    if (g) ok++;
+    b.classList.add(g ? 'ok' : 'ko');
+    p.querySelectorAll('.opt-btn')[x.a].classList.add('ok');
+    p.querySelectorAll('.opt-btn').forEach(o => o.disabled = true);
+    p.querySelector('.fb').innerHTML = (g ? '✅ ¡Correcto! ' : '❌ Incorrecto. ') + x.e;
+
+    if (Object.keys(ans).length === GQ.length) {
+      const passed = (ok === 3);
+      el.querySelector('.res').innerHTML = `Resultado: ${ok}/${GQ.length}. ${passed ? '🎉 ¡Actividad superada!' : '❌ No superada.'}`;
+      RR['a7'] = passed ? 1 : 2;
+      zsv();
+      if (passed) win('a7');
+      lockUI('a7', 1);
+    }
+  };
+}
+
+/* --- Actividad 8: Organiza una reunión (Calendar) --- */
+const SLT = ['Lunes 16:00', 'Lunes 17:00', 'Martes 16:00', 'Martes 17:00', 'Miércoles 16:00', 'Miércoles 17:00'];
+function draw8() {
+  const el = $('#sl');
+  reg(el, 'a8');
+  el.innerHTML = SLT.map((s, i) => `<button class="opt-btn text-center font-semibold text-xs sm:text-sm" data-i="${i}">${s}</button>`).join('');
+  $('#r8').textContent = '';
+}
+
+$('#sl').onclick = e => {
+  const b = e.target.closest('.opt-btn');
+  if (!b) return;
+  const isCorrect = (+b.dataset.i === 3); // Martes 17:00
+  $$('#sl .opt-btn').forEach(o => o.classList.remove('ok', 'ko'));
+  b.classList.add(isCorrect ? 'ok' : 'ko');
+  $('#r8').textContent = isCorrect ? '🎉 ¡Correcto! Martes 17:00 es la única franja común libre para las 3 personas.' : '❌ En esa franja al menos una persona tiene conflicto horario.';
+  RR['a8'] = isCorrect ? 1 : 2;
+  zsv();
+  if (isCorrect) win('a8');
+  lockUI('a8', 1);
+};
+
+/* --- Creador de actividades tipo Select / Emparejar (A9, A10) --- */
+function makeSelectActivity(containerSelector, items, options, checkSelector, resultSelector, id) {
+  const B = $(containerSelector), R = $(resultSelector);
+  reg(B, id);
+  const render = () => {
+    B.innerHTML = items.map((x, i) => `
+      <div class="row flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+        <span class="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200">${x[0]}</span>
+        <select data-i="${i}" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs sm:text-sm">
+          <option value="">Elegir opción…</option>
+          ${options.map((m, j) => `<option value="${j}">${m}</option>`).join('')}
+        </select>
+      </div>
+    `).join('');
+    R.textContent = '';
+  };
+  render();
+
+  $(checkSelector).onclick = () => {
+    let ok = 0;
+    B.querySelectorAll('select').forEach(s => {
+      const g = (s.value !== '' && +s.value === items[+s.dataset.i][1]);
+      if (g) ok++;
+      s.parentNode.classList.remove('ok', 'ko');
+      s.parentNode.classList.add(g ? 'ok' : 'ko');
+    });
+    const passed = (ok === items.length);
+    R.textContent = passed ? '🎉 ¡Perfecto! Actividad superada.' : `${ok} de ${items.length} aciertos.`;
+    RR[id] = passed ? 1 : 2;
+    zsv();
+    if (passed) win(id);
+    lockUI(id, 1);
+  };
+  return render;
+}
+
+const d9 = makeSelectActivity(
+  '#q9',
+  [
+    ['Tu profesora desea que leas un documento pero sin realizar modificaciones', 0],
+    ['Un compañero de equipo debe redactar y corregir su sección asignada', 2],
+    ['Deseas que tu familia aporte sugerencias sin alterar el contenido redactado', 1],
+    ['Persona que creó el archivo y controla los accesos y propiedad', 3]
+  ],
+  ['Lector', 'Comentador', 'Editor', 'Propietario'],
+  '#c9', '#r9', 'a9'
+);
+
+const d10 = makeSelectActivity(
+  '#q10',
+  [
+    ['Nombre y apellidos del participante', 0],
+    ['Explicación detallada y reflexiva sobre una experiencia', 1],
+    ['¿En qué curso estás matriculado? (una única opción exclusiva)', 2],
+    ['¿Qué materias te apasionan? (marcar múltiples opciones)', 3]
+  ],
+  ['Respuesta corta', 'Párrafo', 'Opción múltiple', 'Casillas de verificación'],
+  '#c10', '#r10', 'a10'
+);
+
+/* --- Actividad 11: Reto final (IA y colaboración ética) --- */
+const IA = [
+  ['Reviso y contrasto los resultados de la IA con fuentes primarias y bibliografía', 1],
+  ['Copio y pego la respuesta de la IA entregándola sin lectura crítica previa', 0],
+  ['Nunca introduzco datos privados o personales en herramientas de IA pública', 1],
+  ['Comparto mi contraseña con un amigo para que presente tareas en mi nombre', 0],
+  ['Declaro con transparencia el uso de asistentes de IA si el profesorado lo solicita', 1],
+  ['Abro carpetas con datos sensibles a "cualquiera con el enlace" por comodidad', 0],
+  ['Concedo permisos de edición únicamente a los integrantes de mi equipo de trabajo', 1],
+  ['Hago pasar como producción propia un trabajo elaborado íntegramente por IA', 0]
+];
+
+function draw11() {
+  const el = $('#q11');
+  reg(el, 'a11');
+  el.innerHTML = IA.map((x, i) => `
+    <button class="tg opt-btn text-xs sm:text-sm font-medium" data-i="${i}">${x[0]}</button>
+  `).join('');
+  $('#r11').textContent = '';
+}
+
+$('#q11').onclick = e => {
+  const b = e.target.closest('.tg');
+  if (b) b.classList.toggle('sel');
+};
+
+$('#c11').onclick = () => {
+  let ok = 0;
+  $$('#q11 .tg').forEach(b => {
+    const isGood = !!IA[+b.dataset.i][1];
+    const isSelected = b.classList.contains('sel');
+    const g = (isSelected === isGood);
+    if (g) ok++;
+    b.classList.remove('ok', 'ko');
+    b.classList.add(g ? 'ok' : 'ko');
+  });
+  const passed = (ok === 8);
+  $('#r11').textContent = passed ? '🏆 ¡Reto final superado! Actúas con solvencia y ética digital.' : `${ok}/8 aciertos.`;
+  RR['a11'] = passed ? 1 : 2;
+  zsv();
+  if (passed) win('a11');
+  lockUI('a11', 1);
+};
+
+/* ==========================================================================
+   BANCOS DE PRÁCTICA (10 RETOS) EN CADA MÓDULO
+   ========================================================================== */
+const BANK = {
+  docs: [
+    ['¿Para qué sirve sobre todo Documentos de Google?', 'Para escribir y dar formato a textos', 'Para hacer cálculos con fórmulas', 'Para hacer videollamadas'],
+    ['Documentos guarda los cambios automáticamente en Drive.', 'Verdadero', 'Falso'],
+    ['¿Qué atajo deshace el último cambio realizado?', 'Ctrl + Z', 'Ctrl + V', 'Ctrl + X'],
+    ['Para crear un índice automático navegable debes aplicar…', 'estilos de título (Título 1, 2…)', 'espacios en blanco y guiones manuales', 'color rojo a las palabras'],
+    ['¿Qué función cumple el modo "Sugerencias"?', 'Proponer cambios que el propietario acepta o rechaza', 'Borrar permanentemente el archivo', 'Cambiar la titularidad del documento'],
+    ['¿Desde qué menú se añade una imagen al documento?', 'Insertar > Imagen', 'Archivo > Imprimir', 'Ver > Pantalla completa'],
+    ['El historial de versiones permite restaurar un estado anterior del documento.', 'Verdadero', 'Falso'],
+    ['¿Qué atajo de teclado abre el buscador de palabras en el documento?', 'Ctrl + F', 'Ctrl + P', 'Ctrl + X'],
+    ['Para exportar tu trabajo sin que se altere el diseño seleccionas…', 'Archivo > Descargar > Documento PDF (.pdf)', 'Insertar > Tabla', 'Formato > Interlineado'],
+    ['Para que dos compañeras redacten a la vez en tiempo real, su permiso debe ser…', 'Editor', 'Lector', 'Sin acceso']
+  ],
+  sheets: [
+    ['Una celda se identifica por su columna y su fila, por ejemplo…', 'B3', '3B3', 'Fila B'],
+    ['Toda fórmula en una hoja de cálculo debe iniciarse obligatoriamente con el signo…', '=', '#', '@'],
+    ['¿Qué resultado calcula la fórmula =SUMA(A1:A5)?', 'La suma total de los valores entre A1 y A5', 'El promedio de A1 y A5', 'El número de celdas no vacías'],
+    ['La función =PROMEDIO(B2:B5) calcula…', 'la media aritmética', 'el valor máximo', 'el total acumulado'],
+    ['¿Qué función devuelve el valor numérico más alto de un rango?', '=MAX()', '=MIN()', '=SUMA()'],
+    ['Para visualizar datos mediante barras, líneas o sectores insertas un…', 'gráfico', 'comentario', 'hipervínculo'],
+    ['Al ordenar los datos de la A a la Z, las filas se reorganizan según el criterio elegido.', 'Verdadero', 'Falso'],
+    ['Para presentar el número 0.25 como 25 % aplicas el formato…', 'porcentaje', 'fecha', 'texto plano'],
+    ['Si modificas un dato numérico del que depende una fórmula, el resultado…', 'se recalcula automáticamente', 'permanece inalterable', 'se borra de la celda'],
+    ['Las columnas se identifican con letras y las filas con números correlativos.', 'Verdadero', 'Falso']
+  ],
+  canva: [
+    ['Canva es una plataforma orientada principalmente a…', 'diseñar presentaciones, infografías y carteles', 'programar algoritmos en la nube', 'administrar buzones de correo'],
+    ['En Canva puedes iniciar un proyecto a partir de una plantilla prediseñada.', 'Verdadero', 'Falso'],
+    ['¿Qué recursos encontramos en la pestaña "Elementos"?', 'Formas geométricas, iconos, gráficos e ilustraciones', 'Únicamente fuentes tipográficas', 'La configuración del servidor'],
+    ['Para asegurar que un cartel sea legible a distancia conviene…', 'poco texto y alto contraste cromático', 'párrafos extensos y letra muy pequeña', 'colores de texto idénticos al fondo'],
+    ['Para guardar tu diseño como imagen rasterizada de alta calidad seleccionas…', 'Compartir > Descargar > PNG', 'Archivo > Imprimir etiquetas', 'Ver > Cuadrícula'],
+    ['Es posible invitar a otros compañeros a colaborar en tiempo real en un diseño de Canva.', 'Verdadero', 'Falso'],
+    ['Al emplear fotografías externas en un diseño escolar debes…', 'respetar su licencia de uso y autoría', 'utilizarlas sin comprobar nada', 'cambiarles el color únicamente'],
+    ['Para dar coherencia visual a una presentación se recomienda…', 'mantener la misma paleta de colores y tipografías', 'usar una tipografía diferente en cada frase', 'diseñar cada diapositiva al azar'],
+    ['¿Qué formato es el más recomendable para entregar un dossier listo para imprimir?', 'PDF', 'Archivo de audio MP3', 'Hoja de cálculo CSV'],
+    ['En una presentación de diapositivas eficaz, cada diapositiva debe contener…', 'una sola idea principal', 'el tema entero concentrado', 'párrafos copiados de internet']
+  ],
+  sites: [
+    ['Google Sites permite…', 'construir páginas web sin necesidad de programar', 'editar pistas de audio', 'realizar balances contables'],
+    ['En Sites puedes estructurar el sitio con múltiples páginas y un menú de navegación.', 'Verdadero', 'Falso'],
+    ['Para incrustar un documento alojado en tu Drive utilizas…', 'Insertar > Drive', 'Formato > Negrita', 'Archivo > Salir'],
+    ['Antes de compartir tu sitio terminado debes…', 'configurar la visibilidad y quién tiene acceso', 'borrar las páginas de prueba', 'cambiar de sistema operativo'],
+    ['¿Qué botón hace que el sitio web sea accesible en la red?', 'Publicar', 'Vista previa', 'Rehacer'],
+    ['La función "Vista previa" te permite comprobar…', 'cómo se verá el sitio en móviles, tabletas y PC antes de publicarlo', 'el código binario del servidor', 'la contraseña de los lectores'],
+    ['Un sitio web educativo de calidad se caracteriza por una navegación clara y textos sintetizados.', 'Verdadero', 'Falso'],
+    ['Es posible integrar vídeos educativos de YouTube directamente en una página de Sites.', 'Verdadero', 'Falso'],
+    ['En un sitio web escolar público, ¿qué dato NUNCA se debe divulgar?', 'Dirección particular y número telefónico de menores', 'El título del proyecto de clase', 'La bibliografía empleada'],
+    ['Para que un compañero colabore construyendo páginas contigo le otorgas rol de…', 'editor', 'lector', 'sin permisos']
+  ],
+  gmail: [
+    ['El campo Asunto de un correo electrónico debe…', 'sintetizar con precisión el contenido del mensaje', 'dejarse siempre vacío', 'redactarse íntegramente en MAYÚSCULAS'],
+    ['La estructura de un correo formal incluye…', 'saludo cordial, exposición clara y despedida con firma', 'únicamente emoticonos', 'solo archivos adjuntos sin texto'],
+    ['El campo CCO remite una copia sin revelar la dirección a los demás destinatarios.', 'Verdadero', 'Falso'],
+    ['Para anexar una tarea en formato digital al correo la añades como…', 'archivo adjunto', 'asunto', 'etiqueta'],
+    ['¿Qué acción responde exclusivamente al remitente original del mensaje?', 'Responder', 'Responder a todos', 'Reenviar'],
+    ['Un correo que solicita contraseñas con carácter de urgencia bajo amenaza de bloqueo es…', 'un ataque de phishing', 'un aviso oficial legítimo', 'una felicitación'],
+    ['Las etiquetas y filtros de Gmail facilitan la clasificación del correo recibido.', 'Verdadero', 'Falso'],
+    ['Si recibes spam publicitario no deseado debes…', 'marcarlo como spam y evitar pulsar sus enlaces', 'responder con tus datos para quejarte', 'reenviarlo a tus compañeros'],
+    ['Antes de pulsar el botón "Enviar" resulta imprescindible revisar…', 'destinatarios, texto del asunto y archivos adjuntos', 'la marca del monitor', 'el brillo de la pantalla'],
+    ['Durante unos segundos tras el envío, Gmail permite cancelar la salida pulsando…', 'Deshacer', 'Archivar', 'Posponer']
+  ],
+  cal: [
+    ['Google Calendar está diseñado para…', 'gestionar eventos, calendarios y recordatorios', 'retocar fotografías', 'maquetar revistas'],
+    ['Un evento de Calendar puede configurarse con fecha, hora, ubicación y videollamada.', 'Verdadero', 'Falso'],
+    ['Para recibir un aviso antes de que dé comienzo una entrega agregas una…', 'notificación o recordatorio', 'etiqueta de color', 'hoja de cálculo'],
+    ['Para convocar a otra persona a una reunión añades en el evento su…', 'correo electrónico institucional o personal', 'contraseña', 'número de DNI'],
+    ['¿Cómo se vincula una sesión virtual al evento de calendario?', 'Añadiendo una videollamada de Google Meet', 'Cambiando el color del calendario', 'Imprimiendo la invitación'],
+    ['Es posible mantener calendarios independientes para asuntos académicos y personales.', 'Verdadero', 'Falso'],
+    ['La función de "Repetición de evento" es ideal para…', 'horarios de clases y rutinas periódicas', 'citas excepcionales únicas', 'eliminar recordatorios'],
+    ['Una fecha límite de entrega académica conviene registrarla…', 'como evento o tarea con notificación previa', 'sin fecha fijada', 'confiando solo en la memoria'],
+    ['Si dos convocatorias coinciden en la misma franja horaria en Calendar…', 'se solapan visualmente para que decidas o reprogrames', 'se cancelan ambas', 'se fusionan en una sola'],
+    ['Compartir un calendario obliga necesariamente a otorgar permisos de modificación.', 'Falso', 'Verdadero']
+  ]
+};
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function runQuiz(el, questions, minPass, id) {
+  reg(el, id);
+  let idx = 0, okCount = 0;
+  const list = shuffle(questions);
+
+  function renderStep() {
+    if (idx >= list.length) {
+      const passed = (okCount >= minPass);
+      el.onclick = null;
+      el.innerHTML = `
+        <div class="p-4 rounded-xl ${passed ? 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300' : 'bg-rose-50 dark:bg-rose-950/60 border border-rose-300'} text-center">
+          <p class="font-bold text-base mb-1">Resultado: ${okCount} de ${list.length} aciertos</p>
+          <p class="text-sm">${passed ? '🎉 ¡Bloque de retos superado!' : `Se requerían ${minPass} aciertos.`}</p>
+        </div>
+      `;
+      RR[id] = passed ? 1 : 2;
+      zsv();
+      if (passed) win(id);
+      lockUI(id, 1);
+      return;
+    }
+
+    const item = list[idx];
+    let opts = shuffle(item.slice(1));
+    if (opts.includes('Verdadero')) opts = ['Verdadero', 'Falso'];
+
+    el.innerHTML = `
+      <div class="space-y-3">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <span class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">Pregunta ${idx + 1} de ${list.length}</span>
+          <span>Aciertos: ${okCount}</span>
+        </div>
+        <p class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100">${item[0]}</p>
+        <div class="space-y-2">
+          ${opts.map(o => `<button class="opt-btn text-xs sm:text-sm">${o}</button>`).join('')}
+        </div>
+        <div class="fb-box pt-2"></div>
+      </div>
+    `;
+
+    el.onclick = e => {
+      const b = e.target.closest('.opt-btn');
+      if (!b || b.disabled) return;
+      const isCorrect = (b.textContent === item[1]);
+      if (isCorrect) okCount++;
+      el.querySelectorAll('.opt-btn').forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === item[1]) btn.classList.add('ok');
+      });
+      if (!isCorrect) b.classList.add('ko');
+
+      const fb = el.querySelector('.fb-box');
+      fb.innerHTML = `
+        <p class="text-xs font-semibold ${isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} mb-2">
+          ${isCorrect ? '✅ ¡Respuesta correcta!' : `❌ Solución correcta: <b>${item[1]}</b>`}
+        </p>
+        <button class="next-btn px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">
+          ${idx + 1 < list.length ? 'Siguiente pregunta →' : 'Ver balance final'}
+        </button>
+      `;
+
+      el.querySelector('.next-btn').onclick = () => {
+        idx++;
+        renderStep();
+      };
+    };
+  }
+
+  renderStep();
+}
+
+function initPracticeSets() {
+  const SETS = [
+    ['docs', '📄 Documentos de Google', '#crear'],
+    ['sheets', '📊 Hojas de cálculo', '#crear'],
+    ['canva', '🎨 Canva y Presentaciones', '#crear'],
+    ['sites', '🌐 Google Sites', '#crear'],
+    ['gmail', '✉️ Gmail y comunicación', '#comunicar'],
+    ['cal', '📅 Calendar y citas', '#comunicar']
+  ];
+
+  SETS.forEach(([k, title, section]) => {
+    let container = $('#set-' + k);
+    if (!container) {
+      const markup = `
+        <div class="act bg-white dark:bg-slate-800 border-2 border-indigo-400 dark:border-indigo-500 rounded-2xl p-5 shadow-sm mt-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">🧪 Práctica guiada</span>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">10 retos · ${title}</h3>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">Supera 7 de 10 para consolidar esta herramienta.</p>
+          <div id="set-${k}"></div>
+        </div>
+      `;
+      // Solución al problema de inyección en las etiquetas <summary>
+      $(section).lastElementChild.insertAdjacentHTML('beforebegin', markup);
+      container = $('#set-' + k);
+    }
+    runQuiz(container, BANK[k], 7, 's_' + k);
+  });
+}
+
+/* ==========================================================================
+   RETOS AVANZADOS (ORDENACIÓN, CLASIFICACIÓN, CAZA ERRORES, FÓRMULAS)
+   ========================================================================== */
+function makeOrderActivity(selector, steps, id) {
+  const el = $(selector);
+  reg(el, id);
+  let selected = [];
+  let shuffledOrder = shuffle(steps.map((_, i) => i));
+
+  const render = () => {
+    el.innerHTML = `
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+        ${shuffledOrder.map(i => `
+          <button class="opt-btn text-xs sm:text-sm ${selected.includes(i) ? 'opacity-40 cursor-not-allowed' : ''}" data-i="${i}" ${selected.includes(i) ? 'disabled' : ''}>
+            ${steps[i]}
+          </button>
+        `).join('')}
+      </div>
+      <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 mb-3">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Tu secuencia de pasos:</p>
+        <ol class="list-decimal list-inside space-y-1 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200">
+          ${selected.length === 0 ? '<li class="list-none text-slate-400 italic">Pulsa los bloques superiores en el orden correcto.</li>' : selected.map(i => `<li>${steps[i]}</li>`).join('')}
+        </ol>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-300 transition" data-action="undo">Deshacer paso</button>
+        <button class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition" data-action="check">Comprobar orden</button>
+      </div>
+      <p class="res text-sm font-semibold mt-2"></p>
+    `;
+  };
+  render();
+
+  el.onclick = e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.i !== undefined) {
+      if (!b.disabled) {
+        selected.push(+b.dataset.i);
+        render();
+      }
+    } else if (b.dataset.action === 'undo') {
+      selected.pop();
+      render();
+    } else if (b.dataset.action === 'check') {
+      const isCorrect = (selected.length === steps.length && selected.every((v, k) => v === k));
+      const r = el.querySelector('.res');
+      r.textContent = isCorrect ? '🎉 ¡Secuencia perfecta! Reto superado.' : '❌ El orden no es el adecuado o faltan pasos.';
+      RR[id] = isCorrect ? 1 : 2;
+      zsv();
+      if (isCorrect) win(id);
+      lockUI(id, 1);
+    }
+  };
+}
+
+function makeInputActivity(selector, items, id) {
+  const el = $(selector);
+  reg(el, id);
+  el.innerHTML = items.map((x, i) => `
+    <div class="row p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1">
+      <span class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 block">${x[0]}</span>
+      <input type="text" data-i="${i}" autocomplete="off" placeholder="${x[1]}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+  `).join('') + `
+    <button class="check-btn mt-3 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">Comprobar respuestas</button>
+    <p class="res text-sm font-semibold mt-2"></p>
+  `;
+
+  el.querySelector('.check-btn').onclick = () => {
+    let ok = 0;
+    el.querySelectorAll('input').forEach(inp => {
+      const g = items[+inp.dataset.i][2](inp.value);
+      if (g) ok++;
+      inp.parentNode.classList.remove('ok', 'ko');
+      inp.parentNode.classList.add(g ? 'ok' : 'ko');
+    });
+    const passed = (ok === items.length);
+    el.querySelector('.res').textContent = passed ? '🎉 ¡Todas las fórmulas/consultas son correctas! Actividad superada.' : `${ok} de ${items.length} correctas.`;
+    RR[id] = passed ? 1 : 2;
+    zsv();
+    if (passed) win(id);
+    lockUI(id, 1);
+  };
+}
+
+function makeToggleActivity(selector, items, id) {
+  const el = $(selector);
+  reg(el, id);
+  el.innerHTML = `
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+      ${items.map((x, i) => `<button class="tg opt-btn text-xs sm:text-sm font-medium" data-i="${i}">${x[0]}</button>`).join('')}
+    </div>
+    <button class="check-btn px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">Comprobar selección</button>
+    <p class="res text-sm font-semibold mt-2"></p>
+  `;
+
+  el.onclick = e => {
+    const b = e.target.closest('.tg');
+    if (b) b.classList.toggle('sel');
+  };
+
+  el.querySelector('.check-btn').onclick = () => {
+    let ok = 0;
+    el.querySelectorAll('.tg').forEach(b => {
+      const isTarget = !!items[+b.dataset.i][1];
+      const isSel = b.classList.contains('sel');
+      const g = (isSel === isTarget);
+      if (g) ok++;
+      b.classList.remove('ok', 'ko');
+      b.classList.add(g ? 'ok' : 'ko');
+    });
+    const passed = (ok === items.length);
+    el.querySelector('.res').textContent = passed ? '🏆 ¡Excelente análisis crítico! Sin errores.' : `${ok} de ${items.length} identificadas correctamente.`;
+    RR[id] = passed ? 1 : 2;
+    zsv();
+    if (passed) win(id);
+    lockUI(id, 1);
+  };
+}
+
+function initAdvancedChallenges() {
+  const avBox = $('#avbox');
+  const cardTpl = (id, badge, title, desc, extra = '') => `
+    <div class="act bg-white dark:bg-slate-800 border-2 border-indigo-400 dark:border-indigo-500 rounded-2xl p-5 shadow-sm" id="act-${id}">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">${badge}</span>
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white">${title}</h3>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${desc}</p>
+      <div id="${id}"></div>
+      ${extra}
+    </div>
+  `;
+
+  const ORDER_ITEMS = [
+    ['av-o1', 'Tabla de contenido en Documentos', ['Escribir el cuerpo del documento', 'Aplicar estilos de Título 1 y Título 2 a los epígrafes', 'Situar el cursor en la posición del índice', 'Insertar > Tabla de contenido', 'Actualizar el índice al modificar títulos']],
+    ['av-o2', 'Cita bibliográfica APA de página web', ['Apellido, Inicial del autor', '(Año, día y mes)', 'Título del artículo o página', 'Nombre de la entidad o sitio web', 'Enlace URL completo']],
+    ['av-o3', 'Convocatoria con Calendar y Meet', ['Abrir Calendar y pulsar "Crear evento"', 'Asignar título, fecha y franja horaria', 'Añadir invitados mediante su correo', 'Incorporar videollamada de Google Meet', 'Guardar y enviar invitaciones a los asistentes']],
+    ['av-o4', 'Publicación en Google Sites', ['Crear el sitio desde una plantilla escolar', 'Configurar las páginas y el menú de navegación', 'Insertar textos, imágenes y documentos de Drive', 'Comprobar el diseño con la "Vista previa"', 'Pulsar Publicar y definir quién puede visualizarlo']],
+    ['av-o5', 'Compartir en Drive con privacidad', ['Guardar el archivo en una carpeta organizada', 'Pulsar el botón "Compartir"', 'Indicar únicamente los correos de los miembros necesarios', 'Asignar el rol mínimo preciso (Lector o Editor)', 'Verificar que no esté abierto a "Cualquier persona con el enlace"']]
+  ];
+
+  let html = ORDER_ITEMS.map(o => cardTpl(o[0], '⭐⭐⭐ Nivel 3', 'Ordena: ' + o[1], 'Organiza la secuencia lógica paso a paso.')).join('');
+
+  html += cardTpl('av-m1', '⭐⭐⭐⭐ Nivel 4', 'Ecosistema Google Workspace', 'Vincula cada necesidad con su herramienta idónea.', `
+    <button class="mt-3 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition" id="av-m1-c">Comprobar</button>
+    <p class="res text-sm font-semibold mt-2" id="av-m1-r"></p>
+  `);
+
+  html += cardTpl('av-m2', '⭐⭐⭐⭐ Nivel 4', 'Detective de ciberseguridad', 'Clasifica los mensajes según su naturaleza.', `
+    <button class="mt-3 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition" id="av-m2-c">Comprobar</button>
+    <p class="res text-sm font-semibold mt-2" id="av-m2-r"></p>
+  `);
+
+  html += cardTpl('av-t1', '⭐⭐⭐⭐ Nivel 4', 'Caza errores de navegación', 'Marca únicamente las afirmaciones falsas.');
+  html += cardTpl('av-f2', '⭐⭐⭐⭐ Nivel 4', 'Búsqueda experta con operadores', 'Introduce la expresión exacta tal como la escribirías en Google.');
+  html += cardTpl('av-f1', '⭐⭐⭐⭐⭐ Nivel 5', 'Taller de fórmulas de cálculo', 'Escribe la fórmula para las calificaciones del rango B2:B10.');
+  html += cardTpl('av-casos', '⭐⭐⭐⭐⭐ Nivel 5', 'Resolución de casos prácticos', 'Toma la decisión más adecuada para cada dilema real (mínimo 5 aciertos).');
+
+  avBox.innerHTML = html;
+
+  // Inicializar actividades
+  ORDER_ITEMS.forEach(o => {
+    makeOrderActivity('#' + o[0], o[2], 'v_' + o[0]);
+    if (!ACTS.some(a => a[0] === 'v_' + o[0])) ACTS.push(['v_' + o[0], 'Ordena: ' + o[1]]);
+  });
+
+  makeSelectActivity('#av-m1', [
+    ['Recopilar opiniones de 25 compañeros y tabularlas automáticamente', 4],
+    ['Reunión de trabajo en remoto mediante videollamada', 6],
+    ['Almacenar y administrar carpetas compartidas del equipo', 7],
+    ['Programar fechas de examen con recordatorios automatizados', 5],
+    ['Elaborar el presupuesto de fin de curso con cálculos dinámicos', 1],
+    ['Redactar el proyecto escrito recibiendo comentarios del docente', 0],
+    ['Construir una web con pestañas y navegación pública', 3],
+    ['Exponer diapositivas visuales ante el aula', 2]
+  ], ['Documentos', 'Hojas de cálculo', 'Presentaciones', 'Sites', 'Formularios', 'Calendar', 'Meet', 'Drive'], '#av-m1-c', '#av-m1-r', 'v_m1');
+
+  makeSelectActivity('#av-m2', [
+    ['Notificación de Classroom con la fecha límite de entrega', 0],
+    ['El banco te pide por correo tu contraseña para no bloquear la cuenta', 1],
+    ['Descuentos del 90 % en marcas de lujo en un correo no solicitado', 2],
+    ['"Tu cuenta ha sido suspendida": pulsa aquí e introduce tus credenciales', 1],
+    ['Publicidad comercial recurrente que nunca solicitaste', 2],
+    ['Comunicado del centro educativo remitido por el canal oficial', 0]
+  ], ['Legítimo / Fiable', 'Phishing (Intento de robo)', 'Spam publicitario'], '#av-m2-c', '#av-m2-r', 'v_m2');
+
+  makeToggleActivity('#av-t1', [
+    ['El candado HTTPS garantiza que la información de la página es siempre verídica.', 1],
+    ['El operador -ventas excluye páginas que contengan esa palabra.', 0],
+    ['Si una web carece de autoría y fecha es igualmente fiable para un trabajo escolar.', 1],
+    ['En una cita bibliográfica APA se consignan autor, año, título y enlace.', 0],
+    ['La IA generativa siempre aporta datos verídicos sin necesidad de contrastar.', 1],
+    ['El operador filetype:pdf busca únicamente fotografías e ilustraciones.', 1],
+    ['El operador OR permite localizar resultados que contengan un término o el otro.', 0],
+    ['Un marcador del navegador permite guardar páginas para acceder de forma rápida.', 0]
+  ], 'v_t1');
+
+  const normClean = v => v.toLowerCase().replace(/[“”]/g, '"').trim();
+  makeInputActivity('#av-f2', [
+    ['Busca documentos PDF sobre energía solar excluyendo la palabra venta', 'Pista: filetype y guion -', v => {
+      const s = normClean(v);
+      return /filetype:pdf/.test(s) && /-venta/.test(s) && /energ[ií]a solar/.test(s);
+    }],
+    ['Busca la frase exacta “huella digital” en archivos de Word (.docx)', 'Pista: comillas y filetype', v => {
+      const s = normClean(v);
+      return /"huella digital"/.test(s) && /filetype:docx/.test(s);
+    }],
+    ['Busca resultados sobre gatos o perros (un término u otro) en formato PDF', 'Pista: operador OR y filetype', v => {
+      const s = normClean(v);
+      return /(gatos or perros|perros or gatos)/.test(s) && /filetype:pdf/.test(s);
+    }]
+  ], 'v_f2');
+
+  const normF = v => v.toUpperCase().replace(/\s/g, '').replace(/[“”]/g, '"').replace(/;/g, ',');
+  makeInputActivity('#av-f1', [
+    ['Calcular la calificación más alta del rango B2:B10', '=MAX(B2:B10)', v => /^=MAX\(B2:B10\)$/.test(normF(v))],
+    ['Contar cuántas celdas del rango B2:B10 contienen datos numéricos', '=CONTAR(B2:B10)', v => /^=(CONTAR|COUNT)\(B2:B10\)$/.test(normF(v))],
+    ['Si la nota de B2 es mayor o igual a 5 mostrar "Aprobado", sino "Suspenso"', '=SI(B2>=5,"Aprobado","Suspenso")', v => /^=(SI|IF)\(B2>=5,"APROBADO","SUSPENSO"\)$/.test(normF(v))],
+    ['Sumar únicamente las notas del rango B2:B10 que sean superiores a 5', '=SUMAR.SI(B2:B10,">5")', v => /^=(SUMAR\.SI|SUMIF)\(B2:B10,">5"\)$/.test(normF(v))]
+  ], 'v_f1');
+
+  const CASOS_ITEMS = [
+    ['Debes elaborar un trabajo sobre energías renovables con fuentes de máxima solvencia. ¿Cuál es la estrategia adecuada?', 'Consultar Google Académico, contrastar autoría y fecha y citar las fuentes en formato APA', 'Copiar íntegramente la primera respuesta del modo IA sin contrastar', 'Elegir el blog con mayor número de anuncios comerciales', 'Copiar un hilo de un foro anónimo'],
+    ['Estás trabajando en equipo en un Documento y un compañero borra accidentalmente una sección importante. ¿Cómo actúas?', 'Abrir el Historial de versiones del documento y restaurar la versión precedente', 'Borrar el archivo y empezar desde cero', 'Retirarle el permiso a tu compañero y rehacerlo tú a mano', 'Imprimir el texto que recuerdes'],
+    ['Deseas compartir una carpeta de Drive con tu profesora para que evalúe las tareas sin modificar tus archivos originales:', 'Compartir con su dirección de correo asignándole el rol de Lector', 'Hacerla pública para cualquiera con el enlace con rol de Editor', 'Enviarle tu contraseña de Google', 'Publicar las tareas en redes sociales'],
+    ['Coordinas una sesión virtual de trabajo en grupo. ¿Qué procedimiento es el más riguroso y formal?', 'Programar un evento en Calendar con enlace a Google Meet e invitar a sus correos', 'Publicar una videollamada sin fecha fija en un chat informal', 'Conectarte a Meet en solitario esperando a que entren por azar', 'Escribir la hora en un documento sin avisar'],
+    ['Recibes un correo urgente supuestamente de dirección escolar exigiendo verificar tus claves en un enlace externo:', 'No pulsar el enlace, comprobar por la plataforma oficial del centro y advertir al profesorado', 'Pulsar rápidamente por temor a que suspendan tu cuenta', 'Reenviarlo a todos tus compañeros de clase', 'Responder al correo enviando tu clave'],
+    ['Tu sitio de Google Sites sobre el proyecto de curso está listo. ¿Qué verificaciones realizas antes de pulsar Publicar?', 'Comprobar quién puede acceder, que no se expongan datos personales y verificar que los enlaces funcionen', 'Únicamente que el color del fondo sea llamativo', 'Publicarlo sin revisar y esperar comentarios', 'Añadir tantas fotos personales como sea posible']
+  ];
+
+  runQuiz($('#av-casos'), CASOS_ITEMS, 5, 'v_casos');
+
+  if (!ACTS.some(a => a[0] === 'v_m1')) {
+    ACTS.push(['v_m1', 'Workspace · Clasifica'], ['v_m2', 'Seguridad · Clasifica'], ['v_t1', 'Caza errores'], ['v_f2', 'Búsqueda experta'], ['v_f1', 'Taller de fórmulas'], ['v_casos', 'Casos prácticos']);
+  }
+}
+
+/* ==========================================================================
+   COMPETENCIAS DIGITALES (DIGCOMP) Y DESGLOSE
+   ========================================================================== */
+const COMPETENCIAS = [
+  ['CD1 · Búsqueda, filtrado y gestión de la información', ['a1','a2','a3','v_av-o2','v_t1','v_f2']],
+  ['CD2 · Creación de contenidos digitales y cálculo', ['a5','a6','s_docs','s_sheets','s_canva','s_sites','v_av-o1','v_av-o4','v_f1','v_m1']],
+  ['CD3 · Comunicación, colaboración y ciudadanía digital', ['a7','a8','a9','a10','s_gmail','s_cal','v_av-o3','v_av-o5','v_m2']],
+  ['CD4 · Seguridad, privacidad y uso responsable de la IA', ['a4','a11','v_casos']]
+];
+
+function calcCompetencies() {
+  return COMPETENCIAS.map(([name, actList], i) => {
+    const actPassed = actList.filter(k => done[k]).length;
+    const actPercent = Math.round((actPassed / actList.length) * 100);
+    const examPassed = (zS.e && zS.e.fin) ? Math.round((zS.e.cp[i] / zS.e.ct[i]) * 100) : 0;
+    const finalScore = (zS.e && zS.e.fin) ? Math.round((actPercent + examPassed) / 2) : actPercent;
+    const status = (zS.e && zS.e.fin) ? (finalScore >= 70 ? 'Competencia superada' : 'No superada') : 'En curso';
+    return [name, finalScore, status, actPercent, examPassed];
+  });
+}
+
+function renderCompetencies() {
+  $('#cpv').innerHTML = calcCompetencies().map(([name, score, status]) => `
+    <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+      <div class="flex justify-between items-center text-xs sm:text-sm font-semibold mb-1">
+        <span>${name}</span>
+        <span class="${score >= 70 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}">${score}% · ${status}</span>
+      </div>
+      <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+        <div class="h-full ${score >= 70 ? 'bg-emerald-500' : 'bg-blue-600'} transition-all duration-500" style="width: ${score}%;"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateProgress() {
+  const completedCount = ACTS.filter(a => done[a[0]]).length;
+  const attemptedCount = ACTS.filter(a => RR[a[0]]).length;
+  const percent = Math.round((completedCount / ACTS.length) * 100);
+
+  $('#bar').style.width = percent + '%';
+  $('#pcent').textContent = percent + '%';
+  $('#pt').textContent = `${completedCount} de ${ACTS.length} pruebas superadas (${attemptedCount} realizadas)`;
+
+  // Banner en sección logros
+  const examFin = zS.e && zS.e.fin;
+  const isApproved = examFin && zS.e.ok >= 21;
+  const finalGrade = examFin ? (((completedCount / ACTS.length) * 5 + (zS.e.ok / 30) * 5)).toFixed(1) : 'Pendiente';
+
+  if (examFin) {
+    $('#lg').innerHTML = `
+      <div class="text-center p-6 border-2 ${isApproved ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40' : 'border-rose-500 bg-rose-50 dark:bg-rose-950/40'} rounded-2xl">
+        <span class="text-4xl">${isApproved ? '🎓' : '📋'}</span>
+        <h3 class="text-xl font-bold mt-2 text-slate-900 dark:text-white">${isApproved ? '¡Enhorabuena! Has superado el Curso' : 'Informe de resultados finales'}</h3>
+        <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-1">Estudiante: <b>${zS.n}</b></p>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mt-2">
+          Calificación global: <b class="text-lg ${isApproved ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${finalGrade} / 10</b> · Examen: <b>${(zS.e.ok / 3).toFixed(1)} / 10</b> (${zS.e.ok} de 30)
+        </p>
+      </div>
+    `;
+    $('#dl').hidden = false;
+    $('#prn').hidden = false;
+  } else {
+    $('#lg').innerHTML = `
+      <p class="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+        Completa las actividades de los 6 módulos y el examen final para desbloquear tu calificación global y el diploma acreditativo.
+      </p>
+    `;
+    $('#dl').hidden = true;
+    $('#prn').hidden = true;
+  }
+
+  // Desglose de actividades
+  $('#lg').insertAdjacentHTML('beforeend', `
+    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+      ${ACTS.map(a => `
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+          <span>${RR[a[0]] === 1 ? '✅' : RR[a[0]] === 2 ? '❌' : '⬜'}</span>
+          <span class="font-medium text-slate-700 dark:text-slate-300">${a[1]}</span>
+        </div>
+      `).join('')}
+    </div>
+  `);
+
+  renderCompetencies();
+}
+const prog = updateProgress;
+
+/* ==========================================================================
+   EXAMEN FINAL (30 PRUEBAS: 15 TEST + 15 ORDENAR)
+   ========================================================================== */
+const EXAM_THEORY = [
+  ['¿Qué operador busca una coincidencia exacta de frase?', 'Comillas " "', 'Guion -', 'Operador OR'],
+  ['El filtro filetype:pdf limita los resultados a…', 'documentos en formato PDF', 'fotografías en alta definición', 'vídeos de streaming'],
+  ['Las respuestas del modo IA de los buscadores…', 'ofrecen resúmenes que siempre deben contrastarse con las fuentes', 'son infalibles y nunca cometen errores', 'no precisan verificación'],
+  ['¿Qué indicador confirma la solidez de una fuente digital?', 'Autoría reconocida y fecha de actualización visible', 'Presencia abundante de anuncios llamativos', 'Colores vistosos en el encabezado'],
+  ['Un sitio web con candado de seguridad HTTPS garantiza siempre que el texto es verídico.', 'Falso', 'Verdadero'],
+  ['Todo trabajo académico riguroso debe incluir…', 'la bibliografía completa de las fuentes consultadas', 'únicamente imágenes descargadas', 'solamente el nombre del estudiante'],
+  ['¿Cuál de las siguientes opciones constituye la contraseña más robusta?', 'Mi.Gato#ComeEn2026', '12345678', 'mariagarcia'],
+  ['Reutilizar la misma contraseña idéntica en todas tus cuentas de internet es seguro.', 'Falso', 'Verdadero'],
+  ['Al configurar una cuenta en una red social, la recomendación de privacidad inicial es…', 'perfil privado con visibilidad restringida', 'perfil público abierto a todo el mundo', 'no configurar la privacidad'],
+  ['El rol colaborativo que permite únicamente visualizar un documento sin alterar nada es…', 'Lector', 'Editor', 'Propietario'],
+  ['En Formularios de Google, para permitir que se elijan múltiples opciones a la vez utilizas…', 'Casillas de verificación', 'Respuesta corta', 'Desplegable de opción única'],
+  ['Es una práctica ética presentar como trabajo escolar propio un texto generado íntegramente por IA.', 'Falso', 'Verdadero']
+];
+const EXAM_THEORY_COMP = [0, 0, 0, 0, 0, 0, 3, 3, 3, 2, 1, 3];
+
+const EXAM_ORDER = [
+  [0, 'Búsqueda metódica de información fiable', ['Definir con precisión el objetivo de la búsqueda', 'Formular la consulta empleando palabras clave y operadores', 'Evaluar la autoría, fecha y contraste de los resultados', 'Anotar la cita de la fuente consultada en la bibliografía']],
+  [0, 'Filtrado de resultados en un motor de búsqueda', ['Escribir los términos de consulta en el buscador', 'Abrir el menú de Herramientas o Filtros de búsqueda', 'Seleccionar el formato deseado o rango de fechas', 'Analizar los resultados depurados en pantalla']],
+  [0, 'Protocolo de verificación ante una noticia dudosa', ['Leer el contenido completo y no solo el titular', 'Investigar el autor y la fecha original de publicación', 'Contrastar la noticia en agencias o medios de referencia', 'Decidir críticamente si es veraz antes de compartirla']],
+  [1, 'Estructuración de una presentación digital', ['Diseñar el esquema conceptual y repartir una idea por diapositiva', 'Seleccionar una plantilla limpia con alto contraste cromático', 'Incorporar imágenes con licencia y textos concisos', 'Ensayar la exposición oral con control de tiempo']],
+  [1, 'Aplicación de fórmulas en hoja de cálculo', ['Hacer clic sobre la celda donde irá el resultado', 'Escribir el signo igual (=) para iniciar la fórmula', 'Indicar el nombre de la función y el rango de celdas entre paréntesis', 'Pulsar Intro y verificar el cálculo obtenido']],
+  [1, 'Diseño de un cartel en Canva', ['Elegir una plantilla acorde al mensaje', 'Personalizar los textos y la paleta de colores', 'Integrar ilustraciones o fotografías con permiso de uso', 'Descargar el archivo en formato PDF para impresión']],
+  [1, 'Diseño de un Formulario de Google', ['Asignar un título claro y una descripción al formulario', 'Crear las preguntas seleccionando el tipo de campo idóneo', 'Revisar la experiencia del usuario mediante la Vista previa', 'Obtener y compartir el enlace de participación']],
+  [2, 'Redacción de un correo formal', ['Definir un Asunto preciso que resuma el mensaje', 'Iniciar con un saludo cordial y respetuoso', 'Exponer con claridad y síntesis la consulta', 'Cerrar con una despedida formal y firma']],
+  [2, 'Comunicación respetuosa en foros y chats', ['Leer con atención el mensaje completo previo', 'Reflexionar la respuesta manteniendo un tono constructivo', 'Redactar con claridad evitando escribir todo en mayúsculas', 'Revisar la ortografía antes de pulsar Enviar']],
+  [2, 'Compartición segura de carpetas en la nube', ['Hacer clic en el botón Compartir de la carpeta', 'Introducir las direcciones de correo específicas de los miembros', 'Asignar el permiso mínimo indispensable (Lector o Editor)', 'Enviar la invitación sin habilitar accesos públicos masivos']],
+  [2, 'Coedición en un documento compartido', ['Abrir el documento compartido con el equipo', 'Redactar únicamente la sección pactada', 'Utilizar los comentarios para sugerir cambios al trabajo de otros', 'Recurrir al historial de versiones si surge una pérdida de datos']],
+  [3, 'Creación de una contraseña robusta', ['Idear una frase larga y significativa fácil de recordar', 'Combinar letras mayúsculas y minúsculas', 'Intercalar números y caracteres especiales o símbolos', 'Utilizarla de manera exclusiva para esa cuenta']],
+  [3, 'Detección y respuesta ante intento de Phishing', ['Desconfiar de la urgencia injustificada y enlaces extraños', 'No pulsar ningún enlace ni descargar adjuntos dudosos', 'Comprobar el estado directamente en la web oficial oficial del servicio', 'Reportar el mensaje como spam o phishing y eliminarlo']],
+  [3, 'Configuración de privacidad en redes sociales', ['Acceder al apartado de Configuración y Privacidad', 'Establecer la visibilidad de la cuenta en modo Privado', 'Restringir quién puede etiquetarte o visualizar tus publicaciones', 'Aceptar solicitudes de amistad solo de personas conocidas']],
+  [3, 'Uso responsable de herramientas de Inteligencia Artificial', ['Formular peticiones detalladas y éticas al asistente', 'Someter a verificación crítica los datos y fuentes facilitados', 'Citar con honestidad el soporte de la IA en la entrega', 'Presentar un trabajo elaborado y comprendido por ti mismo']]
+];
+
+function initExam() {
+  const el = $('#exam-box');
+  if (zS.e && zS.e.fin) {
+    renderExamResult(el);
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="text-center py-6">
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Evaluación Final de Competencia Digital</h3>
+      <p class="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto mb-6">
+        Esta evaluación consta de 30 ítems cronometrados sin repetición. Asegúrate de disponer de 15-20 minutos tranquilos antes de pulsar empezar.
+      </p>
+      <button id="exs" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition shadow-lg text-sm sm:text-base">
+        Comenzar el Examen Final (Intento único)
+      </button>
+    </div>
+  `;
+
+  $('#exs').onclick = () => {
+    // Selección de 15 preguntas teóricas (12 base + 3 de los bancos de práctica)
+    const practiceSample = shuffle([
+      { c: 1, q: BANK.docs[0] },
+      { c: 1, q: BANK.sheets[1] },
+      { c: 1, q: BANK.canva[0] },
+      { c: 1, q: BANK.sites[0] },
+      { c: 2, q: BANK.gmail[0] },
+      { c: 2, q: BANK.cal[0] }
+    ]).slice(0, 3);
+
+    const theoryQuestions = [
+      ...EXAM_THEORY.map((q, idx) => ({ c: EXAM_THEORY_COMP[idx], q })),
+      ...practiceSample
+    ];
+
+    // 15 de ordenar pasos
+    const orderQuestions = EXAM_ORDER.map(o => ({ c: o[0], t: o[1], s: o[2] }));
+
+    // Barajamos el conjunto total de 30 pruebas
+    const fullExam = shuffle([...theoryQuestions, ...orderQuestions]);
+
+    const compTotal = [0, 0, 0, 0];
+    fullExam.forEach(x => compTotal[x.c]++);
+
+    zS.e = { ok: 0, cp: [0, 0, 0, 0], ct: compTotal, i: 0, n: fullExam.length, fin: 0 };
+    zsv();
+    runExamStep(el, fullExam);
+  };
+}
+
+function runExamStep(el, examList) {
+  const E = zS.e;
+  if (E.i >= examList.length) {
+    E.fin = 1;
+    const isPassed = (E.ok >= 21);
+    if (isPassed) win('ex');
+    RR['ex'] = isPassed ? 1 : 2;
+    zsv();
+    prog();
+    renderExamResult(el);
+    return;
+  }
+
+  const current = examList[E.i];
+  const progressHeader = `
+    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3">
+      <span class="px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">Prueba ${E.i + 1} de ${examList.length}</span>
+      <span>Aciertos: ${E.ok}</span>
+    </div>
+  `;
+
+  if (current.q) {
+    // Pregunta tipo test
+    const qData = current.q;
+    let opts = shuffle(qData.slice(1));
+    if (opts.includes('Verdadero')) opts = ['Verdadero', 'Falso'];
+
+    el.innerHTML = `
+      ${progressHeader}
+      <p class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 mb-3">${qData[0]}</p>
+      <div class="space-y-2">
+        ${opts.map(txt => `<button class="opt-btn text-xs sm:text-sm">${txt}</button>`).join('')}
+      </div>
+      <div class="fb-box pt-3"></div>
+    `;
+
+    el.onclick = e => {
+      const b = e.target.closest('.opt-btn');
+      if (!b || b.disabled) return;
+      const isCorrect = (b.textContent === qData[1]);
+      if (isCorrect) {
+        E.ok++;
+        E.cp[current.c]++;
+      }
+      el.querySelectorAll('.opt-btn').forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === qData[1]) btn.classList.add('ok');
+      });
+      if (!isCorrect) b.classList.add('ko');
+
+      const fb = el.querySelector('.fb-box');
+      fb.innerHTML = `
+        <p class="text-xs font-semibold ${isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} mb-2">
+          ${isCorrect ? '✅ Respuesta correcta' : '❌ Respuesta incorrecta'}
+        </p>
+        <button id="exNext" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">
+          ${E.i + 1 < examList.length ? 'Siguiente prueba →' : 'Finalizar examen y ver nota'}
+        </button>
+      `;
+
+      $('#exNext').onclick = () => {
+        E.i++;
+        zsv();
+        runExamStep(el, examList);
+      };
+    };
+  } else {
+    // Prueba de ordenación
+    let selectedOrder = [];
+    const steps = current.s;
+    const shuffledIdxs = shuffle(steps.map((_, idx) => idx));
+
+    const renderOrderStep = () => {
+      el.innerHTML = `
+        ${progressHeader}
+        <p class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 mb-1">Ordena la secuencia lógica:</p>
+        <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-3">${current.t}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+          ${shuffledIdxs.map(idx => `
+            <button class="opt-btn text-xs ${selectedOrder.includes(idx) ? 'opacity-40 cursor-not-allowed' : ''}" data-idx="${idx}" ${selectedOrder.includes(idx) ? 'disabled' : ''}>
+              ${steps[idx]}
+            </button>
+          `).join('')}
+        </div>
+        <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl mb-3 text-xs">
+          <p class="font-bold text-slate-500 mb-1 uppercase">Tu orden:</p>
+          <ol class="list-decimal list-inside space-y-0.5">
+            ${selectedOrder.length === 0 ? '<li class="list-none text-slate-400 italic">Haz clic en los pasos de arriba en el orden correcto.</li>' : selectedOrder.map(idx => `<li>${steps[idx]}</li>`).join('')}
+          </ol>
+        </div>
+        <div class="flex gap-2 mb-2">
+          <button class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold" data-btn="undo">Deshacer</button>
+          <button class="px-4 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition" data-btn="check">Confirmar secuencia</button>
+        </div>
+        <div class="fb-box"></div>
+      `;
+    };
+    renderOrderStep();
+
+    el.onclick = e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.idx !== undefined) {
+        if (!b.disabled) {
+          selectedOrder.push(+b.dataset.idx);
+          renderOrderStep();
+        }
+      } else if (b.dataset.btn === 'undo') {
+        selectedOrder.pop();
+        renderOrderStep();
+      } else if (b.dataset.btn === 'check') {
+        const isCorrect = (selectedOrder.length === steps.length && selectedOrder.every((v, k) => v === k));
+        if (isCorrect) {
+          E.ok++;
+          E.cp[current.c]++;
+        }
+        el.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        const fb = el.querySelector('.fb-box');
+        fb.innerHTML = `
+          <p class="text-xs font-semibold ${isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} my-2">
+            ${isCorrect ? '✅ Secuencia lógica correcta' : '❌ Orden incorrecto'}
+          </p>
+          <button id="exNext" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">
+            ${E.i + 1 < examList.length ? 'Siguiente prueba →' : 'Finalizar examen y ver nota'}
+          </button>
+        `;
+        $('#exNext').onclick = () => {
+          E.i++;
+          zsv();
+          runExamStep(el, examList);
+        };
+      }
+    };
+  }
+}
+
+function renderExamResult(el) {
+  const E = zS.e;
+  const isPassed = (E.ok >= 21);
+  const examNote = ((E.ok / 30) * 10).toFixed(1);
+
+  el.onclick = null;
+  el.innerHTML = `
+    <div class="text-center p-6 border-2 ${isPassed ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40' : 'border-rose-500 bg-rose-50 dark:bg-rose-950/40'} rounded-2xl mb-4">
+      <span class="text-4xl">${isPassed ? '🎉' : '❌'}</span>
+      <h3 class="text-xl font-bold mt-2 text-slate-900 dark:text-white">Examen Final Completado</h3>
+      <p class="text-base font-extrabold ${isPassed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} mt-1">
+        Nota de examen: ${examNote} / 10 · ${E.ok} de 30 aciertos (${isPassed ? 'Aprobado' : 'No superado'})
+      </p>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Intento único registrado. No se puede repetir.</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 mb-4">
+      <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3">Rendimiento por áreas competenciales en el examen:</h4>
+      <div class="space-y-2 text-xs">
+        ${COMPETENCIAS.map((c, i) => `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-700/50">
+            <span class="font-medium text-slate-700 dark:text-slate-300">${c[0]}</span>
+            <span class="font-bold ${E.cp[i] >= (E.ct[i] * 0.7) ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600'}">${E.cp[i]} / ${E.ct[i]} aciertos</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="#logros" class="inline-block px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm transition shadow">
+        Consultar mi diploma y balance de competencias →
+      </a>
+    </div>
+  `;
+}
+
+/* ==========================================================================
+   GENERACIÓN DE DIPLOMA E INFORME (DESCARGA HTML E IMPRESIÓN PDF)
+   ========================================================================== */
+function generateCertificateHtml() {
+  const E = zS.e || { ok: 0, fin: 0 };
+  const student = zS.n || 'Estudiante';
+  const completedCount = ACTS.filter(a => done[a[0]]).length;
+  const isApproved = (E.ok >= 21);
+  const globalScore = (((completedCount / ACTS.length) * 5 + (E.ok / 30) * 5)).toFixed(1);
+  const examScore = ((E.ok / 30) * 10).toFixed(1);
+  const compData = calcCompetencies();
+  const dateStr = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Diploma y Certificación · ${student}</title>
+  <style>
+    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 24px; color: #0f172a; background: #fff; line-height: 1.5; }
+    .diploma-card { max-width: 800px; margin: 0 auto; border: 8px double #1e40af; border-radius: 20px; padding: 36px; text-align: center; background: #fafbff; }
+    .badge-icon { display: inline-block; width: 64px; height: 64px; line-height: 64px; background: #1e40af; color: #fff; font-weight: 800; font-size: 28px; border-radius: 16px; margin-bottom: 12px; }
+    h1 { color: #1e3a8a; margin: 8px 0 4px; font-size: 26px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sub { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+    .student-name { font-size: 30px; font-weight: 800; color: #0f172a; border-bottom: 2px solid #cbd5e1; display: inline-block; padding: 0 24px 6px; margin: 12px 0; }
+    .score-badge { display: inline-block; background: ${isApproved ? '#dcfce7' : '#fee2e2'}; color: ${isApproved ? '#166534' : '#991b1b'}; padding: 6px 18px; border-radius: 999px; font-weight: 700; font-size: 16px; margin: 14px 0; border: 1px solid ${isApproved ? '#86efac' : '#fca5a5'}; }
+    .breakdown { max-width: 800px; margin: 32px auto 0; text-align: left; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+    th { background: #f1f5f9; color: #334155; }
+    .signatures { display: flex; justify-content: space-around; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 13px; color: #475569; }
+    @media print { body { padding: 0; } .diploma-card { border-width: 4px; } }
+  </style>
+</head>
+<body>
+  <div class="diploma-card">
+    <div class="badge-icon">VD</div>
+    <div style="font-size:12px; font-weight:700; letter-spacing:1px; color:#2563eb; text-transform:uppercase;">Fundación Vedruna Educación</div>
+    <h1>${isApproved ? 'Certificado de Competencia Digital' : 'Informe de Competencia Digital'}</h1>
+    <p class="sub">Conforme al Marco Europeo de Competencias Digitales (DigComp) · Nivel Iniciación</p>
+    <p style="font-size:14px; margin-bottom:4px;">Se acredita que el/la estudiante:</p>
+    <div class="student-name">${student}</div>
+    <p style="font-size:14px; max-width:600px; margin:10px auto;">
+      ${isApproved ? 'Ha superado con éxito las 23 actividades evaluables y el examen final de 30 pruebas, demostrando un uso crítico, creativo y seguro de las tecnologías digitales.' : 'Ha participado en las pruebas de evaluación diagnóstica de competencia digital del curso 2026-27.'}
+    </p>
+    <div class="score-badge">Calificación Final: ${globalScore} / 10 · Examen: ${examScore} / 10 (${E.ok}/30 aciertos)</div>
+    <p style="font-size:12px; color:#64748b; margin-top:16px;">Emitido con carácter oficial el ${dateStr}</p>
+    <div class="signatures">
+      <div><b>Coordinación TIC</b><br>Fundación Vedruna Educación</div>
+      <div><b>Evaluación de Competencia Digital</b><br>Código: VED-2026-${Math.floor(100000 + Math.random() * 900000)}</div>
+    </div>
+  </div>
+
+  <div class="breakdown">
+    <h3 style="color:#1e3a8a; margin-bottom:6px;">Desglose por Áreas Competenciales (DigComp)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Área Competencial</th>
+          <th>Prácticas</th>
+          <th>Examen</th>
+          <th>Calificación</th>
+          <th>Dictamen</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${compData.map(c => `
+          <tr>
+            <td><b>${c[0]}</b></td>
+            <td>${c[3]}%</td>
+            <td>${c[4]}%</td>
+            <td><b>${c[1]}%</b></td>
+            <td style="color:${c[1] >= 70 ? '#16a34a' : '#dc2626'}; font-weight:600;">${c[1] >= 70 ? 'Superada' : 'No superada'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+
+    <h3 style="color:#1e3a8a; margin: 24px 0 6px;">Registro detallado de pruebas</h3>
+    <table>
+      <thead>
+        <tr><th>Actividad</th><th>Resultado</th></tr>
+      </thead>
+      <tbody>
+        ${ACTS.map(a => `
+          <tr>
+            <td>${a[1]}</td>
+            <td>${RR[a[0]] === 1 ? '✅ Superada' : RR[a[0]] === 2 ? '❌ No superada' : '⬜ No realizada'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>`;
+}
+
+// Descarga universal con Blob (compatible en todos los navegadores)
+$('#dl').onclick = () => {
+  const content = generateCertificateHtml();
+  const safeName = (zS.n || 'Estudiante').replace(/[^\wáéíóúñÁÉÍÓÚÑ]+/g, '_');
+  const filename = `Diploma_Competencia_Digital_${safeName}.html`;
+
+  try {
+    const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 400);
+    $('#dlr').textContent = '✅ Diploma descargado en formato HTML. Puedes abrirlo en tu navegador y guardarlo en PDF mediante Imprimir.';
+  } catch (err) {
+    $('#dlr').textContent = 'Error al generar la descarga automática.';
+  }
+};
+
+// Impresión directa y apertura en ventana limpia para Guardar como PDF
+$('#prn').onclick = () => {
+  const content = generateCertificateHtml();
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.open();
+    printWindow.document.write(content);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 500);
+  } else {
+    $('#dlr').textContent = 'El navegador bloqueó la ventana emergente. Usa el botón "Descargar diploma".';
+  }
+};
+
+/* ==========================================================================
+   GATE DE REGISTRO INICIAL Y REINICIO
+   ========================================================================== */
+function initGate() {
+  const gateModal = $('#gateModal');
+  if (zS.n && zS.n.trim().length >= 3) {
+    $('#who').textContent = 'Alumno/a: ' + zS.n;
+    gateModal.classList.add('hidden');
+    return;
+  }
+
+  gateModal.classList.remove('hidden');
+  $('#gb').onclick = () => {
+    const nameVal = $('#gn').value.trim();
+    if (nameVal.length < 3) {
+      $('#ge').textContent = 'Por favor, escribe tu nombre y dos apellidos para el certificado.';
+      return;
+    }
+    zS.n = nameVal;
+    zsv();
+    $('#who').textContent = 'Alumno/a: ' + nameVal;
+    gateModal.classList.add('hidden');
+    prog();
+  };
+}
+
+// Modal de reinicio seguro (sin confirm() nativo)
+const confirmModal = $('#confirmModal');
+$('#rs-btn').onclick = () => {
+  confirmModal.classList.remove('hidden');
+};
+$('#cfCancel').onclick = () => {
+  confirmModal.classList.add('hidden');
+};
+$('#cfAccept').onclick = () => {
+  confirmModal.classList.add('hidden');
+  try {
+    localStorage.removeItem('cdr');
+    localStorage.removeItem('cdp');
+  } catch(e) {}
+  zS = { r: {}, e: null, n: '' };
+  done = {};
+  location.reload();
+};
+
+/* ==========================================================================
+   INICIALIZACIÓN DEL SISTEMA
+   ========================================================================== */
+function initSystem() {
+  // Renderizar estadísticas globales
+  $('#stats').innerHTML = [
+    [6, 'Módulos teóricos'],
+    [ACTS.length, 'Pruebas evaluables'],
+    [30, 'Ítems en examen final'],
+    ['1', 'Intento por prueba']
+  ].map(s => `
+    <div class="p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center shadow-xs">
+      <span class="block text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 leading-tight">${s[0]}</span>
+      <span class="text-xs font-medium text-slate-500 dark:text-slate-400">${s[1]}</span>
+    </div>
+  `).join('');
+
+  // Dibujar actividades base
+  draw1();
+  draw2();
+  draw3();
+  draw5();
+  draw6();
+  draw7();
+  draw8();
+  draw11();
+  chkPw();
+
+  // Prácticas guiadas y retos avanzados
+  initPracticeSets();
+  initAdvancedChallenges();
+
+  // Examen final
+  initExam();
+
+  // Bloqueo de actividades ya realizadas previamente
+  Object.keys(RR).forEach(id => lockUI(id, 0));
+
+  // Actualizar indicadores y mostrar sección inicial
+  prog();
+  initGate();
+  showSection();
+}
+
+window.addEventListener('DOMContentLoaded', initSystem);
+</script>
+</body>
+</html>
