@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CinemaLab – Cinemática 2º ESO</title>
+<style>
+:root{--bg:#f4f7fb;--sf:#fff;--s2:#e6edf5;--ac:#7c3aed;--tx:#0f172a;--t2:#475569;--ok:#16a34a;--bad:#dc2626;--wn:#d97706;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--sf:#1e293b;--s2:#334155;--ac:#a78bfa;--tx:#f1f5f9;--t2:#94a3b8;--ok:#22c55e;--bad:#f87171;--wn:#fbbf24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f172a;--sf:#1e293b;--s2:#334155;--ac:#a78bfa;--tx:#f1f5f9;--t2:#94a3b8;--ok:#22c55e;--bad:#f87171;--wn:#fbbf24;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 18px;background:var(--sf);border-bottom:2px solid var(--ac)}
+h1{font-size:1.3rem;color:var(--ac)}#sub{font-size:.75rem;color:var(--t2)}
+.sc{background:var(--s2);border-radius:20px;padding:6px 14px;font-weight:700;white-space:nowrap}
+main{max-width:820px;margin:0 auto;padding:18px 14px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tb{flex:1;min-width:110px;padding:10px 6px;border:2px solid var(--s2);background:var(--sf);color:var(--t2);border-radius:12px;font-weight:700;cursor:pointer;font-size:.88rem}
+.tb.on{border-color:var(--ac);color:var(--ac)}
+.pr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.bar{flex:1;height:8px;background:var(--s2);border-radius:4px;overflow:hidden}#pf{height:100%;width:0;background:var(--ac);transition:width .4s}
+.mut{color:var(--t2);font-size:.88rem}
+.card{background:var(--sf);border:1px solid var(--s2);border-radius:12px;padding:20px}
+.ban{border-left:4px solid var(--ac);background:var(--s2);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px}
+.ban b{color:var(--ac)}.ban p{color:var(--t2);font-size:.9rem;line-height:1.55;margin-top:4px}
+.eqd{background:var(--s2);border-radius:8px;padding:10px;text-align:center;font:700 .95rem 'Courier New',monospace;margin-bottom:12px}
+.big{font-size:1.15rem;text-align:center;margin:14px 0;line-height:1.5}
+.row{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0}
+.an{width:150px;padding:10px;font-size:1.1rem;text-align:center;border:2px solid var(--s2);border-radius:8px;background:var(--bg);color:var(--tx)}
+.r2{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{padding:11px 20px;border-radius:8px;font-weight:700;font-size:.92rem;cursor:pointer;border:2px solid var(--ac);background:var(--ac);color:#fff}
+.b2{background:var(--sf);color:var(--tx);border-color:var(--s2)}.b3{flex:1;min-width:130px;background:var(--sf);color:var(--tx)}
+.bh{background:var(--sf);color:var(--wn);border-color:var(--wn)}.bh:disabled{opacity:.4}
+.hi{margin-top:8px;border-left:3px solid var(--wn);padding:8px 12px;font-size:.88rem;color:var(--t2);background:var(--s2);border-radius:0 6px 6px 0}
+#fb div{margin-top:14px;padding:12px 14px;border-radius:8px;font-weight:600;line-height:1.5;border:2px solid}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.info{color:var(--ac)}
+.end{text-align:center;padding:30px 10px}.end p{color:var(--t2);margin:8px 0 16px}
+#login,#rep{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:24px}
+#login{display:flex;align-items:center;justify-content:center}
+.lb{background:var(--sf);border:2px solid var(--ac);border-radius:16px;padding:30px 24px;max-width:420px;width:100%;text-align:center}
+.lb p{color:var(--t2);margin:6px 0 18px;font-size:.92rem}
+.lb input{width:100%;padding:12px;margin-bottom:12px;border:2px solid var(--s2);border-radius:8px;background:var(--bg);color:var(--tx);font-size:1rem}
+.lb .btn{width:100%}.lb .btn:disabled{opacity:.4}
+#rep{display:none}table{width:100%;border-collapse:collapse;background:var(--sf)}
+th,td{padding:6px 8px;text-align:left;font-size:.8rem;border-top:1px solid var(--s2)}th{color:var(--t2)}
+.kp{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.kp div{background:var(--sf);border-radius:8px;padding:10px 16px;flex:1;min-width:110px}.kp b{font-size:1.5rem;display:block}
+@media print{#app,#login,.np{display:none!important}#rep{position:static;display:block!important}}
+</style>
+</head>
+<body>
+<div id="login"><div class="lb">
+<div style="font-size:3rem">🚀</div><h1>CinemaLab</h1>
+<p>Práctica de cinemática para 2º ESO.<br>Escribe tus datos para empezar.</p>
+<input id="nm" placeholder="Nombre y apellidos" autocomplete="off" oninput="chk()">
+<input id="cl" placeholder="Clase (ej: 2º ESO A)" autocomplete="off">
+<button class="btn" id="go" onclick="go()" disabled>Comenzar →</button>
+</div></div>
+
+<div id="app">
+<header>
+<div><h1>🚀 CinemaLab</h1><div id="sub">Cinemática · 2º ESO</div></div>
+<div style="display:flex;gap:8px;align-items:center"><span class="sc">⭐ <span id="sc">0</span> pts</span><button class="btn b2" onclick="rep()">📄 Informe</button></div>
+</header>
+<main>
+<div class="tabs" id="tabs"></div>
+<div class="pr"><div class="bar"><div id="pf"></div></div><span class="mut" id="pt"></span></div>
+<div class="card" id="card"></div>
+</main>
+</div>
+<div id="rep"></div>
+
+<script>
+const $=i=>document.getElementById(i);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TABS=[['mru','🚴 MRU'],['mrua','🚗 MRUA'],['cl','🪨 Caída libre'],['tv','⚽ Tiro vertical'],['gr','📈 Gráficas']];
+const NAMES={mru:'MRU',mrua:'MRUA',cl:'Caída libre',tv:'Tiro vertical',gr:'Gráficas'};
+const F={
+mru:'v = d / t   ·   d = v · t   ·   t = d / v',
+mrua:'v = v₀ + a·t   ·   d = v₀·t + ½·a·t²',
+cl:'v = g·t   ·   h = ½·g·t²   ·   g = 10 m/s²',
+tv:'v = v₀ − g·t   ·   h = v₀·t − ½·g·t²   ·   g = 10 m/s²',
+gr:'Pendiente de x–t = velocidad · Pendiente de v–t = aceleración · Área bajo v–t = distancia'};
+
+const DATA={
+mru:[
+{t:'🚴 El ciclista',c:'Un ciclista circula por un carril bici a velocidad constante.',q:'Va a <b>6 m/s</b> durante <b>20 s</b>. ¿Qué distancia recorre?',u:'m',a:120,h:['MRU: d = v · t','d = 6 · 20 = 120 m']},
+{t:'🚆 El tren',c:'Un tren circula sin cambiar de velocidad.',q:'Recorre <b>300 km</b> en <b>2 h</b>. ¿Cuál es su velocidad?',u:'km/h',a:150,h:['v = d / t','300 / 2 = 150 km/h']},
+{t:'🏊 La nadadora',c:'Una nadadora mantiene un ritmo constante.',q:'Nada a <b>2 m/s</b> y quiere recorrer <b>100 m</b>. ¿Cuántos segundos tarda?',u:'s',a:50,h:['t = d / v','100 / 2 = 50 s']},
+{t:'🚗 Cambio de unidades',c:'En física usamos m/s, pero los coches miden en km/h.',q:'Un coche va a <b>72 km/h</b>. Exprésalo en m/s.',u:'m/s',a:20,h:['Para pasar de km/h a m/s se divide entre 3,6.','72 / 3,6 = 20 m/s']},
+{t:'🏃 El corredor',c:'Cuidado con las unidades del tiempo.',q:'Corre a <b>5 m/s</b> durante <b>3 minutos</b>. ¿Cuántos metros recorre?',u:'m',a:900,h:['Pasa los minutos a segundos: 3 min = 180 s.','d = 5 · 180 = 900 m']}],
+mrua:[
+{t:'🚗 Arranque',c:'Un coche parte del reposo (v₀ = 0) y acelera de forma constante.',q:'Con <b>a = 2 m/s²</b>, ¿qué velocidad tiene a los <b>5 s</b>?',u:'m/s',a:10,h:['v = v₀ + a·t con v₀ = 0','v = 0 + 2·5 = 10 m/s']},
+{t:'🏍️ Moto acelerando',c:'Una moto ya se mueve y sigue acelerando.',q:'Va a <b>5 m/s</b> y acelera con <b>3 m/s²</b> durante <b>4 s</b>. ¿Velocidad final?',u:'m/s',a:17,h:['v = v₀ + a·t','v = 5 + 3·4 = 17 m/s']},
+{t:'🛑 Frenada',c:'Al frenar, la aceleración es negativa.',q:'Un coche va a <b>20 m/s</b> y frena con <b>a = −4 m/s²</b>. ¿Cuántos segundos tarda en pararse?',u:'s',a:5,h:['Al pararse v = 0, así que 0 = v₀ + a·t → t = −v₀ / a','t = −20 / (−4) = 5 s']},
+{t:'🚀 Distancia desde el reposo',c:'Además de la velocidad, podemos calcular lo que se ha recorrido.',q:'Parte del reposo con <b>a = 4 m/s²</b>. ¿Qué distancia recorre en <b>3 s</b>?',u:'m',a:18,h:['d = v₀·t + ½·a·t² con v₀ = 0','d = ½ · 4 · 3² = 18 m']},
+{t:'🚲 Bici que acelera',c:'Una bici lleva velocidad inicial y acelera.',q:'Con <b>v₀ = 10 m/s</b> y <b>a = 2 m/s²</b>, ¿qué distancia recorre en <b>5 s</b>?',u:'m',a:75,h:['d = v₀·t + ½·a·t²','d = 10·5 + ½·2·5² = 50 + 25 = 75 m']}],
+cl:[
+{t:'🪨 La piedra',c:'Se suelta una piedra desde un puente. Usa g = 10 m/s² y desprecia el rozamiento del aire.',q:'¿Con qué velocidad va a los <b>3 s</b>?',u:'m/s',a:30,h:['Se suelta, así que v₀ = 0 y v = g·t','v = 10 · 3 = 30 m/s']},
+{t:'🏢 Desde el tejado',c:'Un objeto cae desde el tejado de un edificio.',q:'Cae durante <b>2 s</b>. ¿Qué altura ha descendido?',u:'m',a:20,h:['h = ½·g·t²','h = ½ · 10 · 2² = 20 m']},
+{t:'🏗️ Edificio de 80 m',c:'Se suelta un objeto desde lo alto de una obra.',q:'Se suelta desde <b>80 m</b>. ¿Cuánto tarda en llegar al suelo?',u:'s',a:4,h:['De h = ½·g·t² despejamos t = √(2h / g)','t = √(2·80 / 10) = √16 = 4 s']},
+{t:'🪴 La maceta',c:'Una maceta se cae de un balcón.',q:'Cae desde <b>20 m</b>. ¿Con qué velocidad llega al suelo?',u:'m/s',a:20,h:['Primero el tiempo: t = √(2·20 / 10) = 2 s','v = g·t = 10 · 2 = 20 m/s']},
+{t:'🪂 Caída de 5 s',c:'Un objeto tarda 5 s en llegar al suelo.',q:'Si cae durante <b>5 s</b>, ¿desde qué altura se soltó?',u:'m',a:125,h:['h = ½·g·t²','h = ½ · 10 · 5² = 125 m']}],
+tv:[
+{t:'⚽ El balón',c:'Lanzamos un balón hacia arriba. Usa g = 10 m/s². En el punto más alto la velocidad es 0.',q:'Lanzado a <b>20 m/s</b>, ¿cuánto tarda en llegar al punto más alto?',u:'s',a:2,h:['En lo más alto v = 0: 0 = v₀ − g·t → t = v₀ / g','t = 20 / 10 = 2 s']},
+{t:'🏀 Altura máxima',c:'Seguimos con el lanzamiento hacia arriba.',q:'Lanzado a <b>20 m/s</b>, ¿qué altura máxima alcanza?',u:'m',a:20,h:['Usa h = v₀·t − ½·g·t² con t = 2 s','h = 20·2 − ½·10·2² = 40 − 20 = 20 m']},
+{t:'⏱️ Tiempo en el aire',c:'El tiempo de bajada es igual al de subida.',q:'Lanzada a <b>30 m/s</b>, ¿cuánto tiempo pasa en el aire hasta volver al punto de partida?',u:'s',a:6,h:['Tiempo de subida: t = v₀ / g = 30 / 10 = 3 s','Total = subida + bajada = 3 + 3 = 6 s']},
+{t:'🎾 Velocidad en el camino',c:'La velocidad va disminuyendo mientras sube.',q:'Lanzada a <b>25 m/s</b>, ¿qué velocidad tiene a los <b>1 s</b>?',u:'m/s',a:15,h:['v = v₀ − g·t','v = 25 − 10·1 = 15 m/s']},
+{t:'🏹 La flecha',c:'Una flecha se dispara en vertical.',q:'Sale a <b>40 m/s</b> hacia arriba. ¿Qué altura máxima alcanza?',u:'m',a:80,h:['Tiempo de subida: t = 40 / 10 = 4 s','h = 40·4 − ½·10·4² = 160 − 80 = 80 m']}],
+gr:[
+{t:'📈 Gráfica posición–tiempo',c:'La pendiente de una gráfica x–t es la velocidad.',g:{pts:[[0,0],[10,50]],xm:10,ym:50,xl:'t (s)',yl:'x (m)'},q:'¿Cuál es la velocidad del móvil?',u:'m/s',a:5,h:['Velocidad = pendiente = distancia / tiempo.','50 m / 10 s = 5 m/s']},
+{t:'📈 Gráfica velocidad–tiempo',c:'Observa la forma de la línea.',g:{pts:[[0,8],[5,8]],xm:5,ym:10,xl:'t (s)',yl:'v (m/s)'},q:'¿Qué tipo de movimiento representa?',mc:['MRU (velocidad constante)','MRUA (acelerado)','Reposo'],a:0,h:['La velocidad no cambia con el tiempo.','Velocidad constante y distinta de 0 → MRU.']},
+{t:'📈 Aceleración',c:'En una gráfica v–t, la pendiente es la aceleración.',g:{pts:[[0,0],[5,20]],xm:5,ym:20,xl:'t (s)',yl:'v (m/s)'},q:'¿Cuál es la aceleración?',u:'m/s²',a:4,h:['a = (v final − v inicial) / t','a = (20 − 0) / 5 = 4 m/s²']},
+{t:'📈 Área bajo la gráfica',c:'En una gráfica v–t, el área bajo la línea es la distancia recorrida.',g:{pts:[[0,6],[10,6]],xm:10,ym:8,xl:'t (s)',yl:'v (m/s)'},q:'¿Qué distancia recorre en 10 s?',u:'m',a:60,h:['El área es un rectángulo: base × altura.','10 s · 6 m/s = 60 m']},
+{t:'📈 Una curva',c:'Las gráficas x–t curvas indican que la velocidad cambia.',g:{pts:[[0,0],[0.5,0.25],[1,1],[1.5,2.25],[2,4],[2.5,6.25],[3,9],[3.5,12.25],[4,16],[4.5,20.25],[5,25]],xm:5,ym:25,xl:'t (s)',yl:'x (m)'},q:'¿Qué movimiento representa?',mc:['MRU','MRUA','Reposo'],a:1,h:['Una recta en x–t sería MRU. ¿Es recta esta línea?','Es una curva: la velocidad aumenta → MRUA.']},
+{t:'📈 Línea horizontal',c:'Fíjate en qué pasa con la posición.',g:{pts:[[0,20],[10,20]],xm:10,ym:30,xl:'t (s)',yl:'x (m)'},q:'¿Qué está haciendo el móvil?',mc:['Se mueve a velocidad constante','Acelera','Está en reposo'],a:2,h:['La posición no cambia con el tiempo.','Si x no cambia, el móvil está parado.']}]
+};
+
+function svg(g){const W=320,H=210,l=44,b=34,r=12,tp=12,pw=W-l-r,ph=H-b-tp,X=x=>l+x/g.xm*pw,Y=y=>tp+ph-y/g.ym*ph;
+ let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;max-width:420px;display:block;margin:0 auto 8px" role="img" aria-label="Gráfica">';
+ for(let i=0;i<=5;i++){const xv=g.xm*i/5,yv=g.ym*i/5;
+  s+='<line x1="'+X(xv)+'" y1="'+tp+'" x2="'+X(xv)+'" y2="'+(tp+ph)+'" stroke="var(--s2)"/><line x1="'+l+'" y1="'+Y(yv)+'" x2="'+(l+pw)+'" y2="'+Y(yv)+'" stroke="var(--s2)"/><text x="'+X(xv)+'" y="'+(tp+ph+14)+'" font-size="10" text-anchor="middle" fill="var(--t2)">'+(+xv.toFixed(1))+'</text><text x="'+(l-5)+'" y="'+(Y(yv)+3)+'" font-size="10" text-anchor="end" fill="var(--t2)">'+(+yv.toFixed(1))+'</text>'}
+ s+='<polyline fill="none" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round" points="'+g.pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')+'"/>';
+ s+='<text x="'+(l+pw/2)+'" y="'+(H-4)+'" font-size="11" text-anchor="middle" fill="var(--tx)">'+g.xl+'</text><text x="10" y="'+(tp+ph/2)+'" font-size="11" text-anchor="middle" fill="var(--tx)" transform="rotate(-90 10 '+(tp+ph/2)+')">'+g.yl+'</text></svg>';return s}
+
+let name='',cls='',t0=null,score=0,tab='mru',hs=0,fin=false;
+const LOG=[],S={};TABS.forEach(t=>S[t[0]]={i:0});
+$('tabs').innerHTML=TABS.map(t=>'<button class="tb'+(t[0]==='mru'?' on':'')+'" onclick="setTab(\''+t[0]+'\')">'+t[1]+'</button>').join('');
+
+function chk(){$('go').disabled=$('nm').value.trim().length<2}
+function go(){name=$('nm').value.trim();if(name.length<2)return;cls=$('cl').value.trim()||'—';t0=new Date();$('login').style.display='none';$('sub').textContent=name+' · '+cls}
+function setTab(k){tab=k;document.querySelectorAll('.tb').forEach((b,i)=>b.classList.toggle('on',TABS[i][0]===k));render()}
+function log(t,ok,u,c){LOG.push({time:new Date(),tab,t,ok,hs,u,c})}
+function fb(c,m){$('fb').innerHTML='<div class="'+c+'">'+m+'</div>'}
+function win(p,u){const pt=hs===0?30:hs===1?20:10;score+=pt;$('sc').textContent=score;fin=true;log(p.t,true,u,p.mc?p.mc[p.a]:p.a+' '+p.u);fb('ok','✅ ¡Correcto! +'+pt+' puntos'+(hs?'':' 🌟'))}
+function hint(){const p=DATA[tab][S[tab].i];if(hs>=p.h.length)return;const d=document.createElement('div');d.className='hi';d.innerHTML='💡 '+p.h[hs];$('hl').appendChild(d);hs++;$('hc').textContent=hs;if(hs>=p.h.length)$('hb').disabled=true}
+function next(){S[tab].i++;render()}
+
+function render(){
+ const d=DATA[tab],s=S[tab];hs=0;fin=false;
+ $('pf').style.width=s.i/d.length*100+'%';$('pt').textContent=Math.min(s.i,d.length)+' / '+d.length;
+ if(s.i>=d.length){$('card').innerHTML='<div class="end"><div style="font-size:3rem">🏁</div><h2>¡Sección completada!</h2><p>Has terminado todos los ejercicios. Prueba otra sección o repite esta.</p><button class="btn" onclick="S[tab].i=0;render()">Repetir</button></div>';return}
+ const p=d[s.i];
+ const ans=p.mc?'<div class="r2">'+p.mc.map((o,i)=>'<button class="btn b3" onclick="ansMc('+i+')">'+o+'</button>').join('')+'</div>':'<div class="row"><input type="number" step="any" id="an" class="an" placeholder="?"><span class="mut">'+p.u+'</span></div>';
+ $('card').innerHTML='<div class="ban"><b>'+p.t+'</b><p>'+p.c+'</p></div><div class="eqd">'+F[tab]+'</div>'+(p.g?svg(p.g):'')+'<p class="big">'+p.q+'</p>'+ans+'<div id="hl"></div><div id="fb"></div><div class="r2"><button class="btn bh" id="hb" onclick="hint()">💡 Pista (<span id="hc">0</span>/'+p.h.length+')</button>'+(p.mc?'':'<button class="btn" onclick="ck()">✓ Comprobar</button>')+'<button class="btn b2" onclick="next()">Siguiente →</button></div>';
+}
+
+function ck(){if(fin)return;const p=DATA[tab][S[tab].i],v=parseFloat($('an').value);if(isNaN(v))return fb('bad','⚠️ Escribe un número.');
+ if(Math.abs(v-p.a)<=Math.max(0.01,p.a*0.005))win(p,v+' '+p.u);else{log(p.t,false,v+' '+p.u,p.a+' '+p.u);fb('bad','❌ No es correcto. Revisa la fórmula y las unidades. Usa las pistas si las necesitas.')}}
+function ansMc(i){if(fin)return;const p=DATA[tab][S[tab].i];if(i===p.a)win(p,p.mc[i]);else{log(p.t,false,p.mc[i],p.mc[p.a]);fb('bad','❌ No es correcto. Mira la forma de la gráfica y prueba con una pista.')}}
+
+function rep(){if(!name)return;const n=LOG.length,ok=LOG.filter(e=>e.ok).length,now=new Date(),min=Math.round((now-t0)/60000);
+ const rows=LOG.map((e,i)=>'<tr><td>'+(i+1)+'</td><td>'+e.time.toLocaleTimeString('es-ES')+'</td><td>'+NAMES[e.tab]+'</td><td>'+e.t+'</td><td>'+(e.ok?'✅':'❌')+'</td><td>'+e.hs+'</td><td>'+e.u+'</td><td>'+e.c+'</td></tr>').join('')||'<tr><td colspan="8">Todavía no hay intentos.</td></tr>';
+ $('rep').innerHTML='<h1>🚀 Informe de CinemaLab</h1><p class="mut"><b>'+esc(name)+'</b> · '+esc(cls)+' · '+now.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · '+min+' min</p>'+
+ '<div class="kp"><div><b>'+n+'</b>Intentos</div><div><b>'+ok+'</b>Correctos</div><div><b>'+(n?Math.round(ok/n*100):0)+'%</b>Acierto</div><div><b>'+score+'</b>Puntos</div></div>'+
+ '<table><tr><th>#</th><th>Hora</th><th>Sección</th><th>Ejercicio</th><th>Res.</th><th>Pistas</th><th>Tu respuesta</th><th>Correcta</th></tr>'+rows+'</table>'+
+ '<div class="r2 np"><button class="btn" onclick="window.print()">🖨️ Imprimir / guardar PDF</button><button class="btn b2" onclick="$(\'rep\').style.display=\'none\'">Cerrar</button></div>';
+ $('rep').style.display='block'}
+
+render();
+</script>
+</body>
+</html>
