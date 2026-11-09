@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Espiral hacia el Interior | Proyecto Odisea 2º ESO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        .green-gradient {
+            background: linear-gradient(135deg, #064e3b 0%, #059669 50%, #10b981 100%);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-emerald-500 selection:text-white"
+      x-data="odysseyApp()">
+
+    <header class="sticky top-0 z-50 glass-card border-b border-emerald-100 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
+                    <i class="fa-solid fa-swatchbook text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-heading font-bold text-lg text-emerald-950 block leading-tight">LA ESPIRAL</span>
+                    <span class="text-[10px] sm:text-xs font-semibold text-emerald-600 tracking-wider uppercase">Proyecto Odisea • 2º ESO</span>
+                </div>
+            </div>
+
+            <!-- Menú de Pestañas (Desktop & Tablet) -->
+            <nav class="hidden lg:flex items-center gap-1 bg-emerald-50/80 p-1.5 rounded-full border border-emerald-200/60">
+                <button @click="activeTab = 'resumen'" :class="activeTab === 'resumen' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-800 hover:bg-emerald-100/60'" class="px-4 py-2 rounded-full text-xs font-bold transition-all duration-200">
+                    <i class="fa-solid fa-compass mr-1.5"></i> Resumen
+                </button>
+                <button @click="activeTab = 'textos'" :class="activeTab === 'textos' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-800 hover:bg-emerald-100/60'" class="px-4 py-2 rounded-full text-xs font-bold transition-all duration-200">
+                    <i class="fa-solid fa-book-journal-whills mr-1.5"></i> Textos
+                </button>
+                <button @click="activeTab = 'sesiones'" :class="activeTab === 'sesiones' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-800 hover:bg-emerald-100/60'" class="px-4 py-2 rounded-full text-xs font-bold transition-all duration-200">
+                    <i class="fa-solid fa-list-ol mr-1.5"></i> Sesiones
+                </button>
+                <button @click="activeTab = 'ganchos'" :class="activeTab === 'ganchos' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-800 hover:bg-emerald-100/60'" class="px-4 py-2 rounded-full text-xs font-bold transition-all duration-200">
+                    <i class="fa-solid fa-bolt mr-1.5"></i> Ganchos
+                </button>
+                <button @click="activeTab = 'evaluacion'" :class="activeTab === 'evaluacion' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-800 hover:bg-emerald-100/60'" class="px-4 py-2 rounded-full text-xs font-bold transition-all duration-200">
+                    <i class="fa-solid fa-square-check mr-1.5"></i> Evaluación
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <button @click="window.print()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 transition hidden sm:inline-flex items-center">
+                    <i class="fa-solid fa-print mr-1"></i> Imprimir
+                </button>
+                <!-- Menú Móvil Select -->
+                <select x-model="activeTab" class="lg:hidden bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl px-3 py-2 font-bold focus:ring-emerald-500">
+                    <option value="resumen">Resumen</option>
+                    <option value="textos">Textos</option>
+                    <option value="sesiones">Sesiones</option>
+                    <option value="ganchos">Ganchos</option>
+                    <option value="evaluacion">Evaluación</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative overflow-hidden green-gradient text-white pt-12 pb-16 no-print">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-300/30 backdrop-blur-sm text-emerald-100 text-xs font-semibold">
+                        <i class="fa-solid fa-graduation-cap"></i> Proyecto Didáctico de Lengua y Literatura / Tutoría
+                    </div>
+                    <h1 class="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight">
+                        Transforma <span class="text-emerald-300 underline decoration-emerald-400 decoration-wavy decoration-2">La Odisea</span> en un Viaje de Autoconocimiento
+                    </h1>
+                    <p class="text-emerald-100 text-base sm:text-lg max-w-2xl font-light leading-relaxed">
+                        Un proyecto práctico de 9 sesiones para alumnado de 2º de la ESO. Cada mito clásico se convierte en un espejo de sus redes sociales, la presión de grupo y la búsqueda de identidad.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button @click="activeTab = 'sesiones'" class="px-5 py-3 rounded-2xl bg-white text-emerald-900 font-bold text-sm shadow-xl hover:bg-emerald-50 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <i class="fa-solid fa-route text-emerald-600"></i> Ver las 9 Sesiones
+                        </button>
+                        <button @click="activeTab = 'textos'" class="px-5 py-3 rounded-2xl bg-emerald-800/80 hover:bg-emerald-800 text-white font-bold text-sm border border-emerald-400/30 backdrop-blur-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-book-open text-amber-300"></i> Leer Textos
+                        </button>
+                    </div>
+                </div>
+                <div class="hidden lg:block lg:col-span-4">
+                    <div class="grid grid-cols-1 gap-4 border-l border-emerald-500/50 pl-8">
+                        <div>
+                            <span class="block text-4xl font-black text-emerald-200">9</span>
+                            <span class="text-sm font-semibold text-emerald-100/80">Sesiones Estructuradas</span>
+                        </div>
+                        <div>
+                            <span class="block text-4xl font-black text-emerald-200">6</span>
+                            <span class="text-sm font-semibold text-emerald-100/80">Ganchos para la Clase</span>
+                        </div>
+                        <div>
+                            <span class="block text-4xl font-black text-emerald-200">3D</span>
+                            <span class="text-sm font-semibold text-emerald-100/80">Móvil de Identidad Final</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
+        
+        <!-- PESTAÑA 1: RESUMEN Y PREPARACIÓN -->
+        <div x-show="activeTab === 'resumen'" x-transition:enter="transition ease-out duration-300 transform opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-8">
+            
+            <div class="glass-card rounded-3xl p-8 shadow-sm border border-emerald-100">
+                <h2 class="font-heading text-2xl font-bold text-emerald-950 mb-4">Resumen del Proyecto</h2>
+                <p class="text-slate-700 leading-relaxed max-w-4xl">
+                    Este proyecto de 9 sesiones para 2º de la ESO transforma la lectura de <em>La Odisea</em> en un proceso de construcción de identidad. 
+                    Los alumnos crearán un <strong>"Móvil de Identidad en Espiral"</strong>, donde cada sesión representa una prueba física en el mito y un desafío psicológico en su vida actual (redes sociales, presión de grupo, autoconcepto). El objetivo es que comprendan que madurar es un viaje hacia el propio centro.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Materiales Necesarios -->
+                <div class="glass-card rounded-3xl p-8 border-l-4 border-l-emerald-500 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-emerald-950">Materiales Necesarios</h3>
+                    </div>
+                    <ul class="space-y-3 text-slate-700 text-sm">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-emerald-500 mt-1"></i>
+                            <span><strong>Cartulinas grandes</strong> (mínimo A3) y papel de seda.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-emerald-500 mt-1"></i>
+                            <span><strong>Elementos decorativos:</strong> Cuerdas, cuentas de colores, pegamento y tijeras.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-emerald-500 mt-1"></i>
+                            <span><strong>Fichas de lectura:</strong> Fragmentos seleccionados de <em>La Odisea</em>.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check text-emerald-500 mt-1"></i>
+                            <span><strong>Diario de Bitácora:</strong> Un cuaderno de clase reservado para reflexiones personales.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Preparación Requerida -->
+                <div class="glass-card rounded-3xl p-8 border-l-4 border-l-emerald-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-800 text-white flex items-center justify-center">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                            </div>
+                            <h3 class="font-heading text-xl font-bold text-emerald-950">Preparación y Errores Conceptuales</h3>
+                        </div>
+                        <ul class="space-y-4 text-slate-700 text-sm">
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-compass-drafting text-emerald-700 mt-1 text-lg"></i>
+                                <div>
+                                    <strong class="block text-emerald-900">Preparación del Aula</strong>
+                                    Seleccionar textos clave de cada episodio y preparar un espacio (techo o perimetral) para colgar las espirales al final del proyecto.
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-1 text-lg"></i>
+                                <div>
+                                    <strong class="block text-amber-700">Error: El Héroe Invencible</strong>
+                                    Enfatizar que los propios errores de Odiseo (como el orgullo o la curiosidad desmedida) son los que alargan el viaje, deconstruyendo la idea de perfección.
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-clock-rotate-left text-amber-500 mt-1 text-lg"></i>
+                                <div>
+                                    <strong class="block text-amber-700">Error: "Historia Vieja"</strong>
+                                    Superar la desconexión mediante la analogía constante con los algoritmos de redes sociales y la presión estética actual.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 2: TEXTOS Y ADAPTACIONES -->
+        <div x-show="activeTab === 'textos'" style="display: none;" x-transition:enter="transition ease-out duration-300 transform opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-8">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-emerald-900 text-white p-6 rounded-3xl shadow-lg">
+                <div>
+                    <h2 class="font-heading text-2xl font-bold">Textos por Sesión</h2>
+                    <p class="text-emerald-200 text-xs mt-1 max-w-2xl">Fragmentos seleccionados de <em>La Odisea</em> frente a su adaptación épica moderna orientada a la realidad de estudiantes de 13 años.</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-xs bg-emerald-800 px-3 py-2 rounded-full border border-emerald-600 text-emerald-100 shadow-inner">
+                        <i class="fa-solid fa-language mr-1"></i> Traducción al contexto adolescente
+                    </span>
+                </div>
+            </div>
+
+            <!-- Acordeón de Textos -->
+            <div class="grid gap-6">
+                <template x-for="(texto, index) in textos" :key="texto.numero">
+                    <div class="glass-card rounded-3xl overflow-hidden transition-all duration-300 border hover:border-emerald-400"
+                         :class="expandedTexto === texto.numero ? 'ring-2 ring-emerald-500 shadow-md' : ''">
+                        
+                        <button @click="expandedTexto = (expandedTexto === texto.numero ? null : texto.numero)"
+                                class="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 bg-gradient-to-r hover:from-emerald-50/80 hover:to-white transition group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-700 text-white flex flex-col items-center justify-center font-bold shadow-md shadow-emerald-700/20 shrink-0 group-hover:scale-105 transition-transform">
+                                    <span class="text-[10px] sm:text-xs uppercase opacity-80 leading-tight">S</span>
+                                    <span class="text-base sm:text-lg leading-none" x-text="texto.numero"></span>
+                                </div>
+                                <h3 class="font-heading font-bold text-base sm:text-xl text-emerald-950 mt-0.5" x-text="texto.titulo"></h3>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 transition-transform duration-300 shrink-0"
+                                 :class="expandedTexto === texto.numero ? 'rotate-180 bg-emerald-100 text-emerald-700' : ''">
+                                <i class="fa-solid fa-chevron-down text-sm"></i>
+                            </div>
+                        </button>
+
+                        <div x-show="expandedTexto === texto.numero" x-collapse>
+                            <div class="p-6 pt-4 border-t border-emerald-100 bg-emerald-50/40">
+                                <!-- Grid para alinear los textos correctamente -->
+                                <div class="grid md:grid-cols-2 gap-8 md:gap-6 lg:gap-10">
+                                    
+                                    <!-- Texto Original -->
+                                    <div class="relative pt-3 h-full flex flex-col">
+                                        <div class="absolute top-0 left-4 bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold border border-slate-200 uppercase tracking-widest shadow-sm z-10 -translate-y-1/2">
+                                            Texto de La Odisea
+                                        </div>
+                                        <div class="bg-white p-6 pt-8 rounded-2xl border border-slate-200 shadow-sm flex-grow relative">
+                                            <i class="fa-solid fa-quote-left text-slate-100 text-3xl absolute top-4 left-4 z-0"></i>
+                                            <p class="text-slate-700 font-serif italic leading-relaxed text-[15px] relative z-10" x-text="texto.original"></p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Adaptación Moderna -->
+                                    <div class="relative pt-3 h-full flex flex-col">
+                                        <div class="absolute top-0 left-4 bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold border border-emerald-500 uppercase tracking-widest shadow-sm z-10 -translate-y-1/2">
+                                            Adaptación 2º ESO
+                                        </div>
+                                        <div class="bg-emerald-900 text-emerald-50 p-6 pt-8 rounded-2xl shadow-sm flex-grow relative overflow-hidden">
+                                            <div class="absolute inset-0 opacity-[0.15] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]"></div>
+                                            <i class="fa-solid fa-quote-left text-emerald-800 text-3xl absolute top-4 left-4 z-0"></i>
+                                            <p class="font-serif italic leading-relaxed text-[15px] relative z-10 text-emerald-100" x-text="texto.adaptacion"></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: ESTRUCTURA DEL PROYECTO (LAS 9 SESIONES) -->
+        <div x-show="activeTab === 'sesiones'" style="display: none;" x-transition:enter="transition ease-out duration-300 transform opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-8">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-emerald-900 text-white p-6 rounded-3xl shadow-lg">
+                <div>
+                    <h2 class="font-heading text-2xl font-bold">Las 9 Sesiones</h2>
+                    <p class="text-emerald-200 text-xs mt-1">Estructura del proyecto: progresión desde la periferia (Troya/Ego) hacia el centro (Ítaca/Raíz).</p>
+                </div>
+            </div>
+
+            <div class="grid gap-6">
+                <template x-for="(sesion, index) in sesiones" :key="sesion.numero">
+                    <div class="glass-card rounded-3xl overflow-hidden transition-all duration-300 border hover:border-emerald-400"
+                         :class="expandedSession === sesion.numero ? 'ring-2 ring-emerald-500 shadow-md' : ''">
+                        
+                        <button @click="expandedSession = (expandedSession === sesion.numero ? null : sesion.numero)"
+                                class="w-full p-6 text-left flex items-center justify-between gap-4 bg-gradient-to-r hover:from-emerald-50/50 hover:to-white transition group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex flex-col items-center justify-center font-bold shadow-md shadow-emerald-600/20 shrink-0 group-hover:scale-105 transition">
+                                    <span class="text-xs uppercase opacity-80">S</span>
+                                    <span class="text-lg leading-none" x-text="sesion.numero"></span>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase tracking-wider" x-text="sesion.simboloResumen"></span>
+                                    </div>
+                                    <h3 class="font-heading font-bold text-lg sm:text-xl text-emerald-950" x-text="sesion.titulo"></h3>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 transition-transform duration-300 shrink-0"
+                                 :class="expandedSession === sesion.numero ? 'rotate-180 bg-emerald-100 text-emerald-700' : ''">
+                                <i class="fa-solid fa-chevron-down text-sm"></i>
+                            </div>
+                        </button>
+
+                        <div x-show="expandedSession === sesion.numero" x-collapse>
+                            <div class="p-6 pt-2 border-t border-emerald-100/80 bg-emerald-50/30 grid md:grid-cols-3 gap-6 text-sm">
+                                
+                                <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
+                                    <div class="flex items-center gap-2 font-bold text-emerald-900 text-xs uppercase tracking-wider mb-2">
+                                        <i class="fa-solid fa-scroll text-emerald-600 text-base"></i> Contenido del Mito
+                                    </div>
+                                    <p class="text-slate-700 leading-relaxed text-xs sm:text-sm" x-text="sesion.contenido"></p>
+                                </div>
+
+                                <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
+                                    <div class="flex items-center gap-2 font-bold text-emerald-900 text-xs uppercase tracking-wider mb-2">
+                                        <i class="fa-solid fa-hands-holding-circle text-emerald-600 text-base"></i> Actividad Práctica
+                                    </div>
+                                    <p class="text-slate-700 leading-relaxed text-xs sm:text-sm" x-text="sesion.actividad"></p>
+                                </div>
+
+                                <div class="bg-emerald-900 text-white p-5 rounded-2xl shadow-sm space-y-2">
+                                    <div class="flex items-center gap-2 font-bold text-emerald-300 text-xs uppercase tracking-wider mb-2">
+                                        <i class="fa-solid fa-lightbulb text-amber-300 text-base"></i> Simbolismo (13 años)
+                                    </div>
+                                    <p class="text-emerald-100 leading-relaxed text-xs sm:text-sm" x-text="sesion.simbolismo"></p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 4: GANCHOS PARA LA CLASE -->
+        <div x-show="activeTab === 'ganchos'" style="display: none;" x-transition:enter="transition ease-out duration-300 transform opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-8">
+            
+            <div class="glass-card rounded-3xl p-6 md:p-8 border border-emerald-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-3">
+                            <i class="fa-solid fa-bolt"></i> Dinámicas de Impacto Rápido (5-10 min)
+                        </div>
+                        <h2 class="font-heading text-2xl font-bold text-emerald-950">Ganchos Pedagógicos</h2>
+                        <p class="text-xs text-slate-600 mt-1">Actividades de apertura para captar la atención inmediatamente.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="gancho in ganchos" :key="gancho.id">
+                    <div class="glass-card rounded-3xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between border border-emerald-100">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-4">
+                                <span class="px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider"
+                                      :class="gancho.badgeColor"
+                                      x-text="gancho.categoria"></span>
+                            </div>
+
+                            <h3 class="font-heading font-bold text-lg sm:text-xl text-emerald-950 mb-3" x-text="gancho.titulo"></h3>
+
+                            <div class="bg-emerald-50/70 p-3 rounded-xl mb-4 border border-emerald-100 text-xs">
+                                <span class="font-bold text-emerald-900 block mb-1">
+                                    <i class="fa-solid fa-toolbox mr-1 text-emerald-600"></i> Materiales:
+                                </span>
+                                <span class="text-slate-700" x-text="gancho.materiales"></span>
+                            </div>
+
+                            <div class="space-y-2 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                                <span class="font-bold text-slate-900 block uppercase tracking-wider text-[10px]">Desarrollo:</span>
+                                <p x-text="gancho.instrucciones"></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-emerald-100">
+                            <span class="text-xs text-emerald-700 font-semibold block bg-emerald-50 p-2 rounded-lg text-center">
+                                <i class="fa-solid fa-link text-emerald-500 mr-1"></i> <span x-text="gancho.conexionMito"></span>
+                            </span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 5: EVALUACIÓN Y TICKET DE SALIDA -->
+        <div x-show="activeTab === 'evaluacion'" style="display: none;" x-transition:enter="transition ease-out duration-300 transform opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-8">
+            
+            <div class="grid lg:grid-cols-12 gap-8">
+                
+                <div class="lg:col-span-6 glass-card rounded-3xl p-8 border border-emerald-200 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading text-xl font-bold text-emerald-950">Criterios de Evaluación</h2>
+                            <p class="text-xs text-slate-500">Pautas claras de calificación</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-sm text-slate-700">
+                        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                            <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                                <i class="fa-solid fa-check-double text-emerald-600"></i> Completitud de la Espiral
+                            </h4>
+                            <p class="text-xs sm:text-sm leading-relaxed text-slate-600">
+                                La espiral debe estar completa con los <strong>9 elementos simbólicos</strong> correspondientes a cada una de las sesiones del itinerario.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                            <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                                <i class="fa-solid fa-brain text-emerald-600"></i> Profundidad de Reflexión
+                            </h4>
+                            <p class="text-xs sm:text-sm leading-relaxed text-slate-600">
+                                Se evalúa la <strong>profundidad de la conexión</strong> entre el mito clásico y su propia vida personal, <strong>no la calidad artística</strong>.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                            <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                                <i class="fa-solid fa-book-bookmark text-emerald-600"></i> Diario de Bitácora
+                            </h4>
+                            <p class="text-xs sm:text-sm leading-relaxed text-slate-600">
+                                Las entradas escritas en el cuaderno deben argumentar las decisiones tomadas en cada pétalo o cuerda de la espiral.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 glass-card rounded-3xl p-8 border border-emerald-200 flex flex-col space-y-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-ticket"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading text-xl font-bold text-emerald-950">Ticket de Salida</h2>
+                            <p class="text-xs text-slate-500">Pregunta de Cierre (Sesión Final)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-emerald-900 to-emerald-950 text-white p-6 sm:p-8 rounded-2xl shadow-inner relative overflow-hidden flex-grow flex flex-col justify-center">
+                        <i class="fa-solid fa-quote-left text-emerald-700 text-6xl absolute -top-4 -right-2 opacity-30"></i>
+                        <span class="text-[10px] sm:text-xs uppercase tracking-widest text-emerald-400 font-bold block mb-4 border-b border-emerald-700/50 pb-2">Pregunta Final Obligatoria:</span>
+                        <p class="font-serif text-lg sm:text-2xl font-semibold italic text-emerald-50 leading-snug">
+                            "Si Odiseo llegara hoy a tu colegio, ¿qué consejo le darías para no perderse en el camino?"
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function odysseyApp() {
+            return {
+                activeTab: 'resumen', // Iniciar siempre en resumen
+                expandedSession: 1,
+                expandedTexto: 1,
+                
+                textos: [
+                    {
+                        numero: 1,
+                        titulo: "El Lanzamiento – De Troya a la Espiral",
+                        original: "«Cuéntame, Musa, la historia del hombre de múltiples caminos que anduvo errante durante mucho tiempo, tras destruir la sagrada ciudad de Troya [...]. Deseaba el regreso a su hogar y volver junto a su esposa.»",
+                        adaptacion: "«Cuéntame, Musa, la historia del joven navegante que, tras sobrevivir al estruendo de los pasillos y al juicio de la multitud, decidió emprender el viaje de regreso a sí mismo. Pues inmensa era la máscara que mostraba en las plazas digitales para complacer a los extraños, pero ardía en su pecho el deseo de hallar su verdadera esencia.»"
+                    },
+                    {
+                        numero: 2,
+                        titulo: "Los Lotófagos – El Olvido Digital",
+                        original: "«Quienquiera que probase el fruto del loto, dulce como la miel, no quería ya traer noticias ni volver, sino quedarse allí entre los lotófagos, comiendo el loto y olvidando el regreso.»",
+                        adaptacion: "«Llegamos a la tierra de la pantalla encendida, donde los hombres consumen el fruto luminoso de las redes. Quienquiera que probaba aquel flujo infinito de sombras y destellos, perdía el deseo de estudiar y de marchar a su destino, quedando atrapado en un sopor eterno donde el tiempo se desvanecía sin gloria.»"
+                    },
+                    {
+                        numero: 3,
+                        titulo: "Polifemo – El Ojo del Juicio y el Nombre \"Nadie\"",
+                        original: "«—¡Cíclope! Si algún hombre te pregunta por la ceguera de tu ojo, dile que te lo sacó Odiseo, el asolador de ciudades, el hijo de Laertes que tiene su casa en Ítaca.»",
+                        adaptacion: "«Salvé la vida al proclamarme \"Nadie\" ante el temible monstruo del orgullo; pero al marcharme, la soberbia domó mi juicio y grité mi verdadero nombre desde la nave para presumir de mi victoria. Así desaté la furia de las olas, aprendiendo que la vanidad de querer fardar ante la clase es la trágica causa de nuestras mayores derrotas.»"
+                    },
+                    {
+                        numero: 4,
+                        titulo: "Eolo – La Gestión de nuestras Tormentas",
+                        original: "«Desataron la bolsa y todos los vientos salieron furiosos. De repente nos arrebató una tempestad que nos llevó de nuevo al alta mar, mientras llorábamos, lejos de la patria.»",
+                        adaptacion: "«Poseía el joven una vasija de cuero donde guardaba los vientos de la ira y la envidia. Mas en un instante de impaciencia, movido por el rencor, desató los nudos prohibidos. Salieron los vientos descontrolados, desencadenando un huracán de voces y disputas que alejó a sus mejores amigos de las costas de la paz.»"
+                    },
+                    {
+                        numero: 5,
+                        titulo: "Circe – No seas un animal",
+                        original: "«Circe los tocó con su varita y los encerró en las zahúrdas. Tenían la cabeza, la voz, las cerdas y el cuerpo de cerdos, pero su mente permanecía intacta como antes.»",
+                        adaptacion: "«Con su vara invisible, la pereza y el instinto salvaje tocaron a los estudiantes, convirtiéndolos en criaturas que solo buscaban el alimento fácil y el descanso sin honra. Olvidaron el respeto y el honor del aula, hasta que la razón, divina mensajera, les recordó que el ser humano no debe dejarse gobernar por los impulsos del rebaño.»"
+                    },
+                    {
+                        numero: 6,
+                        titulo: "El Hades – Consultar con la Experiencia",
+                        original: "«Llegué al lugar que me había dicho Circe y convoqué a las almas de los muertos. Vino el alma del adivino Tiresias, quien me dijo: \"Buscas un regreso dulce, glorioso Odiseo, pero un dios te lo hará difícil\".»",
+                        adaptacion: "«Descendí a las sombras de la incertidumbre para consultar a las voces sabias de mis mayores, aquellos que ya caminaron por los oscuros senderos de la juventud. Y el anciano mentor me advirtió: \"Buscas la calma en medio de la tormenta, joven caminante, pero solo escuchando la voz de los que sufrieron antes que tú evitarás tropezar con la misma piedra\".»"
+                    },
+                    {
+                        numero: 7,
+                        titulo: "Las Sirenas – El Postureo y los Algoritmos",
+                        original: "«Atadme junto al mástil con fuertes cuerdas, de modo que me mantenga firme en él [...]. Y si os suplicara o mandara que me soltarais, atadme entonces con más cuerdas todavía.»",
+                        adaptacion: "«Aparecieron las sirenas del postureo, cantando dulces melodías que prometían la belleza perfecta y la gloria instantánea a cambio de la libertad. Pero me até firmemente al mástil de mis valores y mi familia, rogando a mis compañeros que no me soltasen aunque el deseo de encajar suplicara la rendición.»"
+                    },
+                    {
+                        numero: 8,
+                        titulo: "Escila y Caribdis – Entre la espada y la pared",
+                        original: "«Por un lado estaba Escila y por el otro la divina Caribdis tragaba con furia el agua salada del mar. El temor se apoderó de nosotros y la pálida angustia nos dominó.»",
+                        adaptacion: "«A un lado amenazaba el abismo de traicionar la verdad y al otro, el monstruo del aislamiento y el rechazo del grupo. Atravesé el estrecho paso con el corazón encogido por el temor, comprendiendo que hay dilemas donde no existe el camino fácil, y solo la brújula del honor dicta el rumbo correcto.»"
+                    },
+                    {
+                        numero: 9,
+                        titulo: "Ítaca y el Olivo – El Centro Encontrado",
+                        original: "«Hay un olivo de largas hojas en el patio, firme y floreciente, grueso como una columna. Alrededor de él edifiqué mi habitación [...]. Ningún hombre mortal podría moverlo de su sitio.»",
+                        adaptacion: "«Erigí mi templo sobre el tronco inamovible de mi propia identidad, una raíz profunda que ningún viento ni burla ajena puede arrancar de la tierra. Tras un largo viaje entre monstruos y espejismos, alcancé mi centro: la certeza de saber quién soy cuando las luces se apagan y la marea se calma.»"
+                    }
+                ],
+
+                sesiones: [
+                    {
+                        numero: 1,
+                        titulo: "El Lanzamiento – De Troya a la Espiral",
+                        simboloResumen: "Borde Exterior",
+                        contenido: "Fin de la guerra (ruido externo) e inicio del viaje. Diferencia entre avanzar en línea recta o profundizar en espiral.",
+                        actividad: "Dibujan una gran espiral en cartulina. En el borde exterior escriben: 'LO QUE OTROS VEN DE MÍ'.",
+                        simbolismo: "Reto 13 años: Identificar qué imagen proyectan en clase o redes que no es 100% real."
+                    },
+                    {
+                        numero: 2,
+                        titulo: "Los Lotófagos – El Olvido Digital",
+                        simboloResumen: "Pétalo de Loto",
+                        contenido: "Consumo de la flor del loto que sumerge en el placer pasivo y hace olvidar el hogar.",
+                        actividad: "Reflexión sobre 'apps-loto' (TikTok, Reels). Añaden un pétalo donde confiesan qué les hace perder el tiempo.",
+                        simbolismo: "El loto representa la desconexión de la realidad y la evasión constante."
+                    },
+                    {
+                        numero: 3,
+                        titulo: "Polifemo – El Ojo del Juicio y 'Nadie'",
+                        simboloResumen: "El Ojo",
+                        contenido: "Cíclope y el error de Odiseo al gritar su nombre por orgullo, desatando la furia de Poseidón.",
+                        actividad: "Dibujan un gran ojo e identifican ante quién intentan fardar o llevar la razón siempre.",
+                        simbolismo: "El ego que nos ciega e impide medir las consecuencias de querer destacar."
+                    },
+                    {
+                        numero: 4,
+                        titulo: "Eolo – La Gestión de nuestras Tormentas",
+                        simboloResumen: "Bolsa de Vientos",
+                        contenido: "Bolsa de vientos abierta por envidia y curiosidad, desatando una tormenta que los aleja.",
+                        actividad: "Identifican sus 'vientos' (ira, envidia) y crean una bolsa en la espiral con estrategias de autocontrol.",
+                        simbolismo: "La necesidad de autorregulación emocional frente al impulso destructivo."
+                    },
+                    {
+                        numero: 5,
+                        titulo: "Circe – No seas un animal",
+                        simboloResumen: "Instintos",
+                        contenido: "Bruja que convierte a hombres en cerdos sacando a la luz sus instintos primarios.",
+                        actividad: "Análisis de impulsos (pereza, apetito) y comportamientos destructivos vistos en el colegio.",
+                        simbolismo: "La dignidad y la ética humana frente a la dejadez y el comportamiento de la masa."
+                    },
+                    {
+                        numero: 6,
+                        titulo: "El Hades – Consultar con la Experiencia",
+                        simboloResumen: "Sombra Oscura",
+                        contenido: "Viaje a los infiernos para hablar con las sombras y recibir los consejos del sabio Tiresias.",
+                        actividad: "Entrevista simbólica a un referente (abuelo, mentor) para añadir un consejo en la zona oscura.",
+                        simbolismo: "Aprender de la experiencia de los mayores para no repetir los mismos errores."
+                    },
+                    {
+                        numero: 7,
+                        titulo: "Las Sirenas – El Postureo y los Algoritmos",
+                        simboloResumen: "Cuerdas del Mástil",
+                        contenido: "Canto tentador que promete validación y gloria, pero lleva a la destrucción.",
+                        actividad: "Identifican sirenas modernas (influencers, estándares) y se atan al mástil con cuerdas de valores reales.",
+                        simbolismo: "Resistencia a la validación externa y la búsqueda desesperada de aprobación."
+                    },
+                    {
+                        numero: 8,
+                        titulo: "Escila y Caribdis – Entre la Espada y la Pared",
+                        simboloResumen: "Encrucijada",
+                        contenido: "Elección forzada entre dos males al navegar por un paso estrecho.",
+                        actividad: "Planteamiento de dilemas morales reales del colegio (ej. denunciar acoso o callar).",
+                        simbolismo: "La madurez para asumir la responsabilidad en la toma de decisiones difíciles."
+                    },
+                    {
+                        numero: 9,
+                        titulo: "Ítaca y el Olivo – El Centro Encontrado",
+                        simboloResumen: "Raíz de Olivo",
+                        contenido: "Regreso a casa y la prueba definitiva: el lecho nupcial tallado sobre un olivo inamovible.",
+                        actividad: "Centro físico de la espiral con un símbolo de su raíz (familia, valor). Cuelgan el móvil 3D.",
+                        simbolismo: "La identidad consolidada y el autoconocimiento maduro."
+                    }
+                ],
+
+                ganchos: [
+                    {
+                        id: 1,
+                        titulo: "La Notificación Fatídica",
+                        categoria: "Despertar Curiosidad",
+                        badgeColor: "bg-emerald-100 text-emerald-800",
+                        materiales: "Teléfono móvil / alarma fuerte.",
+                        instrucciones: "Haz sonar una notificación insistente tras pedirles que imaginen una misión importante. Pregunta cuántos sintieron el impulso de mirar.",
+                        conexionMito: "Conecta la tentación de mirar la pantalla con los lotófagos y las distracciones."
+                    },
+                    {
+                        id: 2,
+                        titulo: "El Ídolo de Arena",
+                        categoria: "Pregunta para Reflexionar",
+                        badgeColor: "bg-blue-100 text-blue-800",
+                        materiales: "Pizarra y rotuladores.",
+                        instrucciones: "Escribe: '¿Qué queda de ti si mañana desaparecen tus seguidores y tus notas?'. Reflexión en silencio.",
+                        conexionMito: "Conecta con Odiseo pasando de ser 'Héroe de Troya' a ser 'Nadie'."
+                    },
+                    {
+                        id: 3,
+                        titulo: "Navegando entre 'Likes'",
+                        categoria: "Conexiones Personales",
+                        badgeColor: "bg-purple-100 text-purple-800",
+                        materiales: "Post-its de dos colores.",
+                        instrucciones: "En un color anotan un halago de redes (Sirenas) y en el otro aquello que les mantiene en la tierra (su Olivo).",
+                        conexionMito: "Superación de la vanidad y apego a los valores verdaderos."
+                    },
+                    {
+                        id: 4,
+                        titulo: "El Desafío de la Invisible",
+                        categoria: "Resolución de Problemas",
+                        badgeColor: "bg-amber-100 text-amber-800",
+                        materiales: "Venda para los ojos.",
+                        instrucciones: "Un alumno cruza el aula a ciegas siguiendo susurros mientras la clase intenta distraerlo.",
+                        conexionMito: "Ilustra el filtrado del ruido frente a las tentaciones masivas."
+                    },
+                    {
+                        id: 5,
+                        titulo: "Avatar: El Viaje del Héroe",
+                        categoria: "Gamificación",
+                        badgeColor: "bg-indigo-100 text-indigo-800",
+                        materiales: "Proyector o imagen de personaje.",
+                        instrucciones: "Muestra a Odiseo con 'Ego' al máximo y 'Sabiduría' al mínimo. Deben adivinar qué monstruos reducen soberbia.",
+                        conexionMito: "El viaje interior como un sistema de progresión y subida de nivel."
+                    },
+                    {
+                        id: 6,
+                        titulo: "El Test de la Identidad",
+                        categoria: "Evaluar Comprensión",
+                        badgeColor: "bg-rose-100 text-rose-800",
+                        materiales: "Hojas de papel en blanco.",
+                        instrucciones: "Dibujan una espiral: fuera escriben lo que hacen para impresionar; en el centro, una sola palabra que los defina al estar a solas.",
+                        conexionMito: "Pasar de la proyección exterior (Troya) a la esencia interior (Ítaca)."
+                    }
+                ]
+            }
+        }
+    </script>
+</body>
+</html>
