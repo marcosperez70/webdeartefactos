@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Expresión Gráfica 2º ESO - Vistas Diédricas 5×5×5</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#0f172a}
+body{font-family:'Inter',system-ui,sans-serif;background-color:#0f172a;color:#f8fafc;overflow-x:hidden}
+.font-mono-tech{font-family:'JetBrains Mono',ui-monospace,monospace}
+.tech-blueprint-bg{background-color:#0f172a;background-image:linear-gradient(rgba(56,189,248,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.07) 1px,transparent 1px);background-size:24px 24px}
+.grid-cell{transition:all .15s cubic-bezier(.4,0,.2,1);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.grid-cell:hover{transform:scale(.96)}
+.grid-cell.active-alzado{background-color:#ef4444;box-shadow:inset 0 0 8px rgba(0,0,0,.3),0 0 10px rgba(239,68,68,.4);border-color:#fca5a5}
+.grid-cell.active-planta{background-color:#10b981;box-shadow:inset 0 0 8px rgba(0,0,0,.3),0 0 10px rgba(16,185,129,.4);border-color:#6ee7b7}
+.grid-cell.active-perfil{background-color:#3b82f6;box-shadow:inset 0 0 8px rgba(0,0,0,.3),0 0 10px rgba(59,130,246,.4);border-color:#93c5fd}
+.cell-error{animation:shake .4s ease-in-out;outline:3px solid #f59e0b;z-index:10}
+.cell-missing{background-image:repeating-linear-gradient(45deg,rgba(245,158,11,.15),rgba(245,158,11,.15) 6px,rgba(245,158,11,.35) 6px,rgba(245,158,11,.35) 12px);border-color:#f59e0b!important}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:#1e293b}::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
+</style>
+</head>
+<body class="tech-blueprint-bg min-h-screen flex flex-col">
+
+<header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-700/80 sticky z-30 px-4 py-3 shadow-lg" style="top:env(safe-area-inset-top,0px)">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 border border-sky-400/30">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-full">Proyecto STEAM</span>
+          <span class="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full">2º ESO Tecnología</span>
+        </div>
+        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white flex items-center gap-2 mt-0.5">
+          <span>Expresión Gráfica: Vistas Diédricas 5×5×5</span>
+        </h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-1.5 flex items-center gap-2.5">
+        <div class="text-xs text-slate-400 font-medium">Piezas Superadas:</div>
+        <div class="flex items-center gap-1">
+          <span id="completedCount" class="font-mono-tech text-base font-bold text-emerald-400">0</span>
+          <span class="text-slate-500 text-xs">/ 20</span>
+        </div>
+      </div>
+      <button id="btnTheory" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-sm">
+        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Guía Diédrica</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="bg-slate-900/60 border-b border-slate-800 px-4 py-3">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">Dificultad:</span>
+      <button data-filter="all" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-500 text-white shadow-sm transition whitespace-nowrap">Todas (20)</button>
+      <button data-filter="1" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-emerald-400 hover:bg-slate-700 border border-slate-700 transition whitespace-nowrap">Nivel 1: Inicial (1-5)</button>
+      <button data-filter="2" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-sky-400 hover:bg-slate-700 border border-slate-700 transition whitespace-nowrap">Nivel 2: Básico (6-10)</button>
+      <button data-filter="3" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-amber-400 hover:bg-slate-700 border border-slate-700 transition whitespace-nowrap">Nivel 3: Intermedio (11-15)</button>
+      <button data-filter="4" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-rose-400 hover:bg-slate-700 border border-slate-700 transition whitespace-nowrap">Nivel 4: Avanzado (16-20)</button>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btnPrevShape" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition" title="Pieza anterior">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <select id="shapeSelector" class="bg-slate-800 border border-slate-600 text-white text-xs sm:text-sm font-semibold rounded-lg px-3 py-2 focus:outline-none focus:border-sky-400 flex-1 md:w-72"></select>
+      <button id="btnNextShape" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition" title="Siguiente pieza">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+  <!-- VISOR 3D -->
+  <div class="lg:col-span-6 flex flex-col bg-slate-900/90 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-800/50">
+      <div>
+        <div class="flex items-center gap-2">
+          <span id="badgeDifficulty" class="px-2.5 py-0.5 text-[11px] font-bold rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">NIVEL 1 - FÁCIL</span>
+          <span id="badgeStatus" class="hidden px-2.5 py-0.5 text-[11px] font-bold rounded-md bg-emerald-500 text-slate-950">✓ COMPLETADA</span>
+        </div>
+        <h2 id="shapeTitle" class="text-base sm:text-lg font-bold text-white mt-1">Pieza #1</h2>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <label class="flex items-center gap-2 text-xs font-medium text-slate-300 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer select-none">
+          <input type="checkbox" id="toggleColorFaces" checked class="rounded text-sky-500 focus:ring-0 bg-slate-900 border-slate-600">
+          <span>Colorear Caras según Vista</span>
+        </label>
+        <label class="flex items-center gap-2 text-xs font-medium text-slate-300 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer select-none">
+          <input type="checkbox" id="toggleBoundingCube" checked class="rounded text-sky-500 focus:ring-0 bg-slate-900 border-slate-600">
+          <span>Jaula 5×5×5</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="relative w-full h-[360px] sm:h-[420px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <div id="canvas3DContainer" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+      <div class="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md border border-slate-700/80 rounded-xl p-2.5 text-xs space-y-1.5 pointer-events-none shadow-lg">
+        <div class="font-bold text-slate-300 text-[11px] uppercase tracking-wider mb-1">Colores de Proyección:</div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-red-500 inline-block"></span><span class="text-slate-200 font-medium">Alzado (Vista Frontal)</span></div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-emerald-500 inline-block"></span><span class="text-slate-200 font-medium">Planta (Vista Superior)</span></div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-blue-500 inline-block"></span><span class="text-slate-200 font-medium">Perfil Izquierdo (Lateral)</span></div>
+      </div>
+      <div class="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs font-mono-tech text-slate-300 pointer-events-none">
+        Volumen: <span id="voxelCountDisplay" class="text-sky-400 font-bold">0</span> / 125 uds³
+      </div>
+    </div>
+
+    <div class="p-3 bg-slate-800/70 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+      <span class="text-xs font-semibold text-slate-400">Previsualizar cámara en:</span>
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button id="camIso" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold transition shadow">🎲 Isométrica 3D</button>
+        <button id="camAlzado" class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-xs font-semibold transition">🔴 Ver Alzado</button>
+        <button id="camPlanta" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition">🟢 Ver Planta</button>
+        <button id="camPerfil" class="px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 text-xs font-semibold transition">🔵 Ver Perfil Izq.</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LÁMINA -->
+  <div class="lg:col-span-6 flex flex-col bg-slate-900/90 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-800/50">
+      <div>
+        <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400">Sistema Europeo (1er Diedro)</span>
+        <h2 class="text-base sm:text-lg font-bold text-white">Lámina de Vistas Ortogonales (5×5)</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnClearGrids" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 text-xs font-semibold transition">🗑 Borrar Todo</button>
+        <button id="btnShowSolution" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold transition">👁 Autocompletar</button>
+      </div>
+    </div>
+
+    <div class="p-4 sm:p-6 bg-slate-950/60 flex-1 flex flex-col justify-center">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg mx-auto w-full relative">
+
+        <div class="bg-slate-900/90 border-2 border-red-500/40 rounded-xl p-3 flex flex-col items-center shadow-lg">
+          <div class="w-full flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-red-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> ALZADO</span>
+            <span id="scoreAlzado" class="text-[11px] font-mono-tech text-slate-400">Frente (X, Y)</span>
+          </div>
+          <div id="gridAlzado" class="grid grid-cols-5 gap-1 w-full aspect-square max-w-[190px] bg-slate-800 p-1.5 rounded-lg border border-slate-700"></div>
+        </div>
+
+        <div class="bg-slate-900/90 border-2 border-blue-500/40 rounded-xl p-3 flex flex-col items-center shadow-lg">
+          <div class="w-full flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-blue-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> PERFIL IZQ.</span>
+            <span id="scorePerfil" class="text-[11px] font-mono-tech text-slate-400">Lateral (Z, Y)</span>
+          </div>
+          <div id="gridPerfil" class="grid grid-cols-5 gap-1 w-full aspect-square max-w-[190px] bg-slate-800 p-1.5 rounded-lg border border-slate-700"></div>
+        </div>
+
+        <div class="bg-slate-900/90 border-2 border-emerald-500/40 rounded-xl p-3 flex flex-col items-center shadow-lg">
+          <div class="w-full flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> PLANTA</span>
+            <span id="scorePlanta" class="text-[11px] font-mono-tech text-slate-400">Superior (X, Z)</span>
+          </div>
+          <div id="gridPlanta" class="grid grid-cols-5 gap-1 w-full aspect-square max-w-[190px] bg-slate-800 p-1.5 rounded-lg border border-slate-700"></div>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between text-xs text-slate-300">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-2">
+              <span class="font-bold text-sky-400 uppercase tracking-wider text-[11px]">Cajetín Técnico</span>
+              <span class="font-mono-tech text-[10px] text-slate-400">ESC 1:1</span>
+            </div>
+            <p id="shapeHint" class="text-slate-300 text-xs leading-relaxed mb-3">Haz clic o arrastra sobre las cuadrículas de 5×5 para iluminar los cuadros que se ven desde cada posición.</p>
+          </div>
+          <div class="space-y-1.5 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 font-mono-tech text-[11px]">
+            <div class="flex justify-between"><span class="text-red-400">Alzado:</span><span id="statAlzado" class="text-slate-400">Pendiente</span></div>
+            <div class="flex justify-between"><span class="text-emerald-400">Planta:</span><span id="statPlanta" class="text-slate-400">Pendiente</span></div>
+            <div class="flex justify-between"><span class="text-blue-400">Perfil:</span><span id="statPerfil" class="text-slate-400">Pendiente</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="feedbackBanner" class="mt-5 p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs sm:text-sm text-slate-200 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span id="feedbackIcon" class="text-lg">✏️</span>
+          <span id="feedbackText">Dibuja el Alzado, la Planta y el Perfil Izquierdo y pulsa en <strong>Comprobar Vistas</strong>.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 bg-slate-800/80 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <button id="btnHintCells" class="px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs sm:text-sm font-semibold transition">💡 Pista Visual (Resaltar fallos)</button>
+      <button id="btnVerify" class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/25 transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>Comprobar Vistas</span>
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL TEORÍA -->
+<div id="modalTheory" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div>
+        <span class="text-xs font-bold uppercase text-sky-400">Proyecto STEAM · 2º ESO</span>
+        <h3 class="text-lg font-extrabold text-white">Guía Rápida: Vistas de un Objeto (Sistema Europeo)</h3>
+      </div>
+      <button id="btnCloseTheory" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+      <p>En <strong>Expresión Gráfica</strong> representamos objetos tridimensionales (3D) sobre un papel en dos dimensiones (2D) mediante sus <strong>vistas ortogonales</strong>:</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div class="p-3 rounded-xl bg-red-500/10 border border-red-500/30">
+          <div class="font-bold text-red-400 mb-1">🔴 1. ALZADO</div>
+          <p class="text-xs text-slate-300">Es la vista principal mirando la pieza <strong>de frente</strong>. Nos indica la anchura (eje X) y la altura (eje Y). Se dibuja arriba a la izquierda.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+          <div class="font-bold text-emerald-400 mb-1">🟢 2. PLANTA</div>
+          <p class="text-xs text-slate-300">Es lo que vemos al mirar la pieza <strong>desde arriba</strong>. Se coloca justo <strong>debajo del Alzado</strong> y coincide en anchura con él.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30">
+          <div class="font-bold text-blue-400 mb-1">🔵 3. PERFIL IZQUIERDO</div>
+          <p class="text-xs text-slate-300">Es la vista desde la <strong>izquierda</strong> de la pieza. En el Sistema Europeo se dibuja a la <strong>derecha del Alzado</strong> y coincide en altura con él.</p>
+        </div>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs space-y-1">
+        <div class="font-bold text-sky-300">💡 Regla de Oro de Correspondencia (2º ESO):</div>
+        <ul class="list-disc list-inside space-y-1 text-slate-300">
+          <li>El <strong>Alzado</strong> y la <strong>Planta</strong> tienen siempre la misma <strong>anchura</strong> (columnas alineadas).</li>
+          <li>El <strong>Alzado</strong> y el <strong>Perfil</strong> tienen siempre la misma <strong>altura</strong> (filas alineadas).</li>
+          <li>Aunque un cubo esté más atrás o más abajo, en la vista ortogonal se proyecta como un cuadrado plano.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pt-2 flex justify-end">
+      <button id="btnCloseTheoryBottom" class="px-5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs sm:text-sm transition">¡Entendido, a dibujar!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Catálogo de 20 piezas en cubo 5x5x5. Coordenadas (x,y,z) de 0 a 4:
+   x: izquierda→derecha, y: suelo→techo, z: fondo→frente */
+function createCatalog() {
+  const shapes = [];
+  function box(x1,y1,z1,x2,y2,z2){const c=[];for(let x=x1;x<=x2;x++)for(let y=y1;y<=y2;y++)for(let z=z1;z<=z2;z++)c.push([x,y,z]);return c;}
+  function merge(...boxes){const m=new Map();boxes.flat().forEach(([x,y,z])=>m.set(`${x},${y},${z}`,[x,y,z]));return Array.from(m.values());}
+  const L={1:"Nivel 1 · Inicial",2:"Nivel 2 · Básico",3:"Nivel 3 · Intermedio",4:"Nivel 4 · Avanzado"};
+  const add=(id,name,level,hint,voxels)=>shapes.push({id,name,level,levelName:L[level],hint,voxels});
+
+  add(1,"Prisma y Torre Central",1,"Observa cómo la base ocupa 3×3 en el centro y la columna sube hasta la altura 4.",
+    merge(box(1,0,1,3,0,3),box(2,1,2,2,3,2)));
+  add(2,"Escuadra en L Clásica",1,"Una pieza en forma de L apoyada en la pared izquierda. Ocupa las 5 unidades de ancho y alto.",
+    merge(box(0,0,1,4,0,3),box(0,1,1,0,4,3)));
+  add(3,"Podio Simétrico en T",1,"Vista de frente parece un podio olímpico o una T invertida de 5 unidades de ancho.",
+    merge(box(0,0,1,4,0,3),box(1,1,1,3,1,3),box(2,2,1,2,3,3)));
+  add(4,"Silla Geométrica",1,"Tiene respaldo al fondo (z=0), asiento intermedio y patas delanteras.",
+    merge(box(1,0,0,3,4,0),box(1,0,1,3,1,3)));
+  add(5,"Canal en U Simétrico",1,"Dos torres laterales unidas por una base de 5 unidades. De frente verás una U.",
+    merge(box(0,0,1,4,0,3),box(0,1,1,0,3,3),box(4,1,1,4,3,3)));
+
+  add(6,"Escalera de 5 Peldaños",2,"Baja de izquierda a derecha ocupando las 5 alturas del cubo 5×5×5.",
+    merge(box(0,0,1,0,4,3),box(1,0,1,1,3,3),box(2,0,1,2,2,3),box(3,0,1,3,1,3),box(4,0,1,4,0,3)));
+  add(7,"Rincón Tridimensional (Triedro)",2,"Tres planos perpendiculares: suelo completo, pared izquierda y pared del fondo.",
+    merge(box(0,0,0,4,0,4),box(0,1,0,0,4,4),box(1,1,0,4,4,0)));
+  add(8,"Puente Monumental",2,"Dos pilares en los extremos con un dintel superior que deja un hueco central.",
+    merge(box(0,0,1,1,3,3),box(3,0,1,4,3,3),box(0,3,1,4,4,3)));
+  add(9,"Cruz Griega Tridimensional",2,"Desde la Planta se ve una cruz perfecta de 5×5 con un núcleo central más elevado.",
+    merge(box(2,0,0,2,1,4),box(0,0,2,4,1,2),box(2,2,2,2,4,2)));
+  add(10,"Escuadra Doble Asimétrica",2,"Fíjate bien en cómo cambia la profundidad entre el lado izquierdo y el derecho.",
+    merge(box(0,0,0,4,0,4),box(0,1,0,1,4,1),box(3,1,0,4,2,1)));
+
+  add(11,"Pirámide Escalonada 5×5",3,"Tres niveles concéntricos: base de 5×5, segundo piso de 3×3 y cima de 1×1.",
+    merge(box(0,0,0,4,0,4),box(1,1,1,3,2,3),box(2,3,2,2,4,2)));
+  add(12,"Grúa Voladiza",3,"Una columna sube en la esquina trasera izquierda y proyecta dos brazos en altura.",
+    merge(box(0,0,0,2,0,2),box(0,1,0,0,4,0),box(1,4,0,4,4,0),box(0,4,1,0,4,3)));
+  add(13,"Zig-Zag Espacial (Pieza Z)",3,"Combina tramos horizontales y verticales desplazados en profundidad.",
+    merge(box(0,3,0,2,4,1),box(2,1,0,2,3,3),box(2,0,2,4,1,4)));
+  add(14,"Bunker con Ventana Central",3,"Un marco vertical completo de 5×5 con el centro hueco de 3×3 y base de apoyo.",
+    merge(box(0,0,1,4,0,3),box(0,4,1,4,4,2),box(0,1,1,0,3,2),box(4,1,1,4,3,2)));
+  add(15,"Anfiteatro Escalonado",3,"Las gradas suben hacia atrás y hacia la izquierda al mismo tiempo.",
+    merge(box(0,0,0,4,0,4),box(0,1,0,3,1,3),box(0,2,0,2,2,2),box(0,3,0,1,3,1),box(0,4,0,0,4,0)));
+
+  add(16,"Fortaleza de 4 Torres Asimétricas",4,"Cada esquina de la base 5×5 tiene una torre de distinta altura (5, 4, 3 y 2 unidades).",
+    merge(box(0,0,0,4,0,4),box(0,1,0,0,4,0),box(4,1,0,4,3,0),box(0,1,4,0,2,4),box(4,1,4,4,1,4)));
+  add(17,"Laberinto Perimetral 5×5",4,"Sigue el recorrido de los muros desde la Planta y comprueba sus alturas en el Alzado y Perfil.",
+    merge(box(0,0,0,4,3,0),box(0,0,1,0,2,4),box(1,0,4,4,1,4),box(4,0,2,4,0,3),box(2,0,2,2,4,2)));
+  add(18,"Soporte Mecánico Industrial",4,"Pieza de taller con nervio central, placa trasera ranurada y topes delanteros.",
+    merge(box(0,0,0,4,0,4),box(0,1,0,1,4,0),box(3,1,0,4,4,0),box(1,1,0,3,2,0),box(2,1,1,2,2,2),box(0,1,4,0,1,4),box(4,1,4,4,1,4)));
+  add(19,"Doble Arco Cruzado",4,"Un túnel cruza de frente a fondo y otro de izquierda a derecha con una cúpula superior.",
+    merge(box(0,0,0,1,2,1),box(3,0,0,4,2,1),box(0,0,3,1,2,4),box(3,0,3,4,2,4),box(0,3,0,4,3,4),box(1,4,1,3,4,3)));
+  add(20,"Gran Reto STEAM",4,"Pieza maestra de 2º ESO: combina voladizos en los 3 ejes dentro del cubo 5×5×5.",
+    merge(box(0,0,0,0,4,0),box(1,0,0,4,0,0),box(0,0,1,0,0,4),box(1,2,0,3,2,0),box(0,2,1,0,2,3),box(2,0,2,3,1,3),box(0,4,0,2,4,2)));
+  return shapes;
+}
+
+const SHAPES_CATALOG = createCatalog();
+let currentShapeIndex = 0, currentFilter = 'all';
+const completedShapes = new Set();
+const empty5 = () => Array.from({length:5},()=>Array(5).fill(0));
+let userAlzado = empty5(), userPlanta = empty5(), userPerfil = empty5();
+
+/* Alzado: fila 4-y, col x · Planta: fila z, col x · Perfil izq.: fila 4-y, col 4-z */
+function computeViewsSolution(voxels){
+  const alzado=empty5(), planta=empty5(), perfil=empty5();
+  voxels.forEach(([x,y,z])=>{alzado[4-y][x]=1;planta[z][x]=1;perfil[4-y][4-z]=1;});
+  return {alzado,planta,perfil};
+}
+
+let scene, camera, renderer, controls;
+const voxelGroup = new THREE.Group(), boundingBoxGroup = new THREE.Group();
+let targetCameraPos = null, targetControlsCenter = new THREE.Vector3(0,0,0);
+
+function init3DViewer(){
+  const container=document.getElementById('canvas3DContainer');
+  const w=container.clientWidth, h=container.clientHeight;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(40,w/h,0.1,1000);
+  camera.position.set(8.5,7.5,9.5);
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(w,h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  container.appendChild(renderer.domElement);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=0.08; controls.minDistance=5; controls.maxDistance=22;
+  controls.addEventListener('start',()=>{targetCameraPos=null;});
+  scene.add(new THREE.AmbientLight(0xffffff,0.72));
+  const d1=new THREE.DirectionalLight(0xffffff,0.65); d1.position.set(10,15,12); scene.add(d1);
+  const d2=new THREE.DirectionalLight(0x93c5fd,0.3); d2.position.set(-10,-8,-10); scene.add(d2);
+  scene.add(voxelGroup); scene.add(boundingBoxGroup);
+  buildReferenceCube();
+  window.addEventListener('resize',onWindowResize);
+  animate3D();
+}
+
+function buildReferenceCube(){
+  boundingBoxGroup.clear();
+  const edges=new THREE.EdgesGeometry(new THREE.BoxGeometry(5,5,5));
+  boundingBoxGroup.add(new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color:0x475569,transparent:true,opacity:0.65})));
+  const grid=new THREE.GridHelper(5,5,0x38bdf8,0x334155); grid.position.y=-2.505; boundingBoxGroup.add(grid);
+  const arrow=(dir,origin,color)=>boundingBoxGroup.add(new THREE.ArrowHelper(dir,origin,1.1,color,0.35,0.25));
+  arrow(new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,4.1),0xef4444);
+  arrow(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,4.1,0),0x10b981);
+  arrow(new THREE.Vector3(1,0,0),new THREE.Vector3(-4.1,0,0),0x3b82f6);
+}
+
+function renderCurrent3DShape(){
+  voxelGroup.clear();
+  const shape=SHAPES_CATALOG[currentShapeIndex];
+  const colored=document.getElementById('toggleColorFaces').checked;
+  const mats=[0x64748b,0x3b82f6,0x10b981,0x475569,0xef4444,0x64748b].map(c=>new THREE.MeshLambertMaterial({color:c}));
+  const solid=new THREE.MeshStandardMaterial({color:0x38bdf8,roughness:0.35,metalness:0.1});
+  const unitGeo=new THREE.BoxGeometry(0.98,0.98,0.98);
+  const edgeGeo=new THREE.EdgesGeometry(new THREE.BoxGeometry(0.985,0.985,0.985));
+  const edgeMat=new THREE.LineBasicMaterial({color:0x0f172a});
+  shape.voxels.forEach(([x,y,z])=>{
+    const mesh=new THREE.Mesh(unitGeo,colored?mats:solid);
+    mesh.position.set(x-2,y-2,z-2);
+    mesh.add(new THREE.LineSegments(edgeGeo,edgeMat));
+    voxelGroup.add(mesh);
+  });
+  document.getElementById('voxelCountDisplay').textContent=shape.voxels.length;
+}
+
+function onWindowResize(){
+  const c=document.getElementById('canvas3DContainer');
+  if(!c||!renderer)return;
+  camera.aspect=c.clientWidth/c.clientHeight; camera.updateProjectionMatrix();
+  renderer.setSize(c.clientWidth,c.clientHeight);
+}
+
+function animate3D(){
+  requestAnimationFrame(animate3D);
+  if(targetCameraPos){
+    camera.position.lerp(targetCameraPos,0.12);
+    controls.target.lerp(targetControlsCenter,0.12);
+    if(camera.position.distanceTo(targetCameraPos)<0.05){camera.position.copy(targetCameraPos);targetCameraPos=null;}
+  }
+  controls.update();
+  renderer.render(scene,camera);
+}
+
+function moveCameraTo(x,y,z){targetCameraPos=new THREE.Vector3(x,y,z);targetControlsCenter=new THREE.Vector3(0,0,0);}
+
+let isMouseDown=false, paintValue=1;
+window.addEventListener('mouseup',()=>{isMouseDown=false;});
+
+function getMatrix(view){return view==='alzado'?userAlzado:view==='planta'?userPlanta:userPerfil;}
+const ACTIVE={alzado:'active-alzado',planta:'active-planta',perfil:'active-perfil'};
+
+function createInteractiveGrid(containerId,viewType){
+  const container=document.getElementById(containerId);
+  container.innerHTML='';
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){
+    const cell=document.createElement('button');
+    cell.type='button';
+    cell.dataset.row=r; cell.dataset.col=c; cell.dataset.view=viewType;
+    cell.className='grid-cell w-full aspect-square rounded-md bg-slate-900 border border-slate-700/80 focus:outline-none';
+    const apply=(val)=>{
+      clearCellHints();
+      const m=getMatrix(viewType);
+      m[r][c]=val;
+      cell.classList.toggle(ACTIVE[viewType],val===1);
+      updateLiveCounters();
+    };
+    cell.addEventListener('mousedown',e=>{
+      e.preventDefault(); isMouseDown=true;
+      paintValue=getMatrix(viewType)[r][c]===1?0:1;
+      apply(paintValue);
+    });
+    cell.addEventListener('mouseenter',()=>{if(isMouseDown)apply(paintValue);});
+    container.appendChild(cell);
+  }
+}
+
+function refreshGridDOM(){
+  const sync=(id,view)=>{
+    const m=getMatrix(view);
+    document.getElementById(id).querySelectorAll('.grid-cell').forEach(cell=>{
+      const r=+cell.dataset.row, c=+cell.dataset.col;
+      cell.classList.remove('cell-error','cell-missing');
+      cell.classList.toggle(ACTIVE[view],m[r][c]===1);
+    });
+  };
+  sync('gridAlzado','alzado'); sync('gridPlanta','planta'); sync('gridPerfil','perfil');
+  updateLiveCounters();
+}
+
+function clearCellHints(){document.querySelectorAll('.grid-cell').forEach(c=>c.classList.remove('cell-error','cell-missing'));}
+const countOnes=m=>m.flat().reduce((a,v)=>a+v,0);
+
+function updateLiveCounters(){
+  const sol=computeViewsSolution(SHAPES_CATALOG[currentShapeIndex].voxels);
+  document.getElementById('scoreAlzado').textContent=`${countOnes(userAlzado)} / ${countOnes(sol.alzado)} cuadros`;
+  document.getElementById('scorePlanta').textContent=`${countOnes(userPlanta)} / ${countOnes(sol.planta)} cuadros`;
+  document.getElementById('scorePerfil').textContent=`${countOnes(userPerfil)} / ${countOnes(sol.perfil)} cuadros`;
+}
+
+function compareMatrix(u,s){
+  let extra=0,missing=0;
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){
+    if(u[r][c]===1&&s[r][c]===0)extra++;
+    if(u[r][c]===0&&s[r][c]===1)missing++;
+  }
+  return {isCorrect:extra===0&&missing===0,extra,missing};
+}
+
+function highlightGridDifferences(id,u,s){
+  document.getElementById(id).querySelectorAll('.grid-cell').forEach(cell=>{
+    const r=+cell.dataset.row, c=+cell.dataset.col;
+    if(u[r][c]===1&&s[r][c]===0)cell.classList.add('cell-error');
+    else if(u[r][c]===0&&s[r][c]===1)cell.classList.add('cell-missing');
+  });
+}
+
+function verifyAllViews(showHighlights=false){
+  clearCellHints();
+  const shape=SHAPES_CATALOG[currentShapeIndex];
+  const sol=computeViewsSolution(shape.voxels);
+  const rA=compareMatrix(userAlzado,sol.alzado), rP=compareMatrix(userPlanta,sol.planta), rF=compareMatrix(userPerfil,sol.perfil);
+  const fmt=(res,id)=>{
+    const el=document.getElementById(id);
+    if(res.isCorrect){el.textContent='✓ Correcto';el.className='text-emerald-400 font-bold';}
+    else{el.textContent=`Faltan ${res.missing} · Sobran ${res.extra}`;el.className='text-amber-400 font-semibold';}
+  };
+  fmt(rA,'statAlzado'); fmt(rP,'statPlanta'); fmt(rF,'statPerfil');
+  if(showHighlights){
+    highlightGridDifferences('gridAlzado',userAlzado,sol.alzado);
+    highlightGridDifferences('gridPlanta',userPlanta,sol.planta);
+    highlightGridDifferences('gridPerfil',userPerfil,sol.perfil);
+  }
+  const banner=document.getElementById('feedbackBanner'), icon=document.getElementById('feedbackIcon'), text=document.getElementById('feedbackText');
+  if(rA.isCorrect&&rP.isCorrect&&rF.isCorrect){
+    completedShapes.add(shape.id);
+    updateProgressHeader();
+    banner.className='mt-5 p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-xs sm:text-sm text-emerald-200 flex items-center justify-between gap-3';
+    icon.textContent='🏆';
+    text.innerHTML=`<strong>¡Excelente trabajo de Expresión Gráfica!</strong> Has resuelto correctamente el Alzado, la Planta y el Perfil Izquierdo de la <em>Pieza #${shape.id}</em>.`;
+    populateShapeSelector();
+  } else {
+    banner.className='mt-5 p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-xs sm:text-sm text-amber-200 flex items-center justify-between gap-3';
+    icon.textContent='🔍';
+    text.innerHTML='Revisa las vistas marcadas. Puedes usar los botones <strong>Ver Alzado / Planta / Perfil</strong> bajo la figura 3D o pulsar en <strong>Pista Visual</strong>.';
+  }
+}
+
+function loadShape(index){
+  currentShapeIndex=index;
+  const shape=SHAPES_CATALOG[index];
+  userAlzado=empty5(); userPlanta=empty5(); userPerfil=empty5();
+  refreshGridDOM();
+  document.getElementById('shapeTitle').textContent=`Pieza #${shape.id}: ${shape.name}`;
+  document.getElementById('shapeHint').textContent=shape.hint;
+  const badge=document.getElementById('badgeDifficulty');
+  badge.textContent=shape.levelName.toUpperCase();
+  const styles={1:'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',2:'bg-sky-500/20 text-sky-300 border-sky-500/30',3:'bg-amber-500/20 text-amber-300 border-amber-500/30',4:'bg-rose-500/20 text-rose-300 border-rose-500/30'};
+  badge.className=`px-2.5 py-0.5 text-[11px] font-bold rounded-md border ${styles[shape.level]}`;
+  updateProgressHeader();
+  ['statAlzado','statPlanta','statPerfil'].forEach(id=>{const el=document.getElementById(id);el.textContent='Pendiente';el.className='text-slate-400';});
+  document.getElementById('feedbackBanner').className='mt-5 p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs sm:text-sm text-slate-200 flex items-center justify-between gap-3';
+  document.getElementById('feedbackIcon').textContent='✏️';
+  document.getElementById('feedbackText').innerHTML='Dibuja el Alzado, la Planta y el Perfil Izquierdo y pulsa en <strong>Comprobar Vistas</strong>.';
+  document.getElementById('shapeSelector').value=index;
+  renderCurrent3DShape();
+  moveCameraTo(8.5,7.5,9.5);
+}
+
+function updateProgressHeader(){
+  document.getElementById('completedCount').textContent=completedShapes.size;
+  const done=completedShapes.has(SHAPES_CATALOG[currentShapeIndex].id);
+  document.getElementById('badgeStatus').classList.toggle('hidden',!done);
+}
+
+function populateShapeSelector(){
+  const sel=document.getElementById('shapeSelector');
+  sel.innerHTML='';
+  SHAPES_CATALOG.forEach((shape,idx)=>{
+    if(currentFilter!=='all'&&String(shape.level)!==String(currentFilter))return;
+    const opt=document.createElement('option');
+    opt.value=idx;
+    opt.textContent=`${completedShapes.has(shape.id)?'✓ ':''}Pieza #${shape.id}: ${shape.name} (${shape.levelName})`;
+    if(idx===currentShapeIndex)opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+function updateFilterButtonsUI(){
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    const on=btn.dataset.filter===currentFilter;
+    btn.classList.toggle('bg-sky-500',on); btn.classList.toggle('text-white',on); btn.classList.toggle('bg-slate-800',!on);
+  });
+}
+
+function setupEventListeners(){
+  createInteractiveGrid('gridAlzado','alzado');
+  createInteractiveGrid('gridPlanta','planta');
+  createInteractiveGrid('gridPerfil','perfil');
+
+  // Pintar arrastrando con el dedo en pantallas táctiles
+  ['gridAlzado','gridPlanta','gridPerfil'].forEach(id=>{
+    const g=document.getElementById(id);
+    let last=null, val=1;
+    g.addEventListener('touchstart',e=>{
+      const t=e.touches[0], el=document.elementFromPoint(t.clientX,t.clientY);
+      if(el&&el.classList.contains('grid-cell')){val=getMatrix(el.dataset.view)[+el.dataset.row][+el.dataset.col]===1?0:1;}
+      last=null;
+    },{passive:true});
+    g.addEventListener('touchmove',e=>{
+      e.preventDefault();
+      const t=e.touches[0], el=document.elementFromPoint(t.clientX,t.clientY);
+      if(!el||!el.classList.contains('grid-cell')||el===last)return;
+      last=el;
+      const m=getMatrix(el.dataset.view), r=+el.dataset.row, c=+el.dataset.col;
+      m[r][c]=val; el.classList.toggle(ACTIVE[el.dataset.view],val===1);
+      clearCellHints(); updateLiveCounters();
+    },{passive:false});
+  });
+
+  document.getElementById('shapeSelector').addEventListener('change',e=>loadShape(parseInt(e.target.value,10)));
+  const go=(idx)=>{currentFilter='all';updateFilterButtonsUI();populateShapeSelector();loadShape(idx);};
+  document.getElementById('btnPrevShape').addEventListener('click',()=>go((currentShapeIndex-1+SHAPES_CATALOG.length)%SHAPES_CATALOG.length));
+  document.getElementById('btnNextShape').addEventListener('click',()=>go((currentShapeIndex+1)%SHAPES_CATALOG.length));
+
+  document.querySelectorAll('.filter-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    currentFilter=btn.dataset.filter;
+    updateFilterButtonsUI(); populateShapeSelector();
+    const first=SHAPES_CATALOG.findIndex(s=>currentFilter==='all'||String(s.level)===String(currentFilter));
+    if(first!==-1)loadShape(first);
+  }));
+
+  document.getElementById('toggleColorFaces').addEventListener('change',renderCurrent3DShape);
+  document.getElementById('toggleBoundingCube').addEventListener('change',e=>{boundingBoxGroup.visible=e.target.checked;});
+
+  document.getElementById('camIso').addEventListener('click',()=>moveCameraTo(8.5,7.5,9.5));
+  document.getElementById('camAlzado').addEventListener('click',()=>moveCameraTo(0,0,12.5));
+  document.getElementById('camPlanta').addEventListener('click',()=>moveCameraTo(0,12.5,0.01));
+  document.getElementById('camPerfil').addEventListener('click',()=>moveCameraTo(-12.5,0,0));
+
+  document.getElementById('btnClearGrids').addEventListener('click',()=>{
+    userAlzado=empty5(); userPlanta=empty5(); userPerfil=empty5(); refreshGridDOM();
+  });
+  document.getElementById('btnShowSolution').addEventListener('click',()=>{
+    const sol=computeViewsSolution(SHAPES_CATALOG[currentShapeIndex].voxels);
+    userAlzado=sol.alzado.map(r=>[...r]); userPlanta=sol.planta.map(r=>[...r]); userPerfil=sol.perfil.map(r=>[...r]);
+    refreshGridDOM(); verifyAllViews(false);
+  });
+  document.getElementById('btnVerify').addEventListener('click',()=>verifyAllViews(false));
+  document.getElementById('btnHintCells').addEventListener('click',()=>verifyAllViews(true));
+
+  const modal=document.getElementById('modalTheory');
+  const open=()=>{modal.classList.remove('hidden');modal.classList.add('flex');};
+  const close=()=>{modal.classList.add('hidden');modal.classList.remove('flex');};
+  document.getElementById('btnTheory').addEventListener('click',open);
+  document.getElementById('btnCloseTheory').addEventListener('click',close);
+  document.getElementById('btnCloseTheoryBottom').addEventListener('click',close);
+}
+
+window.onload=function(){
+  init3DViewer();
+  setupEventListeners();
+  populateShapeSelector();
+  loadShape(0);
+};
+</script>
+</body>
+</html>
