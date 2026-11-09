@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vedruna Vigo Matlab 1 ESO</title>
+<style>
+:root {
+  --bg: #f4f8f5;
+  --cd: #ffffff;
+  --tx: #0d2317;
+  --mu: #476454;
+  --pr: #166534;       /* Verde principal Vedruna */
+  --pr-hover: #14532d;
+  --pl: #dcfce7;       /* Verde claro de fondo/resalte */
+  --ne: #b91c1c;       /* Rojo de contraste para negativos/fallos */
+  --nl: #fee2e2;
+  --ok: #15803d;       /* Verde de acierto */
+  --bd: #cbdad0;
+  --hd: #14532d;       /* Cabecera verde oscuro */
+  --ht: #ffffff;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme=light]) {
+    --bg: #09150f;
+    --cd: #102419;
+    --tx: #e6f4ec;
+    --mu: #89a997;
+    --pr: #22c55e;
+    --pr-hover: #4ade80;
+    --pl: #143521;
+    --ne: #f87171;
+    --nl: #3b1717;
+    --ok: #4ade80;
+    --bd: #1e3f2d;
+    --hd: #07170f;
+    --ht: #ffffff;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100vh; overflow-x: hidden; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--tx);
+  font: 16px/1.55 "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+  padding-bottom: 20px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  background: var(--hd);
+  color: var(--ht);
+  z-index: 100;
+  padding: 12px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+header b {
+  font-size: 1.15rem;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--ht);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+nav a:hover, nav a.on {
+  background: #ffffff;
+  color: var(--hd);
+  font-weight: 700;
+}
+
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+h1, h2, h3 {
+  line-height: 1.25;
+  margin: 0 0 0.5em;
+  color: var(--pr);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+}
+
+h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.2rem; }
+p { margin: 0.5em 0; }
+.mu { color: var(--mu); }
+
+.card {
+  background: var(--cd);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pr);
+  color: #ffffff !important;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover { background: var(--pr-hover); }
+
+.btn.sec {
+  background: var(--pl);
+  color: var(--pr) !important;
+}
+
+.btn.sec:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+:focus-visible {
+  outline: 3px solid var(--pr);
+  outline-offset: 2px;
+}
+
+.hero { padding: 4px 0 10px; }
+
+.line {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  padding: 10px 4px 14px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.line button {
+  flex: 1 0 36px;
+  min-width: 36px;
+  height: 44px;
+  border: 1px solid var(--bd);
+  border-top: 4px solid;
+  border-radius: 0 0 8px 8px;
+  background: var(--cd);
+  font: 700 0.95rem inherit;
+  color: var(--tx);
+  cursor: pointer;
+}
+
+.line .n { border-top-color: var(--ne); }
+.line .p { border-top-color: var(--pr); }
+.line .z { border-top-color: var(--mu); }
+.line button.on { background: var(--pr); color: #fff; }
+
+.bar {
+  height: 14px;
+  background: var(--pl);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--pr);
+  transition: width 0.3s ease;
+}
+
+.lv { border-left: 6px solid var(--pr); }
+
+.nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.node {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--tx);
+  font-size: 0.94rem;
+  background: var(--cd);
+}
+
+.node.done {
+  background: var(--pl);
+  border-color: var(--pr);
+  font-weight: 600;
+}
+
+.node.next {
+  border: 2px solid var(--pr);
+  font-weight: 700;
+}
+
+.node.lock {
+  opacity: 0.55;
+  background: transparent;
+  pointer-events: none;
+}
+
+.q {
+  border-top: 1px dashed var(--bd);
+  padding: 14px 0;
+}
+
+.q:first-of-type { border: 0; }
+
+.in {
+  font: inherit;
+  padding: 10px 14px;
+  border: 2px solid var(--bd);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--tx);
+  width: 100%;
+  max-width: 220px;
+}
+
+.in:focus {
+  border-color: var(--pr);
+  outline: none;
+}
+
+.ch {
+  display: inline-block;
+  margin: 4px 8px 6px 0;
+  padding: 8px 16px;
+  border: 2px solid var(--bd);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--cd);
+}
+
+.ch.active {
+  border-color: var(--pr);
+  background: var(--pl);
+  font-weight: 700;
+}
+
+.ch input { margin-right: 6px; }
+
+.g { color: var(--ok); font-weight: 700; }
+.b { color: var(--ne); font-weight: 700; }
+.fb { min-height: 1.5em; margin-top: 8px; font-weight: 600; }
+.res { font-size: 1.25rem; font-weight: 700; margin: 14px 0; }
+
+.tag {
+  display: inline-block;
+  background: var(--pl);
+  color: var(--pr);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+details {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--pr);
+}
+
+.dip {
+  text-align: center;
+  padding: 38px 24px;
+  border: 8px double var(--pr);
+  background: #ffffff;
+  border-radius: 10px;
+  color: #0d2317;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.dip h1 {
+  font-size: 2.5rem;
+  color: var(--pr);
+  margin: 6px 0;
+}
+
+.dip .nm {
+  font: italic 700 2.2rem Georgia, serif;
+  margin: 16px 0;
+  border-bottom: 3px solid var(--pr);
+  display: inline-block;
+  padding: 0 28px;
+  color: #0d2317;
+}
+
+.inf table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  margin-top: 10px;
+}
+
+.inf th, .inf td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--bd);
+  text-align: left;
+}
+
+.inf .lh th {
+  background: var(--pl);
+  color: var(--pr);
+  font-weight: 700;
+}
+
+.inf .sm { font-size: 0.85rem; }
+
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  header, .noprint, nav { display: none !important; }
+  .card { border: 1px solid #ccc !important; box-shadow: none !important; }
+  .dip { border: 6px double #166534 !important; background: #fff !important; }
+  .inf { break-before: page; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <b>🎓 Vedruna Vigo Matlab 1 ESO</b>
+  <nav id="nav"></nav>
+</header>
+
+<main id="app">
+  <div class="card" style="text-align:center; padding:40px;">
+    Cargando Vedruna Vigo Matlab...
+  </div>
+</main>
+
+<script>
+/* 1. SISTEMA DE RUTAS Y ALMACENAMIENTO ADAPTADO PARA GOOGLE SITES (IFRAME) */
+// En Google Sites (o iframes sandboxed), window.location.hash no funciona bien 
+// y localStorage puede estar bloqueado. Usaremos estado interno y fallback de memoria.
+
+const memoryStorage = {};
+const storage = {
+  get(key) {
+    try {
+      if (window.localStorage) {
+        const val = window.localStorage.getItem(key);
+        if (val !== null) return val;
+      }
+    } catch(e) {}
+    return memoryStorage[key] || null;
+  },
+  set(key, val) {
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(key, String(val));
+      }
+    } catch(e) {}
+    memoryStorage[key] = String(val);
+  }
+};
+
+let currentRoute = 'inicio';
+let st = { d:{}, t:{}, ex:null, nm:"", xa:0 };
+
+try {
+  const saved = storage.get("vvm1_vedruna");
+  if (saved) Object.assign(st, JSON.parse(saved));
+} catch(e) {}
+
+const save = () => {
+  try {
+    storage.set("vvm1_vedruna", JSON.stringify(st));
+  } catch(e) {}
+};
+
+const $ = s => document.querySelector(s);
+const R = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const P = arr => arr[R(0, arr.length - 1)];
+const nz = (a, b) => { let n = 0; while(!n) n = R(a, b); return n; };
+const s = n => n < 0 ? "−" + (-n) : "" + n;
+const p = n => n < 0 ? "(−" + (-n) + ")" : "" + n;
+
+const LV = [
+  "Nivel 1 · Conozco los enteros",
+  "Nivel 2 · Ordeno y sumo",
+  "Nivel 3 · Resto con soltura",
+  "Nivel 4 · Multiplico y divido",
+  "Nivel 5 · Operaciones combinadas"
+];
+
+const TH = [
+  "Los números enteros (ℤ) son los positivos (+1, +2…), los negativos (−1, −2…) y el 0. Los negativos sirven para deudas, temperaturas bajo cero, sótanos o profundidad. El opuesto de un número tiene su mismo valor y signo contrario. El valor absoluto |n| es la distancia al 0, así que nunca es negativo.",
+  "En la recta numérica, cuanto más a la derecha, mayor es el número: −9 < −2 < 0 < 5. Sumar un positivo es avanzar a la derecha y sumar un negativo es retroceder. Mismo signo: se suman los valores y se conserva el signo. Distinto signo: se restan los valores y gana el signo del que tiene mayor valor absoluto.",
+  "Restar es sumar el opuesto: a − b = a + (−b). Por eso a − (−b) = a + b. Sin paréntesis, se opera de izquierda a derecha. Quita los paréntesis con cuidado: +(−3) = −3 y −(−3) = +3.",
+  "Regla de los signos: (+)·(+) = +, (−)·(−) = +, (+)·(−) = − y (−)·(+) = −. Para la división es igual. Primero calcula el signo y luego multiplica o divide los valores absolutos. Una división entera exacta es la operación inversa de multiplicar.",
+  "Orden de las operaciones: 1.º paréntesis, 2.º multiplicaciones y divisiones (de izquierda a derecha), 3.º sumas y restas (de izquierda a derecha). Resuelve paso a paso y escribe cada resultado intermedio."
+];
+
+const A = [
+  ["Positivo o negativo", () => {
+    const [t, g] = P([
+      ["Una temperatura de N grados bajo cero", -1],
+      ["Un buzo a N metros de profundidad", -1],
+      ["Debes N euros a un amigo", -1],
+      ["Tienes N euros en la hucha", 1],
+      ["Un montañero a N metros sobre el nivel del mar", 1],
+      ["Un coche aparcado en el sótano N", -1]
+    ]), n = R(2, 40);
+    return { q: "Escribe el entero que representa: " + t.replace("N", n), a: g * n };
+  }],
+  ["El opuesto", () => {
+    const n = nz(-20, 20);
+    return { q: "¿Cuál es el opuesto de " + s(n) + "?", a: -n };
+  }],
+  ["Valor absoluto", () => {
+    const n = nz(-30, 30);
+    return { q: "Calcula |" + s(n) + "|", a: Math.abs(n) };
+  }],
+  ["Mayor o menor", () => {
+    let a = nz(-15, 15), b = nz(-15, 15);
+    if (a === b) b = a + 1;
+    return { q: "¿Cuál es el mayor?", o: [s(a), s(b)], a: s(Math.max(a, b)) };
+  }],
+  ["Ordenar enteros", () => {
+    const l = new Set();
+    while (l.size < 4) l.add(R(-12, 12));
+    const x = [...l];
+    return { q: "¿Cuál es el menor de estos números: " + x.map(s).join(", ") + "?", o: x.map(s), a: s(Math.min(...x)) };
+  }],
+  ["La recta numérica", () => {
+    const a = R(-10, 5), k = R(2, 9), d = P([1, -1]);
+    return { q: "En la recta numérica, parte de " + s(a) + " y avanza " + k + " unidades hacia la " + (d > 0 ? "derecha" : "izquierda") + ". ¿Dónde llegas?", a: a + d * k };
+  }],
+  ["Sumas del mismo signo", () => {
+    const a = R(1, 15), b = R(1, 15), x = P([1, -1]);
+    return { q: "Calcula: " + p(x * a) + " + " + p(x * b), a: x * (a + b) };
+  }],
+  ["Sumas de distinto signo", () => {
+    const a = R(1, 15), b = R(1, 15), x = P([1, -1]);
+    return { q: "Calcula: " + p(x * a) + " + " + p(-x * b), a: x * (a - b) };
+  }],
+  ["Restas con enteros", () => {
+    const a = nz(-12, 12), b = nz(-12, 12);
+    return { q: "Calcula: " + p(a) + " − " + p(b), a: a - b };
+  }],
+  ["Restar un negativo", () => {
+    const a = R(-10, 10), b = R(1, 12);
+    return { q: "Calcula: " + p(a) + " − " + p(-b), a: a + b };
+  }],
+  ["Sumas y restas encadenadas", () => {
+    const [a, b, c, d] = [R(1, 15), R(1, 15), R(1, 15), R(1, 15)];
+    return { q: "Calcula: " + a + " − " + b + " + " + c + " − " + d, a: a - b + c - d };
+  }],
+  ["Con paréntesis", () => {
+    const a = nz(-10, 10), b = nz(-10, 10), c = nz(-10, 10);
+    return { q: "Calcula: " + p(a) + " + " + p(b) + " − " + p(c), a: a + b - c };
+  }],
+  ["Signos distintos al multiplicar", () => {
+    const a = R(2, 9), b = R(2, 9), x = P([1, -1]);
+    return { q: "Calcula: " + p(x * a) + " · " + p(-x * b), a: -a * b };
+  }],
+  ["Multiplicar cualquier entero", () => {
+    const a = nz(-9, 9), b = nz(-9, 9);
+    return { q: "Calcula: " + p(a) + " · " + p(b), a: a * b };
+  }],
+  ["Dividir enteros", () => {
+    const b = nz(-9, 9), q = nz(-9, 9);
+    return { q: "Calcula: " + s(b * q) + " : " + p(b), a: q };
+  }],
+  ["Problemas con enteros", () => {
+    const a = R(2, 6), h = R(2, 5), t = R(0, 12);
+    return { q: "A las 8:00 hay " + t + " °C y la temperatura baja " + a + " °C cada hora. ¿Qué temperatura habrá " + h + " horas después?", a: t - a * h };
+  }],
+  ["Prioridad de operaciones", () => {
+    const a = nz(-10, 10), b = R(2, 9), c = nz(-6, 6);
+    return { q: "Calcula: " + s(a) + " + " + b + " · " + p(c), a: a + b * c };
+  }],
+  ["Paréntesis primero", () => {
+    const a = R(-9, 9), b = R(-9, 9), c = nz(-6, 6);
+    return { q: "Calcula: (" + s(a) + " − " + p(b) + ") · " + p(c), a: (a - b) * c };
+  }],
+  ["Divisiones y productos", () => {
+    const b = nz(-6, 6), q = nz(-8, 8), c = R(2, 6), d = nz(-5, 5);
+    return { q: "Calcula: " + s(b * q) + " : " + p(b) + " + " + c + " · " + p(d), a: q + c * d };
+  }],
+  ["Reto combinado", () => {
+    const a = R(2, 9), b = R(-8, 8), c = R(-8, 8), d = R(2, 6), e = nz(-6, 6);
+    return { q: "Calcula: " + a + " · (" + s(b) + " − " + p(c) + ") − " + s(d * e) + " : " + p(e), a: a * (b - c) - d };
+  }]
+];
+
+const done = i => st.d[i] !== undefined;
+const nd = () => Object.keys(st.d).length;
+const unlocked = i => i === 0 || done(i - 1);
+let cur = null;
+
+// NAVEGACIÓN BASADA EN EVENTOS JS (No usa location.hash para no fallar en Google Sites)
+function navTo(route, evt) {
+  if (evt) evt.preventDefault();
+  currentRoute = route;
+  window.scrollTo(0,0);
+  renderRoute();
+}
+
+function qH(x, k) {
+  const options = x.o 
+    ? x.o.map(o => `<label class="ch" onclick="this.classList.add('active'); this.querySelector('input').checked = true;"><input type="radio" name="q${k}" value="${o}">${o}</label>`).join("") 
+    : `<input class="in" id="q${k}" autocomplete="off" placeholder="Tu respuesta">`;
+  return `
+    <div class="q">
+      <p><b>${k + 1}.</b> ${x.q}</p>
+      ${options}
+      <div class="fb" id="f${k}"></div>
+    </div>
+  `;
+}
+
+function ok(x, k) {
+  if (x.o) {
+    const e = document.querySelector(`input[name=q${k}]:checked`);
+    return e ? e.value === x.a : false;
+  }
+  const el = $("#q" + k);
+  if (!el) return false;
+  const v = el.value.replace(/[−–]/g, "-").replace(",", ".").replace(/\s/g, "").replace(/^\+/, "");
+  return v !== "" && Number(v) === x.a;
+}
+
+function mark() {
+  let c = 0;
+  cur.qs.forEach((x, k) => {
+    const r = ok(x, k);
+    c += r ? 1 : 0;
+    const fbEl = $("#f" + k);
+    if (fbEl) {
+      fbEl.innerHTML = r 
+        ? '<span class="g">✓ ¡Correcto!</span>' 
+        : '<span class="b">✗ Respuesta esperada: ' + (typeof x.a === "number" ? s(x.a) : x.a) + '</span>';
+    }
+  });
+  return c;
+}
+
+function vNav(activeRoute) {
+  const el = $("#nav");
+  if (!el) return;
+  const items = [
+    ["inicio", "Inicio"],
+    ["ruta", "Ruta"],
+    ["teoria", "Teoría"],
+    ["examen", "Examen"],
+    ["diploma", "Diploma"]
+  ];
+  el.innerHTML = items.map(([h, t]) => 
+    `<a onclick="navTo('${h}', event)" class="${activeRoute === h || (activeRoute === 'act' && h === 'ruta') ? 'on' : ''}">${t}</a>`
+  ).join("");
+}
+
+function vInicio() {
+  const n = nd();
+  const app = $("#app");
+  if (!app) return;
+  app.innerHTML = `
+    <section class="hero">
+      <h1>Vedruna Vigo Matlab 1 ESO</h1>
+      <p class="mu">Curso interactivo de números enteros y operaciones combinadas para 1.º de la ESO. Pulsa cualquier número en la recta numérica para analizar su opuesto y su valor absoluto.</p>
+      <div class="line" id="line">
+        ${Array.from({length: 21}, (_, i) => i - 10).map(i => 
+          `<button class="${i < 0 ? 'n' : (i > 0 ? 'p' : 'z')}" onclick="pick(${i}, this)">${s(i)}</button>`
+        ).join("")}
+      </div>
+      <div class="card" id="pk">💡 Pulsa un número en la recta numérica superior.</div>
+    </section>
+    
+    <div class="card">
+      <h3>Tu progreso actual: ${n} de 20 actividades</h3>
+      <div class="bar"><i style="width:${n * 5}%"></i></div>
+      <p class="mu">El curso consta de 20 actividades repartidas en 5 niveles formativos. Al superar todas las actividades desbloquearás el examen final oficial y tu diploma de aprovechamiento.</p>
+      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn" onclick="navTo('${n >= 20 ? 'examen' : 'act-' + (n + 1)}', event)">
+          ${n > 0 ? 'Continuar curso (Actividad ' + (n + 1) + ')' : 'Empezar el curso'}
+        </a>
+        <a class="btn sec" onclick="navTo('ruta', event)">Ver ruta formativa</a>
+      </div>
+      ${st.ex ? `<p class="g" style="margin-top:14px">✓ ¡Examen aprobado con ${st.ex.sc}/10! <a onclick="navTo('diploma', event)" style="cursor:pointer; text-decoration:underline;">Ver mi diploma</a></p>` : ''}
+      <p style="margin-top:20px; font-size:0.9rem;">
+        <button class="btn sec" style="font-size:0.85rem; padding:6px 14px;" onclick="rst(this)">Reiniciar progreso</button>
+      </p>
+    </div>
+  `;
+}
+
+// Para usar con el botón global sin 'const' en local
+window.pick = function(n, b) {
+  document.querySelectorAll(".line button").forEach(x => x.classList.remove("on"));
+  b.classList.add("on");
+  const el = $("#pk");
+  if (el) {
+    el.innerHTML = `El opuesto de <b>${s(n)}</b> es <b>${s(-n)}</b>. Su valor absoluto es |${s(n)}| = <b>${Math.abs(n)}</b>.`;
+  }
+}
+
+window.rst = function(b) {
+  if (!b.dataset.s) {
+    b.dataset.s = "1";
+    b.textContent = "¿Confirmar reinicio? Pulsa de nuevo";
+    return;
+  }
+  st = { d:{}, t:{}, ex:null, nm:"", xa:0 };
+  save();
+  vInicio();
+}
+
+function vRuta() {
+  const app = $("#app");
+  if (!app) return;
+  let html = `<h2>Ruta de aprendizaje</h2><p class="mu">Supera cada actividad con al menos 2 aciertos de 3 para desbloquear la siguiente.</p>`;
+  html += LV.map((l, j) => `
+    <div class="card lv">
+      <h3>${l}</h3>
+      <div class="nodes">
+        ${[0, 1, 2, 3].map(k => {
+          const i = j * 4 + k, d = done(i), u = unlocked(i);
+          return `<a class="node ${d ? 'done' : (u ? 'next' : 'lock')}" onclick="${u ? `navTo('act-${i + 1}', event)` : 'return false;'}">
+            ${d ? '★'.repeat(st.d[i]) : (u ? '▶' : '🔒')} ${i + 1}. ${A[i][0]}
+          </a>`;
+        }).join("")}
+      </div>
+    </div>
+  `).join("");
+  html += `
+    <div class="card">
+      <h3>🏆 Examen final</h3>
+      <p class="mu">Se desbloquea automáticamente al completar con éxito las 20 actividades.</p>
+      <a class="btn ${nd() < 20 ? 'sec' : ''}" onclick="${nd() >= 20 ? "navTo('examen', event)" : 'return false;'}">Ir al examen</a>
+    </div>
+  `;
+  app.innerHTML = html;
+}
+
+function vTeoria() {
+  const app = $("#app");
+  if (!app) return;
+  app.innerHTML = `<h2>Teoría de Números Enteros</h2>` + LV.map((l, j) => `
+    <div class="card lv">
+      <h3>${l}</h3>
+      <p style="font-size:1.02rem;">${TH[j]}</p>
+    </div>
+  `).join("");
+}
+
+function vAct(i) {
+  const app = $("#app");
+  if (!app) return;
+  if (isNaN(i) || i < 0 || i > 19) return vRuta();
+  if (!unlocked(i)) {
+    app.innerHTML = `
+      <div class="card">
+        <h2>🔒 Actividad bloqueada</h2>
+        <p>Debes completar con éxito las actividades previas para acceder.</p>
+        <a class="btn" onclick="navTo('ruta', event)">Volver a la ruta</a>
+      </div>
+    `;
+    return;
+  }
+  cur = { i, qs: [A[i][1](), A[i][1](), A[i][1]()] };
+  app.innerHTML = `
+    <span class="tag">${LV[Math.floor(i / 4)]}</span>
+    <h2>Actividad ${i + 1}: ${A[i][0]}</h2>
+    <details>
+      <summary>Recordatorio teórico</summary>
+      <p style="margin-top:8px;">${TH[Math.floor(i / 4)]}</p>
+    </details>
+    <div class="card">
+      ${cur.qs.map(qH).join("")}
+      <div style="margin-top:16px;">
+        <button class="btn" id="ck" onclick="chk()">Comprobar respuestas</button>
+      </div>
+      <div id="rs"></div>
+    </div>
+  `;
+}
+
+window.chk = function() {
+  const c = mark(), i = cur.i, w = c >= 2;
+  const btn = $("#ck");
+  if (btn) btn.disabled = true;
+  if (!done(i)) {
+    st.t[i] = (st.t[i] || 0) + 1;
+  }
+  if (w) {
+    st.d[i] = Math.max(st.d[i] || 0, c);
+  }
+  save();
+  const rsEl = $("#rs");
+  if (!rsEl) return;
+  rsEl.innerHTML = `
+    <p class="res ${w ? 'g' : 'b'}">
+      ${w ? '¡Superada con éxito! ' + '★'.repeat(c) : 'Aciertos: ' + c + ' de 3. Necesitas al menos 2 para avanzar.'}
+    </p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      ${w 
+        ? (i < 19 
+            ? `<a class="btn" onclick="navTo('act-${i + 2}', event)">Siguiente actividad</a>` 
+            : `<a class="btn" onclick="navTo('examen', event)">Ir al examen final</a>`)
+        : `<button class="btn" onclick="navTo('act-${i + 1}', event)">Reintentar con nuevos datos</button>`
+      }
+      <a class="btn sec" onclick="navTo('ruta', event)">Volver a la ruta</a>
+    </div>
+  `;
+}
+
+function vExamen() {
+  const app = $("#app");
+  if (!app) return;
+  if (nd() < 20) {
+    app.innerHTML = `
+      <div class="card">
+        <h2>🔒 Examen final bloqueado</h2>
+        <p class="mu">Debes completar las 20 actividades previas para presentarte al examen. Llevas ${nd()} superadas.</p>
+        <a class="btn" onclick="navTo('ruta', event)">Ir a las actividades</a>
+      </div>
+    `;
+    return;
+  }
+  const ix = [0, 1, 2, 3, 4].flatMap(j => [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 2).map(k => j * 4 + k));
+  cur = { ex: 1, qs: ix.map(idx => A[idx][1]()) };
+  app.innerHTML = `
+    <h2>Examen Final Vedruna Vigo</h2>
+    <p class="mu">10 cuestiones seleccionadas de todos los niveles. Necesitas 7 aciertos para superar la materia y obtener tu diploma oficial.</p>
+    <div class="card">
+      <p>
+        <label><b>Nombre y apellidos del alumno/a:</b><br>
+          <input class="in" id="nm" style="width:100%; max-width:360px; margin-top:6px;" value="${st.nm || ''}" placeholder="Escribe tu nombre completo">
+        </label>
+      </p>
+      ${cur.qs.map(qH).join("")}
+      <div style="margin-top:16px;">
+        <button class="btn" id="ck" onclick="fin()">Entregar examen</button>
+      </div>
+      <div id="rs"></div>
+    </div>
+  `;
+}
+
+window.fin = function() {
+  const nmInput = $("#nm");
+  const nm = nmInput ? nmInput.value.trim() : "";
+  const rsEl = $("#rs");
+  if (!nm) {
+    if (rsEl) rsEl.innerHTML = '<p class="b">Por favor, escribe tu nombre completo antes de entregar.</p>';
+    return;
+  }
+  const c = mark();
+  const btn = $("#ck");
+  if (btn) btn.disabled = true;
+  st.nm = nm;
+  st.xa = (st.xa || 0) + 1;
+  const w = c >= 7;
+  if (w) {
+    st.ex = {
+      at: st.xa,
+      sc: c,
+      dt: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+    };
+  }
+  save();
+  if (rsEl) {
+    rsEl.innerHTML = `
+      <p class="res ${w ? 'g' : 'b'}">
+        Nota obtenida: ${c} de 10. ${w ? '¡Enhorabuena, has aprobado!' : 'No alcanzaste el 7 requerido. Repasa la teoría e inténtalo de nuevo.'}
+      </p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        ${w 
+          ? `<a class="btn" onclick="navTo('diploma', event)">Ver mi diploma</a>` 
+          : `<button class="btn" onclick="navTo('examen', event)">Repetir examen</button><a class="btn sec" onclick="navTo('teoria', event)">Repasar teoría</a>`
+        }
+      </div>
+    `;
+  }
+}
+
+const CN = ["Suficiente", "Bien", "Notable", "Excelente"];
+const cp = i => {
+  const a = st.t[i] || 1, g = st.d[i] || 2;
+  return a === 1 && g === 3 ? 3 : (a <= 2 ? 2 : (a === 3 ? 1 : 0));
+};
+
+function inf() {
+  let T = 0, G = 0, rows = "";
+  LV.forEach((l, j) => {
+    let sm = 0, r = "";
+    for (let k = 0; k < 4; k++) {
+      const i = j * 4 + k, c = cp(i);
+      sm += c; G += c;
+      T += st.t[i] || 1;
+      r += `<tr>
+        <td>${i + 1}. ${A[i][0]}</td>
+        <td>${st.t[i] || 1}</td>
+        <td>${'★'.repeat(st.d[i] || 0)}</td>
+        <td>${CN[c]}</td>
+      </tr>`;
+    }
+    rows += `<tr class="lh"><th colspan="3">${l}</th><th>${CN[Math.round(sm / 4)]}</th></tr>` + r;
+  });
+  return `
+    <div class="card inf">
+      <h2>Informe Competencial</h2>
+      <p>Alumno/a: <b>${st.nm.replace(/</g, "&lt;")}</b> · Actividades completadas: <b>20 de 20</b> · Intentos medios: <b>${(T / 20).toFixed(1)}</b> · Convocatoria examen: <b>${st.ex.at || 1}</b> · Competencia global: <b>${CN[Math.round(G / 20)]}</b></p>
+      <table>
+        <tr>
+          <th>Actividad</th>
+          <th>Intentos</th>
+          <th>Aciertos</th>
+          <th>Nivel competencial</th>
+        </tr>
+        ${rows}
+      </table>
+      <p class="mu sm" style="margin-top:10px;">Criterio: Excelente = superada en 1 intento con 3 aciertos; Notable = 1-2 intentos; Bien = 3 intentos; Suficiente = 4 o más.</p>
+    </div>
+  `;
+}
+
+function vDiploma() {
+  const app = $("#app");
+  if (!app) return;
+  if (!st.ex) {
+    app.innerHTML = `
+      <div class="card">
+        <h2>Diploma no disponible</h2>
+        <p class="mu">Debes aprobar el examen final para generar y descargar tu diploma acreditativo.</p>
+        <a class="btn" onclick="navTo('examen', event)">Ir al examen</a>
+      </div>
+    `;
+    return;
+  }
+  app.innerHTML = `
+    <div class="dip">
+      <p style="text-transform:uppercase; letter-spacing:1.5px; font-weight:700; color:var(--pr);">Colegio Vedruna Vigo</p>
+      <h1>Diploma de Competencia Matemática</h1>
+      <p>Se otorga con distinción académica a</p>
+      <div class="nm">${st.nm.replace(/</g, "&lt;")}</div>
+      <p>por completar satisfactoriamente el programa interactivo<br><b>Vedruna Vigo Matlab · 1.º ESO</b><br>Especialidad: Números Enteros y Operaciones Combinadas</p>
+      <p>Calificación en examen final: <b>${st.ex.sc}/10</b> · Expedido el ${st.ex.dt}</p>
+      <div style="font-size:2.8rem; margin:10px 0;">🏅</div>
+    </div>
+    ${inf()}
+    <p class="noprint" style="margin-top:20px; text-align:center;">
+      <button class="btn" onclick="window.print()">🖨️ Imprimir o Guardar Diploma en PDF</button>
+    </p>
+  `;
+}
+
+function renderRoute() {
+  const v = currentRoute.startsWith("act-") ? "act" : currentRoute;
+  vNav(v);
+  if (v === "inicio") vInicio();
+  else if (v === "ruta") vRuta();
+  else if (v === "teoria") vTeoria();
+  else if (v === "examen") vExamen();
+  else if (v === "diploma") vDiploma();
+  else if (v === "act") {
+    const num = parseInt(currentRoute.slice(4), 10) - 1;
+    vAct(num);
+  } else {
+    vInicio();
+  }
+}
+
+/* 3. Inicialización controlada para IFRAMES */
+function boot() {
+  renderRoute();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot);
+} else {
+  boot();
+}
+</script>
+</body>
+</html>
