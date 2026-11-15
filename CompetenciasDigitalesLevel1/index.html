@@ -83,7 +83,7 @@ function doPost(e) {
 // 7. Haz clic en "Implementar", autoriza los permisos si te lo pide, y COPIA LA URL DE LA APLICACIÓN WEB.
 // 8. Pega esa URL dentro de las comillas en la variable SCRIPT_URL a continuación:
 
-const SCRIPT_URL = 'https://script.google.com/a/macros/vedruna.es/s/AKfycbzUm9W3qf490CXmhXNYUjKaBOIKEU1ffOW1YoGGUfX2W4IlAmpH42YUVLPeXJ5j6xXQ/exec'; // <-- PEGA AQUÍ LA URL DE TU WEB APP DE GOOGLE APPS SCRIPT
+const SCRIPT_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec'; // <-- SUSTITUYE "https://..." POR TU URL REAL MANTENIENDO LAS COMILLAS
 
 // ============================================================================
 
@@ -149,28 +149,30 @@ async function sendToSheet() {
     
     const g = Object.values(S.r).flat(), tot = g.length ? g.reduce((s,x)=>s+x[1],0)/g.length : 0;
     
-    const payload = {
+    // Convertimos los datos al formato de un formulario clásico (x-www-form-urlencoded)
+    const payload = new URLSearchParams({
         fecha: new Date().toLocaleString('es-ES'),
         nombre: S.name,
         nota_global: (tot * 10).toFixed(1),
         nota_examen: S.r.x ? (pc('x') * 10).toFixed(1) : 'Pendiente'
-    };
+    });
     
     try {
         await fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // Evita problemas de CORS al enviar simplemente los datos
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            mode: 'no-cors', // <-- ESTA LÍNEA ES LA CLAVE PARA EVITAR EL BLOQUEO
+            body: payload
         });
         
+        // Al usar 'no-cors', Google no nos devuelve un "OK" legible, 
+        // pero si no da error de red, asumimos que llegó.
         btn.textContent = '¡Enviado!';
         btn.classList.add('ok');
         btn.classList.remove('pri');
     } catch (e) {
         btn.textContent = 'Error al enviar';
         btn.disabled = false;
-        showCustomModal('Error de Conexión', 'Hubo un error al intentar enviar los datos a la hoja de cálculo. Por favor revisa la consola para más detalles.');
+        showCustomModal('Error de Conexión', 'Hubo un error al intentar enviar. Asegúrate de que el Google Site está PUBLICADO para que funcione correctamente.');
     }
 }
 
