@@ -83,7 +83,7 @@ function doPost(e) {
 // 7. Haz clic en "Implementar", autoriza los permisos si te lo pide, y COPIA LA URL DE LA APLICACIÓN WEB.
 // 8. Pega esa URL dentro de las comillas en la variable SCRIPT_URL a continuación:
 
-const SCRIPT_URL = 'https://script.google.com/a/macros/vedruna.es/s/AKfycbzUm9W3qf490CXmhXNYUjKaBOIKEU1ffOW1YoGGUfX2W4IlAmpH42YUVLPeXJ5j6xXQ/exec'; // <-- SUSTITUYE "https://..." POR TU URL REAL MANTENIENDO LAS COMILLAS
+const SCRIPT_URL = 'https://script.google.com/a/macros/vedruna.es/s/AKfycbzUm9W3qf490CXmhXNYUjKaBOIKEU1ffOW1YoGGUfX2W4IlAmpH42YUVLPeXJ5j6xXQ/exec'; // <-- PEGA AQUÍ LA URL DE TU WEB APP DE GOOGLE APPS SCRIPT
 
 // ============================================================================
 
@@ -160,7 +160,7 @@ async function sendToSheet() {
         await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', // Evita problemas de CORS al enviar simplemente los datos
-            headers: { 'Content-Type': 'text/plain' }, // <-- Modificado para evitar bloqueos del navegador
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
         
