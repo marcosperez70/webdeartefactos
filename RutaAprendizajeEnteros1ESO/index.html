@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vedruna Vigo Matlab 1 ESO · Tema Enteros</title>
+<style>
+:root{--bg:#fff;--pn:#edf2dc;--cd:#fff;--tx:#363636;--mu:#5d6b4b;--pr:#4f6f12;--ac:#a8c34a;--dk:#373737;--dl:#b8d66f;--dt:#fff;--pl:#dfe9bd;--ne:#c2502e;--ok:#3f7d12;--bd:#d3deb4;--hd:#373737;--ht:#fff;--bn:#373737;--bt:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12150d;--pn:#1d2415;--cd:#273020;--tx:#eef3dc;--mu:#b2c09a;--pr:#b8d66f;--dk:#0e110a;--pl:#34401f;--ne:#ff8a66;--ok:#9be05a;--bd:#3a4727;--hd:#0e110a;--bn:#a8c34a;--bt:#1a2110}}
+:root[data-theme=dark]{--bg:#12150d;--pn:#1d2415;--cd:#273020;--tx:#eef3dc;--mu:#b2c09a;--pr:#b8d66f;--dk:#0e110a;--pl:#34401f;--ne:#ff8a66;--ok:#9be05a;--bd:#3a4727;--hd:#0e110a;--bn:#a8c34a;--bt:#1a2110}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.6 "Helvetica Neue",Helvetica,Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hd);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--hd);color:var(--ht);z-index:9;padding:10px 20px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+header b{font-size:1rem;font-weight:800}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav a{color:var(--ht);text-decoration:none;padding:6px 13px;border-radius:99px;font-size:.9rem;opacity:.85}
+nav a:hover{opacity:1;background:rgba(255,255,255,.14)}nav a.on{opacity:1;background:var(--ac);color:#1d2410;font-weight:700}
+main{max-width:1120px;width:calc(100% - 24px);margin:18px auto 40px;padding:28px clamp(16px,4vw,52px) 48px;background:var(--pn);border-top:8px solid var(--ac);border-radius:30px 30px 20px 20px;min-height:60vh}
+h1,h2,h3{line-height:1.15;margin:0 0 .5em}
+h1{font-size:clamp(2.3rem,6vw,3.7rem);font-weight:400;letter-spacing:-.03em}h2{font-size:1.7rem;font-weight:700}h3{font-size:1.2rem;font-weight:700}
+p{margin:.45em 0}.mu{color:var(--mu)}a{color:var(--pr)}
+.eb,.tag{display:block;font-size:.8rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--pr);margin:0 0 .8em}
+.lead{font-size:1.3rem;line-height:1.5}
+.card{background:var(--cd);border-radius:22px;padding:22px;margin:16px 0}
+.lv{background:var(--dk);color:var(--dt)}.lv h3{color:var(--dl)}.lv .mu{color:#cdd8b6}
+.btn{display:inline-block;background:var(--bn);color:var(--bt);border:0;border-radius:14px;padding:14px 24px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sec{background:var(--pl);color:var(--pr)}.btn:disabled{opacity:.45;cursor:default}
+.lv .btn{background:var(--ac);color:#1d2410}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.hm{display:grid;gap:34px}@media(min-width:900px){.hm{grid-template-columns:1fr 1fr;align-items:start}}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.g2 .dk:last-child{grid-column:1/-1}@media(max-width:560px){.g2{grid-template-columns:1fr}}
+.dk{display:block;background:var(--dk);color:var(--dt);border-radius:22px;padding:20px;text-decoration:none}.dk h3{color:var(--dl);margin-bottom:.4em}.dk p{margin:.3em 0;font-size:.95rem}.dk .mu{color:#cdd8b6}
+.line{display:flex;gap:2px;overflow-x:auto;padding:6px 2px 10px}
+.line button{flex:1 0 34px;min-width:34px;height:42px;border:0;border-top:4px solid;border-radius:0 0 8px 8px;background:var(--pn);font-family:inherit;font-weight:700;font-size:.95rem;color:var(--tx);cursor:pointer}
+.line .n{border-color:var(--ne)}.line .p{border-color:var(--pr)}.line .z{border-color:var(--tx)}.line button.on{background:var(--dk);color:#fff}
+.bar{height:12px;background:var(--pl);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}.lv .bar{background:#555}
+.nodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px;margin-top:10px}
+.node{display:block;padding:9px 12px;border:1px solid #5a5a5a;border-radius:12px;text-decoration:none;color:#fff;font-size:.93rem}
+.node.done{background:var(--ac);border-color:var(--ac);color:#1d2410;font-weight:700}.node.next{border:2px solid var(--dl)}
+.q{border-top:1px dashed var(--bd);padding:12px 0}.q:first-of-type{border:0}
+.in{font:inherit;padding:10px 14px;border:2px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);width:170px}
+.g{color:var(--ok);font-weight:700}.b{color:var(--ne);font-weight:700}.fb{min-height:1.4em;margin-top:6px}.res{font-size:1.2rem;font-weight:700;margin:12px 0}
+.hp{background:var(--pl)}
+.dip{text-align:center;padding:34px 20px;border:8px double var(--ac);background:var(--cd);border-radius:14px}.dip h1{font-size:2.4rem;font-weight:700;color:var(--pr)}.dip .nm{font:italic 700 2rem Georgia,serif;margin:12px 0;border-bottom:2px solid var(--tx);display:inline-block;padding:0 24px}
+.inf table{width:100%;border-collapse:collapse;font-size:.92rem}.inf th,.inf td{padding:5px 8px;border-bottom:1px solid var(--bd);text-align:left}.inf th{color:var(--pr)}.inf .sm{font-size:.85rem}
+@media print{.inf{break-before:page;background:#fff;color:#000}.inf th,.inf td{padding:3px 6px;font-size:12px}header,body::before,.noprint{display:none!important}body{background:#fff;color:#000}main{background:#fff;border:0;padding:0;width:100%;margin:0}.dip{border-color:#a8c34a;background:#fff;color:#000}.dip h1{color:#4f6f12}}
+</style></head><body>
+<header><b>🎓 Vedruna Vigo Matlab 1 ESO · Tema Enteros</b><nav id="nav"></nav></header>
+<main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const s=n=>(""+n).replace(/-/g,"−"),nm=v=>(""+v).replace(/[−–]/g,"-").replace(/\s|\+/g,"").replace(/y/g,",").split(/[,;]/).sort().join();
+function ev(z){const t=z.replace(/[−–]/g,"-").replace(/·/g,"*").replace(/:/g,"/").replace(/\[/g,"(").replace(/\]/g,")").match(/\d+|[-+*\/^()]/g);let i=0;
+const E=()=>{let v=T();while(t[i]=="+"||t[i]=="-"){const o=t[i++],w=T();v=o=="+"?v+w:v-w}return v},
+T=()=>{let v=P();while(t[i]=="*"||t[i]=="/"){const o=t[i++],w=P();v=o=="*"?v*w:v/w}return v},
+P=()=>t[i]=="-"?(i++,-P()):t[i]=="+"?(i++,P()):B(),
+B=()=>{const v=A();return t[i]=="^"?(i++,v**P()):v},
+A=()=>{if(t[i]=="("){i++;const v=E();i++;return v}return +t[i++]};return E()}
+const MD=[
+["Positivos, negativos y el conjunto ℤ","Los negativos están por debajo de 0 y los positivos por encima. El valor absoluto |a| es el número sin signo (su distancia a 0) y el opuesto tiene el mismo valor absoluto con signo contrario. Entre dos negativos es mayor el de menor valor absoluto: −8 > −20."],
+["Sumas y restas","Mismo signo: se suman los valores absolutos y se deja el signo. Distinto signo: se restan los valores absolutos y se pone el signo del que tiene mayor valor absoluto. Con varios sumandos, opera de izquierda a derecha o agrupa positivos y negativos."],
+["Paréntesis","+(−a) = −a y −(−a) = +a. Si delante del paréntesis hay un signo menos, cambian todos los signos de dentro: −(5 − 3) = −5 + 3. Resuelve primero los paréntesis más interiores."],
+["Multiplicación, división y combinadas","Mismo signo da positivo y distinto signo da negativo. Orden de operaciones: 1.º paréntesis, 2.º multiplicaciones y divisiones, 3.º sumas y restas."],
+["Potencias, raíces y problemas","Base negativa: exponente par da positivo e impar da negativo. (−2)² = 4 pero −2² = −4. Un número positivo tiene dos raíces cuadradas, una positiva y otra negativa. En los problemas, ganar o subir es positivo; perder o bajar es negativo."]];
+const RAW=[
+["Escribe el entero que representa cada situación.",["Mercedes tiene 2 500 euros en el banco",2500],["Miguel debe 150 euros",-150],["El coche está en el segundo sótano",-2]],
+["Escribe el entero que representa cada situación.",["Vivo en el séptimo piso",7],["El termómetro marca tres grados bajo cero",-3],["Debo 2 € a un amigo",-2]],
+["Expresa numéricamente cada enunciado.",["He pagado una factura de 60 €",-60],["El termómetro ha bajado cinco grados",-5],["El ascensor ha subido cuatro plantas",4]],
+["Escribe el siguiente elemento de cada serie.",["6, 4, 2, 0, −2, …",-4],["20, 15, 10, 5, 0, …",-5],["8, 7, 5, 2, −2, …",-7]],
+["Escribe el valor absoluto.",["|−5| =",5],["|+9| =",9],["|−11| =",11]],
+["Escribe el opuesto.",["Opuesto de (+3) =",-3],["Opuesto de (−12) =",12],["Opuesto de (+15) =",-15]],
+["Dos enteros opuestos distan 12 unidades en la recta.",["Número opuesto de sí mismo",0],["Entero negativo",-6],["Entero positivo",6]],
+["Escribe el signo < o > que corresponde.",["(−8) … (+3)","<"],["(−2) … (−5)",">"],["(+2) … (−5)",">"]],
+["Elige el número que se pide.",["El menor de +5, −3, −7, 0, +1, +6, −12, −5",-12],["El mayor de −6, −3, −9, −1, −5, −12, −4",-1],["El mayor de −20 y −8",-8]],
+["Calcula.",["El opuesto de |−9| =",-9],["|−4| + |−6| =",10],["|+8| − |−3| =",5]],
+["Calcula (mismo signo).","−6 − 2","−8 − 7","+10 + 7"],
+["Calcula (signos distintos).","+9 − 5","+3 − 7","−15 + 5"],
+["Calcula.","−11 + 8","7 − 12","−18 + 10"],
+["Calcula.","+6 − 7","−16 + 20","−13 − 12"],
+["Calcula.","51 − 28","−32 + 49","−62 − 31"],
+["Calcula de izquierda a derecha.","10 − 3 − 5","5 − 8 + 4","−10 − 3 + 8"],
+["Calcula agrupando positivos y negativos.","3 − 7 + 4","−13 + 6 + 4","−2 + 10 − 15"],
+["Calcula paso a paso.","2 − 4 − 5 + 8","−4 − 9 + 6 + 2","−4 − 8 − 2 − 5"],
+["Calcula.","5 + 7 − 2 − 4","2 − 6 + 4 − 9","−8 + 2 − 7 + 6"],
+["Escribe el resultado con su signo (ganas = positivo, pierdes = negativo).",["Si me dan 3 y me quitan 8",-5],["Si me quitan 4 y me dan 6",2],["Si me quitan 5 y me quitan 4",-9]],
+["Quita los paréntesis y calcula.","+(−1)","−(+4)","−(−6)"],
+["Quita los paréntesis y calcula.","−(+7)","+(−10)","−(−13)"],
+["Opera.","+(+8) − (+5)","−(+6) − (−2)","+(−2) + (−6)"],
+["Opera.","+(+7) − (−3)","+(−9) − (+2)","−(+6) + (+4)"],
+["Quita el paréntesis y calcula.","+(5 + 3)","−(8 + 15)","−(−2 − 4)"],
+["Quita el paréntesis y calcula.","+(9 − 7 − 2)","−(−6 + 5 − 7)","−(7 − 5 + 4)"],
+["Calcula.","5 − (9 − 3)","7 + (2 − 8)","15 − (8 + 11)"],
+["Calcula.","12 + (+3 − 5)","15 − (2 − 9)","10 − (−7 − 5)"],
+["Calcula.","(7 − 4) + (9 − 5)","(5 − 9) + (2 − 12)","(10 − 7) − (−2 − 6)"],
+["Calcula con corchetes.","6 + [5 + (7 + 2)]","15 − [2 − (6 − 10)]","12 − [7 − (2 − 10)]"],
+["Calcula los productos.","3 · (−2)","−5 · (+3)","(−4) · (+7)"],
+["Calcula los productos.","(−9) · (−3)","(−5) · (−7)","(−6) · (+4)"],
+["Calcula los cocientes.","(−8) : (+2)","(+21) : (−7)","(−48) : (−8)"],
+["Calcula.","(+3) · (−5) · (+2)","(−2) · (−7) · (−2)","(+5) · (−4) · (−3)"],
+["Escribe el factor desconocido.",["(−6) · (…) = −18",3],["(…) · (−3) = −24",8],["(…) · (−5) = +35",-7]],
+["Opera.","[(+80) : (−8)] : (−5)","[(−70) : (−2)] : (−7)","(+50) : [(−30) : (+6)]"],
+["Opera respetando la prioridad.","5 · (−4) + 2 · (−3)","20 : (−5) − 8 : (+2)","6 : (+2) + 5 · (−3) − 12 : (−4)"],
+["Opera.","(−8) · (+2) + (−5) · (−3)","(+40) : (−8) − (−30) : (+6)","(−2) · (−9) + (−24) : (−3) − (−6) · (−4)"],
+["Opera.","(−3) · [(−2) + (−4)]","(+6) : [(+5) − (+7)]","(−20) : [(−6) − (−2)]"],
+["Opera.","19 − (−3) · [5 − (+8)]","12 − [13 − (−7)] : (−5)","(9 − 6) · (−2) + (13 + 3) : (−4)"],
+["Calcula.","(−2)^6","(−5)^3","(+3)^4"],
+["Calcula mentalmente.","(−1)^29","(−10)^4","(+10)^0"],
+["Calcula y observa la diferencia.","(−2)^4","−2^4","(−3)^3"],
+["Calcula y observa la diferencia.","(5 + 3)^2","5^2 + 3^2","(2 − 4)^3"],
+["Aplica las propiedades de las potencias.","(−2)^5 · (+5)^5","(+4)^3 · (−5)^3","(−15)^4 : (−5)^4"],
+["Aplica las propiedades de las potencias.","(−4)^8 : (−4)^5","(+3)^10 : (−3)^6","(−8)^5 : (+8)^3"],
+["Escribe las dos soluciones enteras (separadas por coma).",["√36 =","6,-6"],["√64 =","8,-8"],["√100 =","10,-10"]],
+["Resuelve los problemas.",["La nave de envasado está a 12 °C y la cámara a −15 °C. ¿Diferencia de temperatura en °C?",27],["Alejandro Magno nació en 356 a. C. y murió en 323 a. C. ¿A qué edad murió?",33]],
+["Resuelve los problemas.",["Un día amaneció a −2 °C. A mediodía subió 8, hasta las 17:00 subió 3, hasta medianoche bajó 5 y hasta el alba bajó 6. ¿Temperatura al amanecer (°C)?",-2],["Un parque acuático pierde 2 475 €/mes de enero a mayo, gana 8 230 €/mes de junio a agosto, gana 1 800 € en septiembre y pierde 3 170 €/mes de octubre a diciembre. ¿Balance anual en €?",4605]],
+["Ampliación: opera.","(5 − 7) − [(−3) + (−6)]","20 − (−6) · (−4)","4 · [(+5) + (−7)] − (−3) · [7 − (+3)]"]];
+const X=RAW.map((r,i)=>({m:i/10|0,i:r[0],p:r.slice(1).map(q=>typeof q=="string"?[q,""+ev(q),1]:[q[0],""+q[1],0])}));
+let st={x:{},nm:"",ex:null,xa:0},cur=[];
+try{Object.assign(st,JSON.parse(localStorage.getItem("vvm2")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("vvm2",JSON.stringify(st))}catch(e){}};
+const dn=i=>st.x[i]&&st.x[i].d,nd=()=>Object.values(st.x).filter(x=>x.d).length,pts=()=>Object.values(st.x).reduce((a,x)=>a+(x.d?x.p:0),0);
+const nxt=()=>{for(let i=1;i<=50;i++)if(!dn(i))return i;return 0};
+const f1=n=>(""+Math.round(n*10)/10).replace(".",","),fm=t=>t.replace(/\^(\d+)/g,"<sup>$1</sup>");
+const LV=p=>p>=90?"Excelente":p>=75?"Notable":p>=60?"Bien":p>=50?"Suficiente":"En progreso",rg=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
+const CP=[["Sentido numérico y representación de enteros","CE5 · CE7",rg(1,10)],["Cálculo con sumas y restas","CE5",rg(11,19)],["Uso de paréntesis y signos","CE5",rg(21,30)],["Multiplicación, división y jerarquía de operaciones","CE5",rg(31,40)],["Potencias y raíces","CE5",rg(41,47).concat(50)],["Resolución de problemas y modelización","CE1 · CE2 · CE6",[20,48,49]]];
+function vNav(v){$("#nav").innerHTML=[["inicio","Inicio"],["ruta","Módulos"],["teoria","Teoría"],["normas","Puntuación"],["examen","Examen"],["diploma","Diploma"]].map(([h,t])=>`<a href="#${h}" class="${v==h||(v=="ej"&&h=="ruta")?"on":""}">${t}</a>`).join("")}
+const DS=["Reconocer enteros, valor absoluto, opuesto y orden.","Sumas y restas con el mismo signo y con signos distintos.","Quitar paréntesis y corchetes cuidando los signos.","Regla de los signos y prioridad de operaciones.","Potencias, raíces y problemas de la vida real."];
+function vInicio(){const n=nd(),q=nxt();$("#app").innerHTML=`<section class="hm"><div><p class="eb">Matemáticas 1.º ESO · Tema Enteros</p><p style="margin-top:24px"><a class="btn" href="#${q?"ej-"+q:"examen"}">${n?(q?"Continuar (ejercicio "+q+")":"Ir al examen final"):"Empezar el curso"} →</a></p>
+<p style="margin-top:22px"><b>Tu progreso: ${n} de 50 ejercicios · ${f1(pts())} puntos</b></p><div class="bar"><i style="width:${n*2}%"></i></div>
+${st.ex&&st.ex.sc>=5&&!q?`<p class="g">✓ Examen aprobado. <a href="#diploma">Ver diploma e informe</a></p>`:""}
+<a class="dk" href="#normas" style="margin-top:24px"><h3>Ver cómo se puntúa</h3><p>Ayuda, examen, nota final e informe de competencias.</p><p class="mu">Ver las normas →</p></a>
+<p style="margin-top:18px"><button class="btn sec" onclick="rst(this)">Reiniciar progreso</button></p></div>
+<div><div class="g2">${MD.map((M,j)=>{let d=0,f=0;for(let k=1;k<=10;k++){const i=j*10+k;if(dn(i))d++;else if(!f)f=i}return `<a class="dk" href="#${f?"ej-"+f:"ruta"}"><h3>${M[0]}</h3><p>${DS[j]}</p><p class="mu">${d} de 10 · ${f?"continuar →":"✓ completado"}</p></a>`}).join("")}</div>
+</div></section>`}
+function pick(n,b){document.querySelectorAll(".line button").forEach(x=>x.classList.remove("on"));b.classList.add("on");$("#pk").innerHTML=`El opuesto de <b>${s(n)}</b> es <b>${s(-n)}</b>. Su valor absoluto es |${s(n)}| = <b>${Math.abs(n)}</b>.`}
+function rst(b){if(!b.dataset.s){b.dataset.s=1;b.textContent="¿Seguro? Pulsa otra vez";return}st={x:{},nm:"",ex:null,xa:0};save();vInicio()}
+function vRuta(){$("#app").innerHTML=`<h2>Módulos</h2><p class="mu">Puedes hacerlos en el orden que quieras y continuar otro día donde lo dejaste.</p>`+MD.map((M,j)=>{let d=0,p=0,f=0;const b=[];for(let k=1;k<=10;k++){const i=j*10+k,x=st.x[i];if(x&&x.d){d++;p+=x.p}else if(!f)f=i;b.push(`<a class="node ${x&&x.d?"done":x&&x.h?"next":""}" href="#ej-${i}">${x&&x.d?"✓":"▶"} ${i}${x&&x.d?" · "+f1(x.p):""}</a>`)}
+return `<div class="card lv"><h3>Módulo ${j+1} · ${M[0]}</h3><div class="bar"><i style="width:${d*10}%"></i></div><p class="mu">${d} de 10 ejercicios · ${f1(p)} puntos${d==10?" · ✓ Completado":""}</p><div class="nodes">${b.join("")}</div>${f?`<p><a class="btn" href="#ej-${f}">${d?"Continuar módulo":"Empezar módulo"}</a></p>`:""}</div>`}).join("")+`<div class="card"><h3>🏆 Examen final</h3><p class="mu">Se desbloquea al completar los 50 ejercicios.</p><a class="btn ${nd()<50?"sec":""}" href="#examen">Ir al examen</a></div>`}
+function vTeoria(){$("#app").innerHTML=`<h2>Teoría</h2>`+MD.map((M,j)=>`<div class="card lv"><h3>Módulo ${j+1} · ${M[0]}</h3><p>${M[1]}</p></div>`).join("")}
+function vNormas(){$("#app").innerHTML=`<h2>Cómo se puntúa</h2><p class="mu">Para que sepas siempre cómo se calcula tu nota.</p>
+<div class="card lv"><h3>Ayuda y puntuación</h3><ul><li><b>Primera vez:</b> vale 1 punto sin ayuda.</li><li><b>Si fallas o la pides:</b> se abre la ayuda y el ejercicio pasa a valer 0,5 puntos. La ayuda muestra la regla del módulo y una pista sobre el signo de cada resultado.</li><li><b>Si vuelves a fallar:</b> se muestra la solución y suma 0 puntos.</li></ul></div>
+<div class="card lv"><h3>Examen y nota</h3><ul><li><b>Examen final:</b> 10 preguntas tomadas de los 5 módulos, sin ayuda. Se desbloquea al completar los 50 ejercicios y se aprueba con 5 de 10.</li><li><b>Nota final:</b> 70 % ejercicios y 30 % examen.</li></ul><p class="mu">Ejemplo: si sumas 40 puntos de 50 (un 8 sobre 10) y sacas un 7 en el examen, tu nota final es 0,7 · 8 + 0,3 · 7 = 7,7.</p></div>
+<div class="card lv"><h3>Diploma e informe</h3><p>El diploma incluye tu nota final sobre 10. El informe, que aparece en la segunda página al imprimir, muestra:</p><ul><li>el logro por competencia con su nivel (Excelente, Notable, Bien, Suficiente o En progreso);</li><li>los puntos de cada módulo;</li><li>los ejercicios resueltos con y sin ayuda;</li><li>los intentos del examen.</li></ul></div>
+<a class="btn" href="#ruta">Ir a los módulos</a>`}
+function vEj(id){if(id<1||id>50)return vRuta();const e=X[id-1],M=MD[e.m],x=st.x[id]||{},v=x.v||[];
+const sg=e.p.map((q,k)=>{const a=+q[1];return isNaN(a)?"":`${"abc"[k]}) resultado ${a<0?"negativo":a>0?"positivo":"cero"}`}).filter(Boolean).join(" · ");
+$("#app").innerHTML=`<span class="tag">Módulo ${e.m+1} · ${M[0]}</span><h2>Ejercicio ${id} de 50</h2><div class="card"><p class="mu" style="font-size:.88rem">Sin ayuda: 1 punto · Con ayuda: 0,5 puntos · Tras un segundo fallo: 0 puntos</p><p><b>${e.i}</b></p>${e.p.map((q,k)=>{const ok=nm(v[k]||"")===nm(q[1]);return `<div class="q"><p>${"abc"[k]}) ${fm(q[0])}${q[2]?" =":""}</p>`+(x.d?`<p class="${ok?"g":"b"}">Tu respuesta: ${v[k]||"—"}${ok?" ✓":" ✗ · solución: "+s(q[1]).replace(",",", ")}</p>`:`<input class="in" id="a${k}" autocomplete="off" value="${(v[k]||"").replace(/"/g,"")}" placeholder="Tu respuesta">`)+`</div>`}).join("")}
+${x.h?`<div class="card hp"><b>💡 Ayuda</b> · ${M[1]}<br><span class="mu">Pista: ${sg}</span></div>`:""}
+<p class="res ${x.d&&x.p?"g":"b"}">${x.d?(x.p==1?"✓ Resuelto sin ayuda: 1 punto":x.p?"✓ Resuelto con ayuda: 0,5 puntos":"Solución mostrada: 0 puntos"):x.f?"✗ No es correcto. Se ha abierto la ayuda: inténtalo otra vez (vale 0,5 puntos).":x.h?"Con ayuda, este ejercicio vale 0,5 puntos.":""}</p>
+${x.d?"":`<button class="btn" onclick="chk(${id})">Comprobar</button> ${x.h?"":`<button class="btn sec" onclick="hlp(${id})">Pedir ayuda (vale 0,5)</button>`}`}
+<a class="btn ${x.d?"":"sec"}" href="#${id<50?"ej-"+(id+1):"ruta"}">${id<50?"Siguiente ejercicio":"Módulos"}</a> <a class="btn sec" href="#ruta">Módulos</a></div>`}
+function sv(id){const x=st.x[id]=st.x[id]||{};x.v=X[id-1].p.map((_,k)=>$("#a"+k).value);return x}
+function hlp(id){const x=sv(id);x.h=1;save();vEj(id)}
+function chk(id){const x=sv(id),ok=X[id-1].p.every((q,k)=>nm(x.v[k])===nm(q[1]));
+if(ok){x.d=1;x.p=x.h?.5:1}else if(x.h){x.d=1;x.p=0}else{x.h=1;x.f=1}save();vEj(id)}
+function vExamen(){if(nd()<50){$("#app").innerHTML=`<div class="card"><h2>🔒 Examen final</h2><p>Completa los 50 ejercicios para desbloquearlo. Llevas ${nd()}.</p><a class="btn" href="#ej-${nxt()||1}">Continuar</a></div>`;return}
+cur=[];for(let m=0;m<5;m++)[...Array(10).keys()].sort(()=>Math.random()-.5).slice(0,2).forEach(k=>{const e=X[m*10+k],q=e.p[R(0,e.p.length-1)];cur.push({q:e.i+" "+fm(q[0])+(q[2]?" =":""),a:q[1]})});
+$("#app").innerHTML=`<h2>Examen final</h2><p class="mu">10 preguntas de todos los módulos, sin ayuda. Necesitas 5 aciertos para aprobar. Nota final: 70 % ejercicios y 30 % examen.</p><div class="card"><p><label>Tu nombre completo:<br><input class="in" id="nm" style="width:100%;max-width:360px" value="${(st.nm||"").replace(/"/g,"")}"></label></p>${cur.map((x,k)=>`<div class="q"><p><b>${k+1}.</b> ${x.q}</p><input class="in" id="e${k}" autocomplete="off" placeholder="Tu respuesta"><div class="fb" id="f${k}"></div></div>`).join("")}<button class="btn" id="ck" onclick="fin()">Entregar examen</button><div id="rs"></div></div>`}
+function fin(){const n=$("#nm").value.trim();if(!n){$("#rs").innerHTML='<p class="b">Escribe tu nombre antes de entregar.</p>';return}
+let c=0;cur.forEach((x,k)=>{const r=nm($("#e"+k).value)===nm(x.a);c+=r;$("#f"+k).innerHTML=r?'<span class="g">✓ Correcto</span>':'<span class="b">✗ Era '+s(x.a)+"</span>"});
+$("#ck").disabled=true;st.nm=n;st.xa=(st.xa||0)+1;if(!st.ex||c>st.ex.sc)st.ex={sc:c,dt:new Date().toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"})};save();const w=c>=5;
+$("#rs").innerHTML=`<p class="res ${w?"g":"b"}">Examen: ${c} de 10. ${w?"¡Aprobado!":"Repasa la teoría e inténtalo de nuevo."}</p>`+(w?`<a class="btn" href="#diploma">Ver diploma e informe</a>`:`<button class="btn" onclick="vExamen()">Repetir examen</button> <a class="btn sec" href="#teoria">Repasar teoría</a>`)}
+function vDiploma(){if(!(st.ex&&st.ex.sc>=5&&nd()>=50)){$("#app").innerHTML=`<div class="card"><h2>Diploma</h2><p>Completa los 50 ejercicios y aprueba el examen final (5 de 10 o más) para conseguirlo.</p><a class="btn" href="#${nd()<50?"ruta":"examen"}">Continuar</a></div>`;return}
+const P=pts(),nf=Math.round((.7*P/5+.3*st.ex.sc)*10)/10,sn=st.nm.replace(/</g,"&lt;"),V=Object.values(st.x),fr=V.filter(x=>x.p==1).length,ay=V.filter(x=>x.h).length;
+const row=(n,c,p)=>`<tr><td>${n}</td><td>${c}</td><td>${Math.round(p)} %</td><td>${LV(p)}</td></tr>`;
+const cr=CP.map(([n,c,ids])=>row(n,c,ids.reduce((a,i)=>a+st.x[i].p,0)/ids.length*100)).join("")+row("Autonomía y perseverancia (ejercicios sin ayuda)","CE9",fr*2);
+const mr=MD.map((M,j)=>{let p=0;for(let k=1;k<=10;k++)p+=st.x[j*10+k].p;return `<tr><td>Módulo ${j+1} · ${M[0]}</td><td colspan="2">${f1(p)} / 10 puntos</td><td>${LV(p*10)}</td></tr>`}).join("");
+$("#app").innerHTML=`<div class="dip"><p class="mu">Vedruna Vigo</p><h1>Diploma</h1><p>Se otorga a</p><div class="nm">${sn}</div><p>por completar con éxito el curso<br><b>Vedruna Vigo Matlab 1 ESO · Tema Enteros</b><br>Números enteros y operaciones combinadas</p><p style="font-size:1.5rem">Nota final: <b>${f1(nf)} / 10</b> · ${LV(nf*10)}</p><p>${st.ex.dt}</p><p style="font-size:2.4rem;margin:8px">🏅</p></div>
+<div class="card inf"><h2>Informe de competencias</h2><p>Alumno/a: <b>${sn}</b> · Matemáticas 1.º ESO (Galicia) · Tema: Números enteros<br>Ejercicios: <b>${f1(P)} / 50 puntos</b> (${fr} sin ayuda, ${ay} con ayuda) · Examen final: <b>${st.ex.sc} / 10</b> (${st.xa} intento${st.xa>1?"s":""}) · Nota final: <b>${f1(nf)} / 10</b></p>
+<table><tr><th>Competencia trabajada</th><th>Comp. específica</th><th>Logro</th><th>Nivel</th></tr>${cr}</table><br><table><tr><th>Módulo</th><th colspan="2">Puntuación</th><th>Nivel</th></tr>${mr}</table>
+<p class="mu sm">Competencias específicas de Matemáticas: CE1 resolver problemas · CE2 comprobar soluciones · CE5 conectar ideas matemáticas · CE6 aplicar a la vida real · CE7 representar · CE9 gestionar el aprendizaje con autonomía. Niveles: Excelente ≥ 90 %, Notable ≥ 75 %, Bien ≥ 60 %, Suficiente ≥ 50 %, En progreso &lt; 50 %. Nota final = 70 % ejercicios + 30 % examen.</p></div><p class="noprint"><button class="btn" onclick="window.print()">Imprimir o guardar en PDF</button></p>`}
+function go(){let h=(location.hash||"#inicio").slice(1),v=h.startsWith("ej-")?"ej":h;window.scrollTo(0,0);vNav(v);({inicio:vInicio,ruta:vRuta,teoria:vTeoria,normas:vNormas,examen:vExamen,diploma:vDiploma}[v]||(v=="ej"?()=>vEj(parseInt(h.slice(3))):vInicio))()}
+addEventListener("hashchange",go);go();
+</script></body></html>
