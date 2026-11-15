@@ -135,49 +135,62 @@ function showCustomModal(title, message) {
 }
 
 // Nueva función para enviar a Google Sheets
-async function sendToSheet() {
+async function sendToSheet(silent = false) {
     if (!SCRIPT_URL) {
-        showCustomModal('Configuración Requerida', 'Para enviar los datos a una Hoja de Cálculo, debes añadir la URL de tu Google Apps Script (Web App) en la variable <b>SCRIPT_URL</b> dentro del código HTML.');
+        if(!silent) showCustomModal('Configuración Requerida', 'Para enviar los datos, debes añadir la URL de tu Google Apps Script en la variable SCRIPT_URL.');
         return;
     }
     
     const btn = document.getElementById('btn-sheet');
-    if (btn.disabled) return;
-    
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
+    if (btn && !silent) {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.textContent = 'Guardando en la nube...';
+    }
     
     const g = Object.values(S.r).flat(), tot = g.length ? g.reduce((s,x)=>s+x[1],0)/g.length : 0;
     
-    // Convertimos los datos al formato de un formulario clásico (x-www-form-urlencoded)
+    // Recopilar notas de todos los módulos (del 1 al 11)
+    const notas = {};
+    for(let i=0; i<11; i++) {
+        notas['m'+(i+1)] = S.r['m'+i] ? (pc('m'+i) * 10).toFixed(1) : '';
+    }
+    
+    // Sumar el total de avisos por salirse de la pestaña
+    let totalSalidas = 0;
+    if(S.o) Object.values(S.o).forEach(v => totalSalidas += v);
+    
+    // Convertimos los datos a parámetros de URL incluyendo las novedades
     const payload = new URLSearchParams({
         fecha: new Date().toLocaleString('es-ES'),
         nombre: S.name,
+        email: S.email || '',
         nota_global: (tot * 10).toFixed(1),
-        nota_examen: S.r.x ? (pc('x') * 10).toFixed(1) : 'Pendiente'
+        nota_examen: S.r.x ? (pc('x') * 10).toFixed(1) : '',
+        ...notas,
+        salidas: totalSalidas
     });
     
     try {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', // <-- ESTA LÍNEA ES LA CLAVE PARA EVITAR EL BLOQUEO
-            body: payload
-        });
+        const finalUrl = SCRIPT_URL + '?' + payload.toString();
+        await fetch(finalUrl, { method: 'GET', mode: 'no-cors' });
         
-        // Al usar 'no-cors', Google no nos devuelve un "OK" legible, 
-        // pero si no da error de red, asumimos que llegó.
-        btn.textContent = '¡Enviado!';
-        btn.classList.add('ok');
-        btn.classList.remove('pri');
+        if (btn && !silent) {
+            btn.textContent = '¡Sincronizado! ☁️';
+            btn.classList.add('ok');
+            btn.classList.remove('pri');
+        }
     } catch (e) {
-        btn.textContent = 'Error al enviar';
-        btn.disabled = false;
-        showCustomModal('Error de Conexión', 'Hubo un error al intentar enviar. Asegúrate de que el Google Site está PUBLICADO para que funcione correctamente.');
+        if (btn && !silent) {
+            btn.textContent = 'Error al sincronizar';
+            btn.disabled = false;
+            showCustomModal('Error de Conexión', 'Hubo un error al intentar enviar. Comprueba tu conexión a internet.');
+        }
     }
 }
 
 function render(){nav();const m=$('#m');
-if(!S.name){m.innerHTML=`<div class=card><h1>Curso de competencias digitales</h1><p class=mu>Antes de empezar, escribe tu nombre completo. Aparecerá en tu informe y en tu diploma.</p><input id=nm placeholder="Nombre y apellidos"><br><button class="pill pri" onclick="setN()">Empezar</button></div>`;return}
+if(!S.name || !S.email){m.innerHTML=`<div class=card><h1>Curso de competencias digitales</h1><p class=mu>Antes de empezar, escribe tu correo y tu nombre completo. Así podremos guardar tu progreso.</p><input id=em type=email placeholder="Correo electrónico" style="margin-bottom:0"><br><input id=nm placeholder="Nombre y apellidos"><br><button class="pill pri" onclick="setN()">Empezar</button></div>`;return}
 if(v=='test')return show();if(v=='rep')return rep();if(v=='dip')return dip();
 const dn=M.filter((_,i)=>S.r['m'+i]).length+(S.r.x?1:0),p=Math.round(dn/12*100);
 m.innerHTML=`<section class=hero><div><div class=eb>Curso de competencia digital</div><h1>Mapa de <em>aprendizaje</em></h1><p class=lead>Hola, ${S.name}. Evalúa tus competencias digitales con Google Workspace y consigue tu informe y tu diploma.</p><p class=sm>Cada prueba se puede hacer una sola vez y todas cuentan para tu informe final.</p><button class=lime onclick="document.getElementById('mod').scrollIntoView({behavior:'smooth'})">Ver los módulos ↓</button></div>
@@ -185,13 +198,15 @@ m.innerHTML=`<section class=hero><div><div class=eb>Curso de competencia digital
 <div id=mod class=eb2>Módulos</div><h2 class=h2>Todos los módulos</h2>`+
 L.map(([t,a,b],n)=>`<h2 class=lv>${t}</h2><div class=grid>`+M.slice(a,b).map((x,j)=>{const i=a+j,d=S.r['m'+i];return`<div class="card mc"><div class=ct><span class=ic>${i+1}</span><div><h3>${x.n}</h3><span class=mu>${C[x.c[0]]}</span></div></div><div class=cf><code>DigComp ${x.c.join(' · ')}</code>${d?`<span class="pill ${pc('m'+i)>=.6?'ok':'ko'}">${Math.round(pc('m'+i)*100)}%</span>`:`<button class=dk onclick="ini('m${i}')">Hacer la prueba →</button>`}</div></div>`}).join('')+'</div>').join('')+
 `<h2 class=lv>Examen final</h2><div class="card mc"><div class=ct><span class=ic>★</span><div><h3>50 preguntas: 25 de ordenar y 25 de test</h3><span class=mu>Se desbloquea al completar los 11 módulos.</span></div></div><div class=cf><code>Examen</code>${S.r.x?`<span class="pill ${pc('x')>=.6?'ok':'ko'}">Nota ${(pc('x')*10).toFixed(1)}/10</span>`:`<button class=dk ${all()?'':'disabled'} onclick="ini('x')">Empezar examen →</button>`}</div></div>`}
-function setN(){const n=$('#nm').value.trim();if(n.length<3)return;S.name=n;save();render()}
+function setN(){const n=$('#nm').value.trim(), e=$('#em').value.trim();if(n.length<3 || e.length<5 || !e.includes('@')){showCustomModal('Datos incompletos', 'Por favor, escribe un correo electrónico válido y tu nombre completo para continuar.');return;}S.name=n;S.email=e;save();render()}
 function ini(id){if(S.r[id])return;$('#m').innerHTML=`<div class=card><h1>${id=='x'?'Examen final':'Módulo '+(+id.slice(1)+1)}</h1><p>Solo puedes hacer esta prueba <b>una vez</b>: no se podrá repetir. ¿Empezar ahora?</p><div class=row><button class="pill pri" onclick="beg('${id}')">Empezar</button><button class=pill onclick="go('map')">Cancelar</button></div></div>`}
 function beg(id){if(S.r[id])return;let it;
 if(id=='x'){const O=M.flatMap(m=>m.o.map((_,i)=>mo(m,i))),Q=M.flatMap(m=>m.q.map((_,i)=>mq(m,i)));it=sh([...sh(O).slice(0,25),...sh(Q).slice(0,25)])}
 else{const m=M[+id.slice(1)];it=sh([...m.o.map((_,i)=>mo(m,i)),...m.q.map((_,i)=>mq(m,i))])}
 S.r[id]=it.map(i=>[i.c,0]);S.tm=S.tm||{};S.tm[id]={s:Date.now()};save();run={id,it,i:0};v='test';try{document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}render()}
-function show(){const{it,i,id}=run;nav();if(i>=it.length){S.tm[id].e=S.tm[id].e||Date.now();save();try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}const f=id=='x'?'Examen':'Módulo '+(+id.slice(1)+1);$('#m').innerHTML=`<div class=card><h1>${f} completado</h1><p>Resultado: <b>${Math.round(pc(id)*100)}%</b> (${(pc(id)*10).toFixed(1)}/10)</p><div class=row><button class="pill pri" onclick="go('map')">Volver al mapa</button><button class=pill onclick="go('rep')">Ver informe</button></div></div>`;return}
+function show(){const{it,i,id}=run;nav();if(i>=it.length){S.tm[id].e=S.tm[id].e||Date.now();save();try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}const f=id=='x'?'Examen':'Módulo '+(+id.slice(1)+1);
+sendToSheet(true);
+$('#m').innerHTML=`<div class=card><h1>${f} completado</h1><p>Resultado: <b>${Math.round(pc(id)*100)}%</b> (${(pc(id)*10).toFixed(1)}/10)</p><p class="mu ok" style="display:inline-block;padding:4px 12px;border-radius:99px;margin:8px 0;color:#1f2a05;font-size:14px">☁️ Guardado en la nube</p><div class=row><button class="pill pri" onclick="go('map')">Volver al mapa</button><button class=pill onclick="go('rep')">Ver informe</button></div></div>`;return}
 const x=it[i],h=`<div class=card><span class=tag>${id=='x'?'Examen':'Módulo '+(+id.slice(1)+1)} · ${i+1}/${it.length}</span><div class=bar style="margin:8px 0"><i style="width:${i/it.length*100}%"></i></div>`;
 if(x.k=='q'){$('#m').innerHTML=h+en(x)+`<h3>${x.t}</h3><div class=opts>${sh(x.o).map(o=>`<button class=pill onclick="aq(this,${o==x.o[0]})">${o}</button>`).join('')}</div><div id=fb></div></div>`;return}
 x.pool=sh(x.s.map((_,k)=>k));x.pl=[];ord()}
@@ -209,7 +224,7 @@ $('#m').innerHTML=`<h1>Informe de competencias</h1><p class=mu>${S.name} · conj
 <div class=card><h3>Resultados por prueba</h3><table>${M.map((m,i)=>`<tr><td>Módulo ${i+1} · ${m.n}</td><td style="text-align:right">${S.r['m'+i]?Math.round(pc('m'+i)*100)+'%'+ex('m'+i):'<span class=mu>pendiente</span>'}</td></tr>`).join('')}<tr><td><b>Examen final</b></td><td style="text-align:right">${S.r.x?Math.round(pc('x')*100)+'%'+ex('x'):'<span class=mu>pendiente</span>'}</td></tr></table></div>
 <div class="row noprint" style="margin-top:12px">
 <button class="pill pri" onclick="pdf()">Descargar informe en PDF</button>
-<button id="btn-sheet" class="pill" onclick="sendToSheet()">Enviar a Hoja de Cálculo</button>
+<button id="btn-sheet" class="pill" onclick="sendToSheet()">Sincronizar datos ☁️</button>
 </div>`}
 function dip(){if(!(S.r.x&&all())){$('#m').innerHTML=`<div class=card><h1>Diploma</h1><p class=mu>Se emite al completar los 11 módulos y el examen final.</p></div>`;return}
 const a=comp(),g=Object.values(S.r).flat(),tot=g.reduce((s,x)=>s+x[1],0)/g.length;
