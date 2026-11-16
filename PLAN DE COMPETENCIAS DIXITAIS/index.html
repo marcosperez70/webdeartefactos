@@ -426,6 +426,13 @@
   :root[data-theme="dark"] .badge.plain{background:#3d5c4e;}
   :root[data-theme="dark"] .res-empty{background:#0f1c15;}
   
+
+  .sb-all{appearance:none;margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:999px;padding:8px 16px;font:700 13px 'Manrope',sans-serif;cursor:pointer;transition:background .2s;}
+  .sb-all:hover,.sb-all[aria-pressed="true"]{background:var(--green-300);border-color:var(--green-300);color:var(--green-900);}
+  .all-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .all-subject{background:var(--green-100);border:1px solid var(--green-200);border-radius:14px;padding:14px 16px 16px;}
+  .level.eso .all-subject{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);}
+  .all-subject h4{margin:0 0 8px;font-family:'Fraunces',serif;font-size:17px;font-weight:600;}
 </style>
 </head>
 <body>
@@ -446,6 +453,7 @@
         <input id="q" type="search" placeholder="Buscar materia, competencia, curso ou actividade…" autocomplete="off" aria-label="Buscar">
         <button type="button" class="sb-clear" id="qClear" hidden aria-label="Borrar busca">×</button>
       </div>
+      <button type="button" class="sb-all" id="allBtn" aria-pressed="false">Ver todas as actividades</button>
       <div class="sb-info" id="qInfo" aria-live="polite"></div>
       <div class="sb-status" id="dbStatus"></div>
     </div>
@@ -752,7 +760,7 @@ function buildCard(course, subj, ts, forceOpen){
 /* ----- Buscador ----- */
 const sInput = document.getElementById('q'), sClear = document.getElementById('qClear'), sInfo = document.getElementById('qInfo');
 const resultsEl = document.getElementById('results'), mainEl = document.getElementById('mainContent');
-let searching = false;
+let searching = false, allMode = false;
 
 function hay(course, subj){
   const key = keyOf(course, subj.name);
@@ -761,14 +769,16 @@ function hay(course, subj){
   return norm([course, subj.name, subj.blurb || '', rows, links].join(' '));
 }
 function goToCourse(level, course){
-  sInput.value = ''; runSearch();
+  sInput.value = ''; setAll(false); runSearch();
   setActiveCourse(level, course);
   document.getElementById('level-' + level).scrollIntoView({behavior:'smooth', block:'start'});
 }
 function runSearch(){
   const q = sInput.value.trim(), ts = termsOf(q);
   sClear.hidden = !sInput.value;
+  if (ts.length) setAll(false);
   if (!ts.length){
+    if (allMode){ renderAll(); return; }
     searching = false; resultsEl.hidden = true; resultsEl.textContent = ''; mainEl.hidden = false; sInfo.textContent = '';
     return;
   }
@@ -809,19 +819,80 @@ function runSearch(){
   }
 }
 
+/* ----- Ver todas as actividades ----- */
+const allBtn = document.getElementById('allBtn');
+function setAll(v){
+  allMode = v;
+  allBtn.setAttribute('aria-pressed', String(v));
+  allBtn.textContent = v ? 'Ocultar actividades' : 'Ver todas as actividades';
+}
+function renderAll(){
+  searching = true;
+  resultsEl.textContent = '';
+  let nLinks = 0, nSubj = 0;
+  ['primaria','eso'].forEach(level => {
+    const sec = document.createElement('section'); sec.className = 'level ' + level;
+    const inner = document.createElement('div'); inner.className = 'level-inner';
+    LEVELS[level].courses.forEach(course => {
+      const subs = COURSES[course].subjects.filter(s => (LINKS[keyOf(course, s.name)] || []).length);
+      if (!subs.length) return;
+      const count = subs.reduce((n, s) => n + LINKS[keyOf(course, s.name)].length, 0);
+      const h = document.createElement('h3'); h.className = 'res-course';
+      h.innerHTML = `${esc(course)} <span class="res-count mono">${count}</span>`;
+      const go = document.createElement('button'); go.type = 'button'; go.className = 'res-go'; go.textContent = 'Ver curso →';
+      go.addEventListener('click', () => goToCourse(level, course));
+      h.appendChild(go);
+      const grid = document.createElement('div'); grid.className = 'all-grid';
+      subs.forEach(s => {
+        const arr = LINKS[keyOf(course, s.name)];
+        nLinks += arr.length; nSubj++;
+        const box = document.createElement('div'); box.className = 'all-subject';
+        const t = document.createElement('h4'); t.textContent = s.name;
+        const ul = document.createElement('ul'); ul.className = 'link-list';
+        arr.forEach(l => {
+          const li = document.createElement('li');
+          const a = document.createElement('a'); a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+          a.textContent = l.title || hostOf(l.url); li.appendChild(a);
+          if (l.title){ const hs = document.createElement('span'); hs.className = 'link-host mono'; hs.textContent = hostOf(l.url); li.appendChild(hs); }
+          ul.appendChild(li);
+        });
+        box.append(t, ul); grid.appendChild(box);
+      });
+      inner.append(h, grid);
+    });
+    if (inner.children.length){ sec.appendChild(inner); resultsEl.appendChild(sec); }
+  });
+  if (!nLinks){
+    const e = document.createElement('div'); e.className = 'res-empty';
+    e.textContent = 'Aínda non hai ningunha actividade ligada.';
+    resultsEl.appendChild(e);
+  }
+  mainEl.hidden = true; resultsEl.hidden = false;
+  sInfo.textContent = nLinks ? `${nLinks} ${nLinks === 1 ? 'actividade' : 'actividades'} en ${nSubj} ${nSubj === 1 ? 'materia' : 'materias'}` : '';
+}
+
 buildTabs('primaria');
 buildTabs('eso');
 setActiveCourse('primaria', LEVELS.primaria.courses[0]);
 setActiveCourse('eso', LEVELS.eso.courses[0]);
 
 sInput.addEventListener('input', runSearch);
+allBtn.addEventListener('click', () => {
+  setAll(!allMode);
+  if (allMode) sInput.value = '';
+  runSearch();
+  if (allMode){
+    const bar = document.getElementById('searchbar');
+    if (bar.getBoundingClientRect().top > 120) bar.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+});
 sClear.addEventListener('click', () => { sInput.value = ''; runSearch(); sInput.focus(); });
 sInput.addEventListener('keydown', e => { if (e.key === 'Escape'){ sInput.value = ''; runSearch(); } });
 document.addEventListener('keydown', e => {
   if (e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); sInput.focus(); }
 });
 // Desde o camiño de crecemento: saír da busca antes de ir ao curso
-gp.addEventListener('click', () => { if (searching){ sInput.value = ''; runSearch(); } }, true);
+gp.addEventListener('click', () => { if (searching){ sInput.value = ''; setAll(false); runSearch(); } }, true);
 
 // ===== Ligazóns das actividades =====
 // Modo 1 (por defecto): le o ficheiro actividades.json do repositorio (só lectura).
@@ -865,6 +936,7 @@ async function loadLinks(){
   });
   Object.values(LINKS).forEach(a => a.sort((p, q) => p.ts - q.ts));
   refreshAllLinks();
+  if (allMode) renderAll();
 }
 (async () => {
   try {
