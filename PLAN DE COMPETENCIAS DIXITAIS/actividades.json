@@ -1,6 +1,20 @@
-{
-  "course": "5º PRIMARIA",
-  "subject": "LENGUA",
-  "title": "Nombre de la actividad",
-  "url": "https://..."
-}
+[
+  {
+    "course": "5º PRIMARIA",
+    "subject": "LENGUA",
+    "title": "Buscadores y marcadores",
+    "url": "https://docs.google.com/document/d/XXXX"
+  },
+  {
+    "course": "5º PRIMARIA",
+    "subject": "MATEMÁTICAS",
+    "title": "Hoja de cálculo: tabla de datos",
+    "url": "https://docs.google.com/spreadsheets/d/XXXX"
+  },
+  {
+    "course": "1º ESO",
+    "subject": "TECNOLOXÍA",
+    "title": "Programación con Scratch",
+    "url": "https://scratch.mit.edu/projects/XXXX"
+  }
+]
