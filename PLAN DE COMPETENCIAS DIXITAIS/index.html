@@ -2,7 +2,7 @@
 <html lang="gl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Competencias Dixitais · Primaria e ESO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +48,7 @@
     position:relative;
     background: radial-gradient(120% 140% at 12% 0%, #1f6b42 0%, #12402c 55%, #0d2e20 100%);
     color:var(--white);
-    padding: 64px 24px 40px;
+    padding: calc(64px + env(safe-area-inset-top,0px)) 24px 40px;
     overflow:hidden;
   }
   .hero::after{
@@ -322,16 +322,110 @@
   .level.eso .callout .metaphor{ border-top-color:rgba(255,255,255,0.16); color:rgba(255,255,255,0.65); }
 
   footer{
-    text-align:center; padding:34px 20px 48px;
+    text-align:center; padding:34px 20px calc(48px + env(safe-area-inset-bottom,0px));
     font-size:12.5px; color:var(--ink-soft);
     background:var(--paper);
   }
 
   @media (max-width:640px){
-    .hero{padding:44px 18px 30px;}
+    .hero{padding:calc(44px + env(safe-area-inset-top,0px)) 18px 30px;}
     .level{padding:40px 18px 48px;}
     .tab-btn{margin-right:14px; font-size:14.5px;}
   }
+
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  [hidden]{display:none !important;}
+  mark{background:#ffe58f;color:#122720;border-radius:3px;padding:0 2px;}
+
+  /* ---------- BUSCADOR ---------- */
+  .searchbar{margin-top:34px;max-width:760px;scroll-margin-top:16px;}
+  .sb-field{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:16px;padding:0 10px 0 16px;transition:background .2s,border-color .2s;}
+  .sb-field:focus-within{background:rgba(255,255,255,0.16);border-color:var(--green-300);}
+  .sb-field > svg{width:18px;height:18px;flex:none;stroke:var(--green-300);}
+  .sb-field input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#fff;font:600 16px 'Manrope',sans-serif;padding:15px 0;}
+  .sb-field input::placeholder{color:rgba(255,255,255,0.55);font-weight:500;}
+  .sb-field input::-webkit-search-cancel-button{display:none;}
+  .sb-clear{appearance:none;border:0;background:rgba(255,255,255,0.14);color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:16px;line-height:1;}
+  .sb-info{margin-top:10px;font-family:'Space Mono',monospace;font-size:12px;color:rgba(255,255,255,0.75);min-height:1.3em;}
+  .sb-status{margin-top:4px;font-size:12.5px;color:rgba(255,255,255,0.6);}
+
+  .results .level{padding:40px 24px 44px;}
+  .res-course{display:flex;align-items:center;gap:12px;margin:28px 0 14px;font-size:22px;font-weight:600;}
+  .res-course:first-child{margin-top:0;}
+  .res-count{font-size:11.5px;background:var(--green-600);color:#fff;border-radius:999px;padding:2px 9px;}
+  .res-go{margin-left:auto;appearance:none;background:transparent;border:1px solid var(--green-300);color:inherit;border-radius:999px;padding:5px 12px;font:600 12px 'Manrope',sans-serif;cursor:pointer;}
+  .res-go:hover{background:var(--green-300);color:var(--green-900);}
+  .res-empty{padding:56px 24px;text-align:center;background:var(--white);color:var(--ink-soft);font-size:15px;line-height:1.6;}
+
+  /* ---------- ACTIVIDADES (ligazóns) ---------- */
+  .subject-card.open .sc-detail{max-height:3000px;}
+  .sc-links{cursor:default;}
+  .sc-links .sc-row-tag svg{width:13px;height:13px;flex:none;stroke:currentColor;}
+  .link-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;}
+  .link-list li{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--green-200);border-radius:10px;padding:7px 8px 7px 11px;font-size:13.5px;}
+  .level.eso .link-list li{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);}
+  .link-list a{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:700;color:var(--green-700);text-decoration:none;}
+  .link-list a:hover{text-decoration:underline;}
+  .level.eso .link-list a{color:var(--green-300);}
+  .link-host{flex:none;max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--ink-soft);}
+  .level.eso .link-host{color:rgba(255,255,255,0.55);}
+  .link-del{display:none;flex:none;appearance:none;border:0;background:transparent;cursor:pointer;color:var(--ink-soft);font:700 12px 'Space Mono',monospace;padding:3px 7px;border-radius:6px;}
+  .level.eso .link-del{color:rgba(255,255,255,0.7);}
+  body.can-add .link-del{display:inline-block;}
+  .link-del.armed{background:#b3261e;color:#fff;}
+  .link-empty{margin-top:6px;font-size:13px;font-style:italic;color:var(--ink-soft);}
+  .level.eso .link-empty{color:rgba(255,255,255,0.6);}
+  .link-add{display:none;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  body.can-add .link-add{display:flex;}
+  .link-add input{flex:1 1 150px;min-width:0;border:1px solid var(--green-300);background:var(--white);color:var(--ink);border-radius:10px;padding:8px 10px;font:500 14px 'Manrope',sans-serif;}
+  .level.eso .link-add input{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.25);color:#fff;}
+  .link-add button{appearance:none;border:0;background:var(--green-700);color:#fff;border-radius:10px;padding:8px 14px;font:700 13px 'Manrope',sans-serif;cursor:pointer;}
+  .link-add button:disabled{opacity:.55;cursor:default;}
+  .level.eso .link-add button{background:var(--green-300);color:var(--green-900);}
+  .link-note{margin-top:6px;font-size:12.5px;color:#b3261e;}
+  .level.eso .link-note{color:#ffb4ab;}
+  .badge.link-badge{width:auto;border-radius:999px;padding:0 8px;gap:4px;background:var(--green-900);}
+  .badge.link-badge svg{width:11px;height:11px;stroke:#fff;}
+
+  @media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--paper:#0b1712;--ink:#e4f1e9;--ink-soft:#a3bfb0;--line:#24402f;--green-100:#14261c;--green-200:#25432f;color-scheme:dark;}
+  :root:not([data-theme="light"]) .level.primaria{background:#0f1c15;}
+  :root:not([data-theme="light"]) .level.primaria .tab-btn.active{color:var(--green-300);}
+  :root:not([data-theme="light"]) .level.primaria .tab-btn:hover{color:#fff;}
+  :root:not([data-theme="light"]) .level.primaria .level-tag{color:var(--green-300);}
+  :root:not([data-theme="light"]) .level.primaria .sc-row .sc-row-tag{color:var(--green-300);}
+  :root:not([data-theme="light"]) .level.primaria .callout h5{color:var(--green-300);}
+  :root:not([data-theme="light"]) .level.primaria .callout{background:#14261c;}
+  :root:not([data-theme="light"]) .level.primaria .callout li b{color:#fff;}
+  :root:not([data-theme="light"]) .level.primaria .subject-card .chev{background:transparent;border-color:rgba(255,255,255,0.35);}
+  :root:not([data-theme="light"]) .level.primaria .subject-card .chev svg{stroke:#fff;}
+  :root:not([data-theme="light"]) .level.primaria .link-list li{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);}
+  :root:not([data-theme="light"]) .level.primaria .link-list a{color:var(--green-300);}
+  :root:not([data-theme="light"]) .level.primaria .link-add input{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.25);color:#fff;}
+  :root:not([data-theme="light"]) .level.primaria .link-add button{background:var(--green-300);color:var(--green-900);}
+  :root:not([data-theme="light"]) .level.primaria .link-note{color:#ffb4ab;}
+  :root:not([data-theme="light"]) .badge.plain{background:#3d5c4e;}
+  :root:not([data-theme="light"]) .res-empty{background:#0f1c15;}
+  }
+  :root[data-theme="dark"]{--paper:#0b1712;--ink:#e4f1e9;--ink-soft:#a3bfb0;--line:#24402f;--green-100:#14261c;--green-200:#25432f;color-scheme:dark;}
+  :root[data-theme="dark"] .level.primaria{background:#0f1c15;}
+  :root[data-theme="dark"] .level.primaria .tab-btn.active{color:var(--green-300);}
+  :root[data-theme="dark"] .level.primaria .tab-btn:hover{color:#fff;}
+  :root[data-theme="dark"] .level.primaria .level-tag{color:var(--green-300);}
+  :root[data-theme="dark"] .level.primaria .sc-row .sc-row-tag{color:var(--green-300);}
+  :root[data-theme="dark"] .level.primaria .callout h5{color:var(--green-300);}
+  :root[data-theme="dark"] .level.primaria .callout{background:#14261c;}
+  :root[data-theme="dark"] .level.primaria .callout li b{color:#fff;}
+  :root[data-theme="dark"] .level.primaria .subject-card .chev{background:transparent;border-color:rgba(255,255,255,0.35);}
+  :root[data-theme="dark"] .level.primaria .subject-card .chev svg{stroke:#fff;}
+  :root[data-theme="dark"] .level.primaria .link-list li{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);}
+  :root[data-theme="dark"] .level.primaria .link-list a{color:var(--green-300);}
+  :root[data-theme="dark"] .level.primaria .link-add input{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.25);color:#fff;}
+  :root[data-theme="dark"] .level.primaria .link-add button{background:var(--green-300);color:var(--green-900);}
+  :root[data-theme="dark"] .level.primaria .link-note{color:#ffb4ab;}
+  :root[data-theme="dark"] .badge.plain{background:#3d5c4e;}
+  :root[data-theme="dark"] .res-empty{background:#0f1c15;}
+  
 </style>
 </head>
 <body>
@@ -345,10 +439,22 @@
     <div class="growth-path" id="growthPath"></div>
 
     <div class="legend" id="legend"></div>
+
+    <div class="searchbar" id="searchbar" role="search">
+      <div class="sb-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+        <input id="q" type="search" placeholder="Buscar materia, competencia, curso ou actividade…" autocomplete="off" aria-label="Buscar">
+        <button type="button" class="sb-clear" id="qClear" hidden aria-label="Borrar busca">×</button>
+      </div>
+      <div class="sb-info" id="qInfo" aria-live="polite"></div>
+      <div class="sb-status" id="dbStatus"></div>
+    </div>
   </div>
 </header>
 
-<main>
+<div class="results" id="results" hidden></div>
+
+<main id="mainContent">
   <section class="level primaria" id="level-primaria">
     <div class="level-inner">
       <div class="level-head">
@@ -456,32 +562,7 @@ function renderCourse(level, courseName){
   // grid
   const grid = document.getElementById('grid-' + level);
   grid.innerHTML = '';
-  data.subjects.forEach(subj => {
-    const card = document.createElement('div');
-    card.className = 'subject-card';
-    const badges = subj.rows.map(r => {
-      const cd = r[0];
-      const isCd = /^CD[1-5]$/.test(cd);
-      return `<span class="badge ${badgeClass(isCd ? cd : '')}" title="${isCd ? (cd + ': ' + CD_NAMES[cd]) : cd}">${isCd ? cd.replace('CD','') : '•'}</span>`;
-    }).join('');
-    const rowsHtml = subj.rows.map(r => {
-      const cd = r[0];
-      const isCd = /^CD[1-5]$/.test(cd);
-      const label = isCd ? (cd + ' · ' + CD_NAMES[cd]) : cd;
-      return `<div class="sc-row"><div class="sc-row-tag">${isCd ? ICONS[cd] : ''}${label}</div><p>${r[1]}</p></div>`;
-    }).join('');
-    card.innerHTML = `
-      <div class="sc-top">
-        <h4>${subj.name}</h4>
-        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-      </div>
-      ${subj.blurb ? `<div class="blurb">${subj.blurb}</div>` : ''}
-      <div class="sc-badges">${badges}</div>
-      <div class="sc-detail"><div class="sc-detail-inner">${rowsHtml}</div></div>
-    `;
-    card.addEventListener('click', () => card.classList.toggle('open'));
-    grid.appendChild(card);
-  });
+  data.subjects.forEach(subj => grid.appendChild(buildCard(courseName, subj, [], false)));
 
   // callout (conclusion + metaphor)
   const callout = document.getElementById('callout-' + level);
@@ -528,10 +609,270 @@ function buildTabs(level){
   });
 }
 
+
+/* ===== ACTIVIDADES (ligazóns compartidas) + BUSCADOR ===== */
+const LINK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+const LINKS = {};            // "curso|materia" -> [{id,title,url,ts}]
+const OPEN = new Set();      // tarxetas abertas
+let dbRef = null, canWrite = false, dbState = 'loading';
+
+const keyOf = (course, name) => course + '|' + name;
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function norm(s){
+  return String(s).split('').map(c => (c.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().charAt(0)) || c).join('');
+}
+function termsOf(q){ return norm(q).split(/\s+/).filter(Boolean); }
+function hl(text, ts){
+  text = String(text);
+  if (!ts || !ts.length) return esc(text);
+  const n = norm(text), mark = new Array(text.length).fill(false);
+  ts.forEach(t => { let i = n.indexOf(t); while (i > -1){ for (let k = i; k < i + t.length; k++) mark[k] = true; i = n.indexOf(t, i + t.length); } });
+  let out = '', open = false;
+  for (let i = 0; i < text.length; i++){
+    if (mark[i] && !open){ out += '<mark>'; open = true; }
+    if (!mark[i] && open){ out += '</mark>'; open = false; }
+    out += esc(text[i]);
+  }
+  return out + (open ? '</mark>' : '');
+}
+function cleanUrl(v){
+  v = String(v || '').trim();
+  if (!v) return null;
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(v)) v = 'https://' + v;
+  try { const u = new URL(v); return /^https?:$/.test(u.protocol) ? u.href : null; } catch (e) { return null; }
+}
+function hostOf(u){ try { return new URL(u).hostname.replace(/^www\./,''); } catch (e) { return u; } }
+
+function fillLinks(card){
+  const arr = LINKS[card.dataset.key] || [];
+  const ul = card.querySelector('.link-list');
+  ul.textContent = '';
+  arr.forEach(l => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = l.title || hostOf(l.url);
+    li.appendChild(a);
+    if (l.title){
+      const h = document.createElement('span'); h.className = 'link-host mono'; h.textContent = hostOf(l.url); li.appendChild(h);
+    }
+    const del = document.createElement('button');
+    del.type = 'button'; del.className = 'link-del'; del.textContent = '×'; del.title = 'Eliminar ligazón';
+    let timer = null;
+    del.addEventListener('click', async () => {
+      if (!del.classList.contains('armed')){
+        del.classList.add('armed'); del.textContent = 'Seguro?';
+        timer = setTimeout(() => { del.classList.remove('armed'); del.textContent = '×'; }, 3000);
+        return;
+      }
+      clearTimeout(timer);
+      try { await store.remove(l.id); } catch (e) { del.textContent = 'Erro'; }
+    });
+    li.appendChild(del);
+    ul.appendChild(li);
+  });
+  card.querySelector('.link-empty').hidden = arr.length > 0;
+  const b = card.querySelector('.link-badge');
+  b.hidden = arr.length === 0;
+  b.querySelector('span').textContent = arr.length;
+}
+function refreshAllLinks(){ document.querySelectorAll('.subject-card').forEach(fillLinks); }
+
+function applyPerms(){
+  document.body.classList.toggle('can-add', dbState === 'ready' && canWrite);
+  const msg = {
+    loading: '',
+    ready: canWrite ? 'Abre unha materia para engadir ou consultar a ligazón da súa actividade.' : '',
+    off: 'Para engadir ligazóns hai que abrir a páxina cunha sesión iniciada.',
+    error: 'Non se puideron cargar as ligazóns neste momento.'
+  };
+  document.getElementById('dbStatus').textContent = msg[dbState] || '';
+}
+
+function buildCard(course, subj, ts, forceOpen){
+  const key = keyOf(course, subj.name);
+  const card = document.createElement('div');
+  card.className = 'subject-card' + ((forceOpen || OPEN.has(key)) ? ' open' : '');
+  card.dataset.key = key;
+  const badges = subj.rows.map(r => {
+    const cd = r[0], isCd = /^CD[1-5]$/.test(cd);
+    return `<span class="badge ${badgeClass(isCd ? cd : '')}" title="${isCd ? (cd + ': ' + CD_NAMES[cd]) : esc(cd)}">${isCd ? cd.replace('CD','') : '•'}</span>`;
+  }).join('') + `<span class="badge link-badge" title="Actividades ligadas" hidden>${LINK_ICON}<span></span></span>`;
+  const rowsHtml = subj.rows.map(r => {
+    const cd = r[0], isCd = /^CD[1-5]$/.test(cd);
+    const label = isCd ? (cd + ' · ' + CD_NAMES[cd]) : cd;
+    return `<div class="sc-row"><div class="sc-row-tag">${isCd ? ICONS[cd] : ''}${esc(label)}</div><p>${hl(r[1], ts)}</p></div>`;
+  }).join('');
+  card.innerHTML = `
+    <div class="sc-top">
+      <h4>${hl(subj.name, ts)}</h4>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+    </div>
+    ${subj.blurb ? `<div class="blurb">${hl(subj.blurb, ts)}</div>` : ''}
+    <div class="sc-badges">${badges}</div>
+    <div class="sc-detail"><div class="sc-detail-inner">
+      ${rowsHtml}
+      <div class="sc-row sc-links">
+        <div class="sc-row-tag">${LINK_ICON}Actividades</div>
+        <ul class="link-list"></ul>
+        <div class="link-empty">Aínda non hai ningunha actividade ligada.</div>
+        <div class="link-add">
+          <input class="in-title" type="text" maxlength="80" placeholder="Título (opcional)" aria-label="Título da actividade">
+          <input class="in-url" type="url" placeholder="Pegar ligazón (https://…)" aria-label="Ligazón da actividade">
+          <button type="button" class="btn-add">Engadir</button>
+        </div>
+        <div class="link-note" hidden></div>
+      </div>
+    </div></div>`;
+  const note = t => { const n = card.querySelector('.link-note'); n.textContent = t; n.hidden = !t; };
+  const inT = card.querySelector('.in-title'), inU = card.querySelector('.in-url'), btn = card.querySelector('.btn-add');
+  async function submit(){
+    const url = cleanUrl(inU.value);
+    if (!url){ note('A ligazón non é válida: ten que ser unha dirección web (http o https).'); return; }
+    btn.disabled = true; note('');
+    try {
+      await store.add({ course, subject: subj.name, title: inT.value.trim().slice(0, 80), url });
+      inT.value = ''; inU.value = '';
+    } catch (e) {
+      note(e && e.code === 'code' ? 'Código de edición incorrecto ou non indicado.' : 'Non se puido gardar a ligazón.');
+    }
+    btn.disabled = false;
+  }
+  btn.addEventListener('click', submit);
+  [inT, inU].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); submit(); } }));
+  card.addEventListener('click', e => {
+    if (e.target.closest('.sc-links')) return;
+    card.classList.toggle('open');
+    if (card.classList.contains('open')) OPEN.add(key); else OPEN.delete(key);
+  });
+  fillLinks(card);
+  return card;
+}
+
+/* ----- Buscador ----- */
+const sInput = document.getElementById('q'), sClear = document.getElementById('qClear'), sInfo = document.getElementById('qInfo');
+const resultsEl = document.getElementById('results'), mainEl = document.getElementById('mainContent');
+let searching = false;
+
+function hay(course, subj){
+  const key = keyOf(course, subj.name);
+  const rows = subj.rows.map(r => r[0] + ' ' + (CD_NAMES[r[0]] || '') + ' ' + r[1]).join(' ');
+  const links = (LINKS[key] || []).map(l => l.title + ' ' + l.url).join(' ');
+  return norm([course, subj.name, subj.blurb || '', rows, links].join(' '));
+}
+function goToCourse(level, course){
+  sInput.value = ''; runSearch();
+  setActiveCourse(level, course);
+  document.getElementById('level-' + level).scrollIntoView({behavior:'smooth', block:'start'});
+}
+function runSearch(){
+  const q = sInput.value.trim(), ts = termsOf(q);
+  sClear.hidden = !sInput.value;
+  if (!ts.length){
+    searching = false; resultsEl.hidden = true; resultsEl.textContent = ''; mainEl.hidden = false; sInfo.textContent = '';
+    return;
+  }
+  const wasSearching = searching; searching = true;
+  const groups = []; let total = 0;
+  ORDER.forEach(course => {
+    const matches = COURSES[course].subjects.filter(s => { const h = hay(course, s); return ts.every(t => h.includes(t)); });
+    if (matches.length){ groups.push({course, matches}); total += matches.length; }
+  });
+  resultsEl.textContent = '';
+  if (!total){
+    const e = document.createElement('div'); e.className = 'res-empty';
+    e.textContent = 'Sen resultados para “' + q + '”. Proba con outra materia, curso ou competencia (por exemplo CD2).';
+    resultsEl.appendChild(e);
+  }
+  ['primaria','eso'].forEach(level => {
+    const gs = groups.filter(g => LEVELS[level].courses.includes(g.course));
+    if (!gs.length) return;
+    const sec = document.createElement('section'); sec.className = 'level ' + level;
+    const inner = document.createElement('div'); inner.className = 'level-inner';
+    gs.forEach(g => {
+      const h = document.createElement('h3'); h.className = 'res-course';
+      h.innerHTML = `${esc(g.course)} <span class="res-count mono">${g.matches.length}</span>`;
+      const go = document.createElement('button'); go.type = 'button'; go.className = 'res-go'; go.textContent = 'Ver curso →';
+      go.addEventListener('click', () => goToCourse(level, g.course));
+      h.appendChild(go);
+      const grid = document.createElement('div'); grid.className = 'subject-grid';
+      g.matches.forEach(s => grid.appendChild(buildCard(g.course, s, ts, total <= 10)));
+      inner.append(h, grid);
+    });
+    sec.appendChild(inner); resultsEl.appendChild(sec);
+  });
+  mainEl.hidden = true; resultsEl.hidden = false;
+  sInfo.textContent = total ? `${total} ${total === 1 ? 'materia' : 'materias'} en ${groups.length} ${groups.length === 1 ? 'curso' : 'cursos'}` : '';
+  if (!wasSearching){
+    const bar = document.getElementById('searchbar');
+    if (bar.getBoundingClientRect().top > 120) bar.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
 buildTabs('primaria');
 buildTabs('eso');
 setActiveCourse('primaria', LEVELS.primaria.courses[0]);
 setActiveCourse('eso', LEVELS.eso.courses[0]);
+
+sInput.addEventListener('input', runSearch);
+sClear.addEventListener('click', () => { sInput.value = ''; runSearch(); sInput.focus(); });
+sInput.addEventListener('keydown', e => { if (e.key === 'Escape'){ sInput.value = ''; runSearch(); } });
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); sInput.focus(); }
+});
+// Desde o camiño de crecemento: saír da busca antes de ir ao curso
+gp.addEventListener('click', () => { if (searching){ sInput.value = ''; runSearch(); } }, true);
+
+// ===== Ligazóns das actividades =====
+// Modo 1 (por defecto): le o ficheiro actividades.json do repositorio (só lectura).
+// Modo 2: pega aquí a URL da aplicación web de Google Apps Script e o profesorado poderá engadir ligazóns desde a páxina.
+const CONFIG = { SCRIPT_URL: "https://script.google.com/a/macros/vedruna.es/s/AKfycbwfUI0PlwYoeVLWfmQOKF8etbHDrJ2nct_gurw9dD57rQSpd4wRHJFu42RMgu8p9XQwNA/exec'' };
+
+function editCode(){
+  let c = '';
+  try { c = localStorage.getItem('cd_code') || ''; } catch (e) {}
+  if (!c){
+    c = (window.prompt('Código de edición do profesorado:') || '').trim();
+    if (c){ try { localStorage.setItem('cd_code', c); } catch (e) {} }
+  }
+  return c;
+}
+const store = {
+  async load(){
+    const r = await fetch(CONFIG.SCRIPT_URL || 'actividades.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('http');
+    return r.json();
+  },
+  async post(body){
+    const code = editCode();
+    if (!code) throw { code: 'code' };
+    const r = await fetch(CONFIG.SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...body, code }) });
+    const j = await r.json();
+    if (j.error === 'code'){ try { localStorage.removeItem('cd_code'); } catch (e) {} throw { code: 'code' }; }
+    if (j.error) throw j;
+    await loadLinks();
+  },
+  add(l){ return this.post({ action: 'add', ...l }); },
+  remove(id){ return this.post({ action: 'delete', id }); }
+};
+async function loadLinks(){
+  const list = await store.load();
+  Object.keys(LINKS).forEach(k => delete LINKS[k]);
+  (Array.isArray(list) ? list : []).forEach((x, n) => {
+    if (!x || !x.course || !x.subject) return;
+    const url = cleanUrl(x.url); if (!url) return;
+    (LINKS[keyOf(String(x.course), String(x.subject))] ||= []).push({ id: String(x.id || n), title: String(x.title || ''), url, ts: Number(x.ts) || n });
+  });
+  Object.values(LINKS).forEach(a => a.sort((p, q) => p.ts - q.ts));
+  refreshAllLinks();
+}
+(async () => {
+  try {
+    await loadLinks();
+    canWrite = !!CONFIG.SCRIPT_URL; dbState = 'ready';
+  } catch (e) { dbState = 'error'; }
+  applyPerms();
+})();
 </script>
 </body>
 </html>
