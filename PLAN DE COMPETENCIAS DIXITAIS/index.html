@@ -666,7 +666,7 @@ function fillLinks(card){
         return;
       }
       clearTimeout(timer);
-      try { await store.remove(l.id); } catch (e) { del.textContent = 'Erro'; }
+      try { await dbRef.collection('links').doc(l.id).delete(); } catch (e) { del.textContent = 'Erro'; }
     });
     li.appendChild(del);
     ul.appendChild(li);
@@ -682,7 +682,7 @@ function applyPerms(){
   document.body.classList.toggle('can-add', dbState === 'ready' && canWrite);
   const msg = {
     loading: '',
-    ready: canWrite ? 'Abre unha materia para engadir ou consultar a ligazón da súa actividade.' : '',
+    ready: canWrite ? 'Abre unha materia para engadir ou consultar a ligazón da súa actividade.' : 'Modo lectura: só os colaboradores poden engadir ligazóns.',
     off: 'Para engadir ligazóns hai que abrir a páxina cunha sesión iniciada.',
     error: 'Non se puideron cargar as ligazóns neste momento.'
   };
@@ -729,12 +729,14 @@ function buildCard(course, subj, ts, forceOpen){
   async function submit(){
     const url = cleanUrl(inU.value);
     if (!url){ note('A ligazón non é válida: ten que ser unha dirección web (http o https).'); return; }
+    if (!dbRef) return;
     btn.disabled = true; note('');
     try {
-      await store.add({ course, subject: subj.name, title: inT.value.trim().slice(0, 80), url });
+      await dbRef.collection('links').add({ course, subject: subj.name, title: inT.value.trim().slice(0, 80), url, ts: Date.now() });
       inT.value = ''; inU.value = '';
     } catch (e) {
-      note(e && e.code === 'code' ? 'Código de edición incorrecto ou non indicado.' : 'Non se puido gardar a ligazón.');
+      if (e && e.code === 'invalid_argument'){ canWrite = false; applyPerms(); }
+      note('Non se puido gardar a ligazón.');
     }
     btn.disabled = false;
   }
@@ -823,55 +825,28 @@ document.addEventListener('keydown', e => {
 // Desde o camiño de crecemento: saír da busca antes de ir ao curso
 gp.addEventListener('click', () => { if (searching){ sInput.value = ''; runSearch(); } }, true);
 
-// ===== Ligazóns das actividades =====
-// Modo 1 (por defecto): le o ficheiro actividades.json do repositorio (só lectura).
-// Modo 2: pega aquí a URL da aplicación web de Google Apps Script e o profesorado poderá engadir ligazóns desde a páxina.
-const CONFIG = { SCRIPT_URL: "https://script.google.com/a/macros/vedruna.es/s/AKfycbwfUI0PlwYoeVLWfmQOKF8etbHDrJ2nct_gurw9dD57rQSpd4wRHJFu42RMgu8p9XQwNA/exec'' };
-
-function editCode(){
-  let c = '';
-  try { c = localStorage.getItem('cd_code') || ''; } catch (e) {}
-  if (!c){
-    c = (window.prompt('Código de edición do profesorado:') || '').trim();
-    if (c){ try { localStorage.setItem('cd_code', c); } catch (e) {} }
-  }
-  return c;
-}
-const store = {
-  async load(){
-    const r = await fetch(CONFIG.SCRIPT_URL || 'actividades.json', { cache: 'no-store' });
-    if (!r.ok) throw new Error('http');
-    return r.json();
-  },
-  async post(body){
-    const code = editCode();
-    if (!code) throw { code: 'code' };
-    const r = await fetch(CONFIG.SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...body, code }) });
-    const j = await r.json();
-    if (j.error === 'code'){ try { localStorage.removeItem('cd_code'); } catch (e) {} throw { code: 'code' }; }
-    if (j.error) throw j;
-    await loadLinks();
-  },
-  add(l){ return this.post({ action: 'add', ...l }); },
-  remove(id){ return this.post({ action: 'delete', id }); }
-};
-async function loadLinks(){
-  const list = await store.load();
-  Object.keys(LINKS).forEach(k => delete LINKS[k]);
-  (Array.isArray(list) ? list : []).forEach((x, n) => {
-    if (!x || !x.course || !x.subject) return;
-    const url = cleanUrl(x.url); if (!url) return;
-    (LINKS[keyOf(String(x.course), String(x.subject))] ||= []).push({ id: String(x.id || n), title: String(x.title || ''), url, ts: Number(x.ts) || n });
-  });
-  Object.values(LINKS).forEach(a => a.sort((p, q) => p.ts - q.ts));
-  refreshAllLinks();
-}
+// Ligazóns compartidas (base de datos do artefacto)
 (async () => {
-  try {
-    await loadLinks();
-    canWrite = !!CONFIG.SCRIPT_URL; dbState = 'ready';
-  } catch (e) { dbState = 'error'; }
   applyPerms();
+  if (!(window.claude && claude.use)){ dbState = 'off'; applyPerms(); return; }
+  try {
+    const [db, user] = await Promise.all([claude.use('db'), claude.use('user')]);
+    if (!db){ dbState = 'off'; applyPerms(); return; }
+    dbRef = db;
+    let can = null;
+    if (user){ try { can = await user.can('data.write'); } catch (e) {} }
+    canWrite = can !== false; dbState = 'ready'; applyPerms();
+    db.collection('links').onSnapshot(snap => {
+      Object.keys(LINKS).forEach(k => delete LINKS[k]);
+      snap.docs.forEach(d => {
+        const x = d.data(); if (!x || !x.course || !x.subject) return;
+        const url = cleanUrl(x.url); if (!url) return;
+        (LINKS[keyOf(String(x.course), String(x.subject))] ||= []).push({ id: d.id, title: String(x.title || ''), url, ts: Number(x.ts) || 0 });
+      });
+      Object.values(LINKS).forEach(a => a.sort((p, q) => p.ts - q.ts));
+      refreshAllLinks();
+    }, () => { dbState = 'error'; applyPerms(); });
+  } catch (e) { dbState = 'off'; applyPerms(); }
 })();
 </script>
 </body>
