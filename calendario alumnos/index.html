@@ -1,1 +1,2719 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sitios de Calendarios de Alumnos</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    /* Personalización sutil de barras de desplazamiento */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .calendar-cell {
+      min-height: 128px;
+    }
+    @media (max-width: 768px) {
+      .calendar-cell {
+        min-height: 92px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- Notificación Toast Flotante -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Encabezado Institucional Superior -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        
+        <!-- Logo y Título -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-blue-600/20 shrink-0">
+            <i data-lucide="calendar-days" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                Sitios de Calendarios de Alumnos
+              </h1>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                13 Cursos Activos
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Portal unificado de planificación académica, exámenes y actividades por grupo
+            </p>
+          </div>
+        </div>
+
+        <!-- Panel de Sincronización y Configuración -->
+        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <!-- Botón Principal Crear Evento -->
+          <button onclick="openCreateEventModal()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm font-semibold shadow-sm shadow-emerald-600/20 transition-all cursor-pointer">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+            <span>+ Crear evento</span>
+          </button>
+
+          <!-- Botón Asistente de Voz Gemini Live -->
+          <button id="btn-voice-assistant" onclick="toggleVoiceAssistantPanel()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-semibold shadow-sm shadow-indigo-600/20 transition-all cursor-pointer">
+            <span id="voice-header-dot" class="w-2 h-2 rounded-full bg-indigo-200"></span>
+            <i data-lucide="mic" class="w-4 h-4"></i>
+            <span>Asistente Voz Gemini</span>
+          </button>
+
+          <!-- Indicador Auto-Sync 24h -->
+          <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200/90 rounded-xl px-3.5 py-2 text-xs">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <div class="leading-tight">
+              <div class="font-semibold text-slate-700 flex items-center gap-1.5">
+                <span>Auto-sync 24h activo</span>
+                <span id="countdown-badge" class="font-mono text-[11px] bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-600">23:59:59</span>
+              </div>
+              <div class="text-slate-500 mt-0.5">
+                Última act.: <span id="last-sync-text" class="font-medium text-slate-700">Hoy, ahora mismo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón Sincronizar Ahora -->
+          <button id="btn-sync-now" onclick="syncCalendars(true)" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold shadow-sm shadow-blue-600/20 transition-all cursor-pointer">
+            <i id="sync-icon" data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Sincronizar ahora</span>
+          </button>
+
+          <!-- Botón Configurar Calendarios -->
+          <button onclick="openConfigModal()" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-sm font-medium shadow-xs transition-all cursor-pointer">
+            <i data-lucide="settings-2" class="w-4 h-4 text-slate-500"></i>
+            <span class="hidden sm:inline">Configurar Calendarios y Permisos</span>
+            <span class="sm:hidden">Permisos / Config</span>
+          </button>
+
+          <!-- Botón Copiar Código para Google Sites -->
+          <button onclick="copyGoogleSitesEmbedCode()" title="Copiar todo el código HTML listo para pegar en Insertar > Insertar código de Google Sites" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-sm font-semibold shadow-2xs transition-all cursor-pointer">
+            <i data-lucide="code-2" class="w-4 h-4 text-amber-600"></i>
+            <span class="hidden xl:inline">Google Sites</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+
+    <!-- Barra de Herramientas: Filtros por Etapa, Curso, Búsqueda y Navegación Mensual -->
+    <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-4">
+      
+      <!-- Fila 1: Navegación Mensual + Selector Desplegable + Vista -->
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        
+        <!-- Controles de Fecha / Mes -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <button onclick="changeMonth(-1)" title="Mes anterior" class="p-2 rounded-lg hover:bg-white hover:shadow-xs text-slate-600 hover:text-slate-900 transition cursor-pointer">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <button onclick="goToToday()" class="px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-white hover:shadow-xs rounded-lg transition cursor-pointer">
+              Hoy
+            </button>
+            <button onclick="changeMonth(1)" title="Mes siguiente" class="p-2 rounded-lg hover:bg-white hover:shadow-xs text-slate-600 hover:text-slate-900 transition cursor-pointer">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Selectores rápidos Mes y Año -->
+          <div class="flex items-center gap-2">
+            <select id="select-month" onchange="onMonthYearSelect()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+              <option value="0">Enero</option>
+              <option value="1">Febrero</option>
+              <option value="2">Marzo</option>
+              <option value="3">Abril</option>
+              <option value="4">Mayo</option>
+              <option value="5">Junio</option>
+              <option value="6">Julio</option>
+              <option value="7">Agosto</option>
+              <option value="8">Septiembre</option>
+              <option value="9">Octubre</option>
+              <option value="10">Noviembre</option>
+              <option value="11">Diciembre</option>
+            </select>
+            <select id="select-year" onchange="onMonthYearSelect()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+            </select>
+          </div>
+
+          <span id="month-event-counter" class="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
+            0 eventos este mes
+          </span>
+        </div>
+
+        <!-- Filtro Desplegable Único + Buscador + Cambio de Vista -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Selector desplegable directo por curso -->
+          <div class="relative flex-1 sm:flex-initial min-w-[235px]">
+            <select id="course-dropdown" onchange="handleDropdownCourseChange(this.value)" class="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 hover:bg-white pl-3.5 pr-9 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+              <!-- Opciones generadas dinámicamente con indicador de permisos -->
+            </select>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+
+          <!-- Buscador de eventos -->
+          <div class="relative flex-1 sm:flex-initial min-w-[200px]">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="search-input" oninput="renderApp()" placeholder="Buscar examen, excursión..." class="w-full rounded-xl border border-slate-200 bg-slate-50 focus:bg-white pl-9 pr-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+          </div>
+
+          <!-- Alternar Vista: Mes / Agenda -->
+          <div class="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-1">
+            <button id="view-btn-month" onclick="setViewMode('month')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-blue-700 shadow-xs transition cursor-pointer">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <span>Mes</span>
+            </button>
+            <button id="view-btn-agenda" onclick="setViewMode('agenda')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition cursor-pointer">
+              <i data-lucide="list" class="w-3.5 h-3.5"></i>
+              <span>Agenda</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Filtros rápidos por Etapa Educativa -->
+      <div class="pt-3 border-t border-slate-100 flex flex-col gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">Etapas:</span>
+          <button onclick="selectStage('ALL')" data-stage="ALL" class="stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white transition cursor-pointer">
+            Todos los cursos
+          </button>
+          <button onclick="selectStage('BACH')" data-stage="BACH" class="stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+            Bachillerato (2)
+          </button>
+          <button onclick="selectStage('4ESO')" data-stage="4ESO" class="stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+            4º ESO (2)
+          </button>
+          <button onclick="selectStage('3ESO')" data-stage="3ESO" class="stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+            3º ESO (3)
+          </button>
+          <button onclick="selectStage('2ESO')" data-stage="2ESO" class="stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+            2º ESO (3)
+          </button>
+          <button onclick="selectStage('1ESO')" data-stage="1ESO" class="stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer">
+            1º ESO (3)
+          </button>
+          <button onclick="clearAllCourses()" class="ml-auto text-xs font-medium text-slate-500 hover:text-rose-600 underline cursor-pointer">
+            Deseleccionar todos
+          </button>
+        </div>
+
+        <!-- Fila 3: Chips Interactivos de los 13 Cursos (Selección múltiple + Leyenda de color + Permisos) -->
+        <div class="flex flex-col gap-2">
+          <div id="course-chips-container" class="flex flex-wrap items-center gap-1.5">
+            <!-- Se renderizan dinámicamente con JS -->
+          </div>
+          <div class="flex flex-wrap items-center gap-4 text-[11px] text-slate-500">
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="pen-line" class="w-3 h-3 text-emerald-600"></i>
+              <span>Con derechos para crear eventos (<strong id="writable-count-badge" class="text-slate-700">4</strong>)</span>
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="lock" class="w-3 h-3 text-slate-400"></i>
+              <span>Solo lectura (<strong id="readonly-count-badge" class="text-slate-700">9</strong>)</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vista de Calendario Mensual -->
+    <section id="month-view-container" class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+      <!-- Cabecera días de la semana (Lunes a Domingo) -->
+      <div class="grid grid-cols-7 bg-slate-50 border-b border-slate-200 text-center">
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-slate-600">Lunes</div>
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-slate-600">Martes</div>
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-slate-600">Miércoles</div>
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-slate-600">Jueves</div>
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-slate-600">Viernes</div>
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50/40">Sábado</div>
+        <div class="py-3 text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50/40">Domingo</div>
+      </div>
+      <!-- Rejilla de días -->
+      <div id="calendar-grid" class="grid grid-cols-7 divide-x divide-y divide-slate-200/80">
+        <!-- Generado por JS -->
+      </div>
+    </section>
+
+    <!-- Vista de Agenda / Lista Detallada del Mes -->
+    <section id="agenda-view-container" class="hidden space-y-4">
+      <!-- Generado por JS -->
+    </section>
+
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="bg-white border-t border-slate-200 mt-10 py-4 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <p><strong>Sitios de Calendarios de Alumnos</strong> · Gestión centralizada de horarios y eventos escolares.</p>
+      <p id="data-source-status" class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+        <span>Modo demostración cargado (13 cursos listos para conectar vía iCal)</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- MODAL 1: Detalle de Evento o Resumen de Día -->
+  <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div id="detail-modal-header" class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span id="detail-modal-badge" class="px-2.5 py-1 rounded-lg text-xs font-bold"></span>
+          <h3 id="detail-modal-title" class="text-lg font-bold text-slate-900">Detalle del evento</h3>
+        </div>
+        <button onclick="closeDetailModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="detail-modal-body" class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700">
+        <!-- Contenido dinámico -->
+      </div>
+      <div id="detail-modal-footer" class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div id="detail-modal-actions"></div>
+        <button onclick="closeDetailModal()" class="ml-auto px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition cursor-pointer">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Crear Nuevo Evento (con validación de derechos por calendario) -->
+  <div id="create-event-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl max-h-[92vh] flex flex-col overflow-hidden">
+      <!-- Cabecera -->
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+            <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">Crear nuevo evento</h2>
+            <p class="text-xs text-slate-500">Selecciona un calendario en el que tengas derechos de edición</p>
+          </div>
+        </div>
+        <button onclick="closeCreateEventModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form id="create-event-form" onsubmit="handleCreateEventSubmit(event)" class="p-6 overflow-y-auto space-y-4 text-sm">
+        <!-- Selector de Calendario / Curso Destino -->
+        <div>
+          <label for="create-event-course" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            Calendario / Curso destino *
+          </label>
+          <div class="relative">
+            <select id="create-event-course" onchange="onCreateCourseChange()" class="w-full appearance-none rounded-xl border border-slate-300 bg-white pl-3.5 pr-10 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+              <!-- Opciones dinámicas -->
+            </select>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+        </div>
+
+        <!-- Alerta de Sin Permisos (Visible cuando canWrite === false) -->
+        <div id="no-permission-banner" class="hidden rounded-xl border-2 border-rose-300 bg-rose-50 p-4 text-rose-900">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-sm font-extrabold text-rose-800">
+                No puedes crear eventos en este calendario
+              </h4>
+              <p class="text-xs text-rose-700 leading-relaxed">
+                Tu perfil tiene acceso de <strong>solo lectura</strong> en <span id="no-perm-course-name" class="font-bold underline">este curso</span>. Elige otro calendario con permisos de edición o habilita tus derechos desde <em>Configurar Calendarios y Permisos</em>.
+              </p>
+              <div class="pt-1.5">
+                <button type="button" onclick="closeCreateEventModal(); openConfigModal();" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer">
+                  <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                  <span>Gestionar permisos de calendarios</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campos del Evento (Se deshabilitan si no hay permisos) -->
+        <fieldset id="create-event-fields" class="space-y-4 transition-opacity">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <label for="create-event-title" class="block text-xs font-semibold text-slate-700 mb-1">
+                Título del evento *
+              </label>
+              <input type="text" id="create-event-title" required placeholder="Ej. Examen de Matemáticas, Entrega proyecto..." class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400" />
+            </div>
+            <div>
+              <label for="create-event-category" class="block text-xs font-semibold text-slate-700 mb-1">
+                Categoría
+              </label>
+              <select id="create-event-category" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400">
+                <option value="Examen">📝 Examen</option>
+                <option value="Entrega">📂 Entrega</option>
+                <option value="Actividad">🎯 Actividad</option>
+                <option value="Excursión">🚌 Excursión</option>
+                <option value="Reunión">👥 Reunión</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label for="create-event-date" class="block text-xs font-semibold text-slate-700 mb-1">
+                Fecha *
+              </label>
+              <input type="date" id="create-event-date" required class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400" />
+            </div>
+            <div>
+              <label for="create-event-start" class="block text-xs font-semibold text-slate-700 mb-1">
+                Hora inicio
+              </label>
+              <input type="time" id="create-event-start" value="09:25" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400" />
+            </div>
+            <div>
+              <label for="create-event-end" class="block text-xs font-semibold text-slate-700 mb-1">
+                Hora fin
+              </label>
+              <input type="time" id="create-event-end" value="10:20" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400" />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-4">
+            <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
+              <input type="checkbox" id="create-event-allday" onchange="toggleAllDayInputs()" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+              <span>Evento de todo el día</span>
+            </label>
+            <div class="flex-1 max-w-xs">
+              <input type="text" id="create-event-location" placeholder="Aula o ubicación (ej. Aula 201)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100" />
+            </div>
+          </div>
+
+          <div>
+            <label for="create-event-desc" class="block text-xs font-semibold text-slate-700 mb-1">
+              Descripción / Temario / Observaciones
+            </label>
+            <textarea id="create-event-desc" rows="3" placeholder="Detalles adicionales para los alumnos del grupo..." class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400"></textarea>
+          </div>
+        </fieldset>
+
+        <!-- Botones del Formulario -->
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeCreateEventModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-submit-create-event" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-sm transition cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Guardar evento en calendario</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Configuración de Calendarios (iCal / Google Calendar) y Permisos -->
+  <div id="config-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+      <!-- Cabecera Modal Config -->
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-5 h-5 text-blue-600"></i>
+            <span>Configurar Calendarios y Permisos de Edición</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Define en qué cursos tienes <strong>derechos para crear eventos</strong> y conecta opcionalmente sus enlaces públicos <strong>.ics</strong> o IDs de Google Calendar.
+          </p>
+        </div>
+        <button onclick="closeConfigModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Ayuda rápida + Acción Demo -->
+      <div class="px-6 py-3 bg-blue-50/80 border-b border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="text-xs text-blue-900 leading-relaxed">
+          <strong>Permisos por curso:</strong> Activa <em>"Con derechos de creación"</em> en los calendarios que administras. En los cursos marcados como <em>"Solo lectura"</em> no se permitirá añadir ni borrar eventos.
+        </div>
+        <button onclick="loadDemoDataAndClose()" class="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-blue-100/60 text-blue-700 border border-blue-200 text-xs font-semibold shadow-2xs transition cursor-pointer">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>Restaurar datos demo</span>
+        </button>
+      </div>
+
+      <!-- Lista de inputs para los 13 cursos -->
+      <div id="config-courses-list" class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <!-- Pie Modal Config -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <button onclick="clearConfiguredUrls()" class="text-xs font-medium text-rose-600 hover:text-rose-700 underline cursor-pointer">
+          Limpiar URLs configuradas
+        </button>
+        <div class="flex items-center gap-2.5">
+          <button onclick="closeConfigModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition cursor-pointer">
+            Cancelar
+          </button>
+          <button onclick="saveCalendarConfigs()" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition cursor-pointer">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Guardar y Sincronizar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL FLOTANTE: Asistente de Voz en Tiempo Real con Gemini Live API -->
+  <aside id="voice-assistant-panel" class="fixed bottom-5 left-5 z-40 hidden w-[360px] max-w-[calc(100vw-2.5rem)] bg-white rounded-2xl shadow-2xl border border-indigo-200 overflow-hidden flex-col">
+    <!-- Cabecera del Asistente -->
+    <div class="px-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+          <i data-lucide="audio-waveform" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold leading-tight">Asistente Gemini Live</h3>
+          <p id="voice-status-text" class="text-[11px] text-indigo-100">Listo para conectar por voz</p>
+        </div>
+      </div>
+      <button onclick="toggleVoiceAssistantPanel()" class="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition cursor-pointer" title="Minimizar panel">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Historial de Transcripción en Vivo -->
+    <div id="voice-transcript-box" class="p-3.5 h-56 overflow-y-auto bg-slate-50/80 space-y-2.5 text-xs">
+      <div class="bg-white border border-slate-200/80 rounded-xl p-2.5 text-slate-600 leading-relaxed">
+        Pulsa <strong>Iniciar conversación por voz</strong> y pídele cosas como:
+        <ul class="list-disc pl-4 mt-1 space-y-0.5 text-slate-500">
+          <li><em>"¿Qué exámenes tiene 1º de Bachillerato A este mes?"</em></li>
+          <li><em>"Crea un examen de Física en 4º de ESO A el 25 de este mes a las 10:00"</em></li>
+          <li><em>"Filtra solo los cursos de 3º de ESO"</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Controles de Audio y Envío Rápido por Texto -->
+    <div class="p-3 bg-white border-t border-slate-200 space-y-2.5">
+      <div class="flex items-center gap-2">
+        <button id="btn-voice-connect" onclick="startGeminiLiveSession()" class="flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+          <i data-lucide="mic" class="w-4 h-4"></i>
+          <span>Iniciar conversación por voz</span>
+        </button>
+        <button id="btn-voice-disconnect" onclick="stopGeminiLiveSession()" class="hidden flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+          <i data-lucide="mic-off" class="w-4 h-4"></i>
+          <span>Finalizar sesión</span>
+        </button>
+      </div>
+
+      <form onsubmit="sendVoiceTextFallback(event)" class="flex items-center gap-1.5">
+        <input type="text" id="voice-text-input" placeholder="O escribe una orden al asistente..." class="flex-1 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <button type="submit" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white transition cursor-pointer" title="Enviar texto al asistente">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <script>
+    // =========================================================================
+    // 1. DEFINICIÓN DE LOS 13 CURSOS ESCOLARES Y SU CÓDIGO DE COLORES
+    // =========================================================================
+    const COURSES = [
+      // Bachillerato (Tonos Violeta / Índigo)
+      { id: '1bachA', shortName: '1º BACH A', name: '1º de Bachillerato A (1 bach 1)', stage: 'BACH', defaultCanWrite: true, bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300', dot: 'bg-purple-600', badgeBg: 'bg-purple-600' },
+      { id: '1bachB', shortName: '1º BACH B', name: '1º de Bachillerato B', stage: 'BACH', defaultCanWrite: false, bg: 'bg-indigo-100', text: 'text-indigo-800', border: 'border-indigo-300', dot: 'bg-indigo-600', badgeBg: 'bg-indigo-600' },
+
+      // 4º de ESO (Tonos Azul / Cian)
+      { id: '4esoA', shortName: '4º ESO A', name: '4º de ESO A', stage: '4ESO', defaultCanWrite: true, bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-300', dot: 'bg-blue-600', badgeBg: 'bg-blue-600' },
+      { id: '4esoB', shortName: '4º ESO B', name: '4º de ESO B', stage: '4ESO', defaultCanWrite: false, bg: 'bg-sky-100', text: 'text-sky-800', border: 'border-sky-300', dot: 'bg-sky-600', badgeBg: 'bg-sky-600' },
+
+      // 3º de ESO (Tonos Esmeralda / Verde / Teal)
+      { id: '3esoA', shortName: '3º ESO A', name: '3º de ESO A', stage: '3ESO', defaultCanWrite: false, bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-300', dot: 'bg-teal-600', badgeBg: 'bg-teal-600' },
+      { id: '3esoB', shortName: '3º ESO B', name: '3º de ESO B', stage: '3ESO', defaultCanWrite: true, bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-300', dot: 'bg-emerald-600', badgeBg: 'bg-emerald-600' },
+      { id: '3esoC', shortName: '3º ESO C', name: '3º de ESO C', stage: '3ESO', defaultCanWrite: false, bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300', dot: 'bg-green-600', badgeBg: 'bg-green-600' },
+
+      // 2º de ESO (Tonos Ámbar / Naranja / Lima)
+      { id: '2esoA', shortName: '2º ESO A', name: '2º de ESO A', stage: '2ESO', defaultCanWrite: true, bg: 'bg-amber-100', text: 'text-amber-900', border: 'border-amber-300', dot: 'bg-amber-500', badgeBg: 'bg-amber-600' },
+      { id: '2esoB', shortName: '2º ESO B', name: '2º de ESO B', stage: '2ESO', defaultCanWrite: false, bg: 'bg-orange-100', text: 'text-orange-900', border: 'border-orange-300', dot: 'bg-orange-500', badgeBg: 'bg-orange-600' },
+      { id: '2esoC', shortName: '2º ESO C', name: '2º de ESO C', stage: '2ESO', defaultCanWrite: false, bg: 'bg-yellow-100', text: 'text-yellow-900', border: 'border-yellow-400', dot: 'bg-yellow-500', badgeBg: 'bg-yellow-600' },
+
+      // 1º de ESO (Tonos Rosa / Fucsia / Carmesí)
+      { id: '1esoA', shortName: '1º ESO A', name: '1º de ESO A', stage: '1ESO', defaultCanWrite: false, bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-300', dot: 'bg-rose-600', badgeBg: 'bg-rose-600' },
+      { id: '1esoB', shortName: '1º ESO B', name: '1º de ESO B', stage: '1ESO', defaultCanWrite: false, bg: 'bg-pink-100', text: 'text-pink-800', border: 'border-pink-300', dot: 'bg-pink-600', badgeBg: 'bg-pink-600' },
+      { id: '1esoC', shortName: '1º ESO C', name: '1º de ESO C', stage: '1ESO', defaultCanWrite: false, bg: 'bg-fuchsia-100', text: 'text-fuchsia-800', border: 'border-fuchsia-300', dot: 'bg-fuchsia-600', badgeBg: 'bg-fuchsia-600' },
+    ];
+
+    const COURSE_MAP = Object.fromEntries(COURSES.map(c => [c.id, c]));
+
+    const MONTH_NAMES = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    const DAY_NAMES_FULL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    // =========================================================================
+    // 2. ESTADO DE LA APLICACIÓN
+    // =========================================================================
+    const today = new Date();
+    const DEFAULT_PERMISSIONS = Object.fromEntries(COURSES.map(c => [c.id, c.defaultCanWrite]));
+
+    let state = {
+      currentYear: today.getFullYear(),
+      currentMonth: today.getMonth(), // 0-11
+      selectedCourses: new Set(COURSES.map(c => c.id)), // Todos activos por defecto
+      activeStage: 'ALL',
+      viewMode: 'month', // 'month' | 'agenda'
+      events: [],
+      customEvents: [], // Eventos creados manualmente desde la web
+      calendarUrls: {}, // { courseId: 'https://...ics o id@group.calendar.google.com' }
+      calendarPermissions: { ...DEFAULT_PERMISSIONS }, // { courseId: boolean }
+      lastSyncTimestamp: null,
+      nextSyncTimestamp: null,
+      useDemoMode: true
+    };
+
+    const STORAGE_KEYS = {
+      URLS: 'sca_calendar_urls_v1',
+      PERMISSIONS: 'sca_calendar_permissions_v1',
+      EVENTS: 'sca_cached_events_v1',
+      CUSTOM_EVENTS: 'sca_custom_events_v1',
+      LAST_SYNC: 'sca_last_sync_v1',
+      DEMO_MODE: 'sca_demo_mode_v1'
+    };
+
+    const SYNC_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
+
+    function canWriteCalendar(courseId) {
+      return Boolean(state.calendarPermissions[courseId]);
+    }
+
+    // =========================================================================
+    // 3. GENERADOR DE DATOS ESCOLARES DE DEMOSTRACIÓN (13 CURSOS)
+    // =========================================================================
+    function generateRealisticDemoEvents(baseYear, baseMonth) {
+      const templates = [
+        { courseId: '1bachA', dayOffset: 2, time: '08:30 - 09:25', title: 'Examen: Matemáticas I (Derivadas)', location: 'Aula 201', description: 'Evaluación parcial de cálculo diferencial y aplicaciones.' },
+        { courseId: '1bachA', dayOffset: 9, time: '11:45 - 12:40', title: 'Entrega: Comentario de Texto Filosófico', location: 'Aula 201', description: 'Entrega impresa y en plataforma digital.' },
+        { courseId: '1bachA', dayOffset: 17, time: '09:25 - 13:30', title: 'Visita Científica: Facultad de Física', location: 'Campus Universitario', description: 'Salida educativa autorizada para 1º de Bachillerato A.' },
+        { courseId: '1bachB', dayOffset: 4, time: '10:20 - 11:15', title: 'Examen: Física y Química (Cinemática)', location: 'Laboratorio 2', description: 'Problemas de MRU, MRUA y tiro parabólico.' },
+        { courseId: '1bachB', dayOffset: 14, time: '12:40 - 13:35', title: 'Exposición Oral: Historia del Mundo Contemporáneo', location: 'Aula 202', description: 'Presentaciones por parejas sobre la Revolución Industrial.' },
+        { courseId: '4esoA', dayOffset: 3, time: '09:25 - 10:20', title: 'Examen: Inglés B1 (Use of English & Listening)', location: 'Aula 104', description: 'Unidades 1 y 2 completas.' },
+        { courseId: '4esoA', dayOffset: 12, time: '11:45 - 12:40', title: 'Taller de Orientación Académica y Profesional', location: 'Salón de Actos', description: 'Charla sobre modalidades de Bachillerato y Ciclos Formativos.' },
+        { courseId: '4esoB', dayOffset: 5, time: '08:30 - 09:25', title: 'Examen: Lengua Castellana y Literatura', location: 'Aula 105', description: 'Sintaxis de la oración compuesta y Romanticismo.' },
+        { courseId: '4esoB', dayOffset: 19, time: '10:20 - 11:15', title: 'Entrega: Proyecto de Tecnología y Digitalización', location: 'Aula Taller', description: 'Memoria técnica y prototipo funcional.' },
+        { courseId: '3esoA', dayOffset: 6, time: '11:45 - 12:40', title: 'Examen: Geografía e Historia (Sector Primario)', location: 'Aula 101', description: 'Mapas físicos y análisis de paisajes agrarios.' },
+        { courseId: '3esoB', dayOffset: 8, time: '09:25 - 10:20', title: 'Examen: Biología y Geología (Nutrición)', location: 'Aula 102', description: 'Aparatos digestivo, respiratorio y circulatorio.' },
+        { courseId: '3esoB', dayOffset: 18, time: '12:40 - 13:35', title: 'Actividad: Debate en Tutoría sobre Convivencia', location: 'Aula 102', description: 'Dinámica grupal coordinada por el departamento de orientación.' },
+        { courseId: '3esoC', dayOffset: 10, time: '08:30 - 09:25', title: 'Control: Matemáticas Académicas (Ecuaciones)', location: 'Aula 103', description: 'Sistemas de ecuaciones lineales y problemas.' },
+        { courseId: '2esoA', dayOffset: 7, time: '10:20 - 11:15', title: 'Examen: Física y Química (La Materia)', location: 'Aula 004', description: 'Estados de agregación, leyes de los gases y disoluciones.' },
+        { courseId: '2esoA', dayOffset: 20, time: '09:25 - 14:00', title: 'Excursión: Museo de Ciencias Naturales', location: 'Salida puerta principal', description: 'Traer almuerzo y cuaderno de campo.' },
+        { courseId: '2esoB', dayOffset: 11, time: '11:45 - 12:40', title: 'Entrega: Cuaderno de Educación Plástica y Visual', location: 'Aula de Arte', description: 'Láminas de geometría y perspectiva.' },
+        { courseId: '2esoC', dayOffset: 15, time: '08:30 - 09:25', title: 'Examen: Francés (2ª Lengua Extranjera)', location: 'Aula 006', description: 'Vocabulario cotidiano y verbos regulares.' },
+        { courseId: '1esoA', dayOffset: 3, time: '12:40 - 13:35', title: 'Examen: Ciencias de la Naturaleza (La Tierra)', location: 'Aula 001', description: 'Capas de la Tierra, atmósfera e hidrosfera.' },
+        { courseId: '1esoB', dayOffset: 13, time: '10:20 - 11:15', title: 'Actividad: Lectura Compartida en Biblioteca', location: 'Biblioteca Central', description: 'Recomendaciones literarias del primer trimestre.' },
+        { courseId: '1esoC', dayOffset: 16, time: '09:25 - 10:20', title: 'Examen: Matemáticas (Fracciones y Decimales)', location: 'Aula 003', description: 'Operaciones combinadas y problemas cotidianos.' },
+      ];
+
+      const generated = [];
+      // Generar eventos para el mes anterior, el actual y el siguiente
+      [-1, 0, 1].forEach(monthOffset => {
+        const target = new Date(baseYear, baseMonth + monthOffset, 1);
+        const y = target.getFullYear();
+        const m = target.getMonth();
+        const maxDays = new Date(y, m + 1, 0).getDate();
+
+        templates.forEach((tpl, idx) => {
+          const day = Math.min(tpl.dayOffset + (idx % 5), maxDays);
+          const dateStr = formatDateISO(new Date(y, m, day));
+          generated.push({
+            id: `demo-${y}-${m + 1}-${idx}`,
+            courseId: tpl.courseId,
+            date: dateStr,
+            time: tpl.time,
+            title: tpl.title,
+            location: tpl.location,
+            description: tpl.description,
+            source: 'demo'
+          });
+        });
+      });
+
+      return generated;
+    }
+
+    // =========================================================================
+    // 4. PARSER DE CALENDARIOS ICAL (.ICS) Y SINCRONIZACIÓN REAL
+    // =========================================================================
+    function normalizeCalendarUrl(input) {
+      const trimmed = (input || '').trim();
+      if (!trimmed) return '';
+      // Si el usuario pegó solo un ID de Google Calendar (ej: xyz@group.calendar.google.com)
+      if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && trimmed.includes('@')) {
+        return `https://calendar.google.com/calendar/ical/${encodeURIComponent(trimmed)}/public/basic.ics`;
+      }
+      return trimmed;
+    }
+
+    function parseICSContent(icsText, courseId) {
+      const events = [];
+      // Desplegar líneas continuadas según RFC 5545 (CRLF + espacio/tab)
+      const unfolded = icsText.replace(/\r?\n[ \t]/g, '');
+      const lines = unfolded.split(/\r?\n/);
+
+      let inEvent = false;
+      let current = {};
+
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (line === 'BEGIN:VEVENT') {
+          inEvent = true;
+          current = {};
+        } else if (line === 'END:VEVENT') {
+          inEvent = false;
+          if (current.dtstart && current.summary) {
+            const parsedStart = parseICSDate(current.dtstart);
+            const parsedEnd = current.dtend ? parseICSDate(current.dtend) : null;
+            if (parsedStart) {
+              let timeStr = 'Todo el día';
+              if (!parsedStart.isAllDay) {
+                timeStr = parsedEnd && !parsedEnd.isAllDay
+                  ? `${parsedStart.time} - ${parsedEnd.time}`
+                  : parsedStart.time;
+              }
+              events.push({
+                id: current.uid || `${courseId}-${parsedStart.date}-${Math.random().toString(36).slice(2, 8)}`,
+                courseId,
+                date: parsedStart.date,
+                time: timeStr,
+                title: unescapeICSText(current.summary),
+                location: current.location ? unescapeICSText(current.location) : 'Centro Educativo',
+                description: current.description ? unescapeICSText(current.description) : 'Sin descripción adicional.',
+                source: 'ical'
+              });
+            }
+          }
+        } else if (inEvent) {
+          const colonIdx = line.indexOf(':');
+          if (colonIdx > -1) {
+            const keyPart = line.slice(0, colonIdx).split(';')[0].toUpperCase();
+            const valPart = line.slice(colonIdx + 1);
+            if (keyPart === 'SUMMARY') current.summary = valPart;
+            else if (keyPart === 'DESCRIPTION') current.description = valPart;
+            else if (keyPart === 'LOCATION') current.location = valPart;
+            else if (keyPart === 'DTSTART') current.dtstart = valPart;
+            else if (keyPart === 'DTEND') current.dtend = valPart;
+            else if (keyPart === 'UID') current.uid = valPart;
+          }
+        }
+      }
+      return events;
+    }
+
+    function parseICSDate(val) {
+      // Formatos típicos: 20261119 o 20261119T093000Z o 20261119T093000
+      const clean = val.trim();
+      if (/^\d{8}$/.test(clean)) {
+        const y = clean.slice(0, 4);
+        const m = clean.slice(4, 6);
+        const d = clean.slice(6, 8);
+        return { date: `${y}-${m}-${d}`, time: '', isAllDay: true };
+      }
+      const match = clean.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z)?$/);
+      if (match) {
+        const [, y, m, d, hh, mm, ss, isUTC] = match;
+        if (isUTC) {
+          const dt = new Date(Date.UTC(+y, +m - 1, +d, +hh, +mm, +ss));
+          return {
+            date: formatDateISO(dt),
+            time: `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`,
+            isAllDay: false
+          };
+        }
+        return {
+          date: `${y}-${m}-${d}`,
+          time: `${hh}:${mm}`,
+          isAllDay: false
+        };
+      }
+      return null;
+    }
+
+    function unescapeICSText(str) {
+      return str
+        .replace(/\\n/gi, '\n')
+        .replace(/\\,/g, ',')
+        .replace(/\\;/g, ';')
+        .replace(/\\\\/g, '\\');
+    }
+
+    async function fetchICalWithFallback(url) {
+      // Intento directo primero; si hay bloqueo CORS en el navegador, usar proxy público AllOrigins
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const text = await res.text();
+          if (text.includes('BEGIN:VCALENDAR')) return text;
+        }
+      } catch (e) {
+        // Fallback silencioso a proxy CORS
+      }
+
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+      const proxyRes = await fetch(proxyUrl);
+      if (!proxyRes.ok) throw new Error(`Error HTTP ${proxyRes.status}`);
+      const proxyText = await proxyRes.text();
+      if (!proxyText.includes('BEGIN:VCALENDAR')) {
+        throw new Error('El enlace no devolvió un archivo iCal (.ics) válido');
+      }
+      return proxyText;
+    }
+
+    // =========================================================================
+    // 5. SINCRONIZACIÓN Y AUTO-ACTUALIZACIÓN CADA 24 HORAS
+    // =========================================================================
+    async function syncCalendars(manualTrigger = false) {
+      const syncIcon = document.getElementById('sync-icon');
+      const syncBtn = document.getElementById('btn-sync-now');
+
+      if (syncIcon) syncIcon.classList.add('animate-spin');
+      if (syncBtn) syncBtn.disabled = true;
+
+      try {
+        const configuredEntries = Object.entries(state.calendarUrls).filter(([, url]) => url && url.trim() !== '');
+
+        if (configuredEntries.length > 0) {
+          // Sincronizar calendarios reales configurados
+          let fetchedEvents = [];
+          let successCount = 0;
+          let errorCourses = [];
+
+          await Promise.all(configuredEntries.map(async ([courseId, rawUrl]) => {
+            const url = normalizeCalendarUrl(rawUrl);
+            try {
+              const icsContent = await fetchICalWithFallback(url);
+              const parsed = parseICSContent(icsContent, courseId);
+              fetchedEvents = fetchedEvents.concat(parsed);
+              successCount++;
+            } catch (err) {
+              console.warn(`Error sincronizando ${courseId}:`, err);
+              errorCourses.push(COURSE_MAP[courseId]?.shortName || courseId);
+            }
+          }));
+
+          // Si algunos cursos no tienen URL pero estaba activo el modo demo híbrido, conservar o mostrar solo reales
+          if (successCount > 0) {
+            state.events = [...fetchedEvents, ...state.customEvents];
+            state.useDemoMode = false;
+            localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(fetchedEvents));
+            localStorage.setItem(STORAGE_KEYS.DEMO_MODE, 'false');
+
+            if (errorCourses.length > 0) {
+              showToast(`Sincronizados ${successCount} calendarios. Error en: ${errorCourses.join(', ')}`, 'warning');
+            } else {
+              showToast(`¡Sincronización completada! ${fetchedEvents.length} eventos cargados de ${successCount} calendarios.`, 'success');
+            }
+          } else {
+            throw new Error('No se pudo conectar con ninguna de las URLs configuradas. Verifica que sean enlaces públicos .ics');
+          }
+        } else {
+          // Sin URLs configuradas: refrescar datos escolares de demostración conservando los eventos creados localmente
+          await new Promise(r => setTimeout(r, 450));
+          const demoBase = generateRealisticDemoEvents(today.getFullYear(), today.getMonth());
+          state.events = [...demoBase, ...state.customEvents];
+          state.useDemoMode = true;
+          localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(demoBase));
+          localStorage.setItem(STORAGE_KEYS.DEMO_MODE, 'true');
+
+          if (manualTrigger) {
+            showToast('Calendarios escolares sincronizados correctamente (13 cursos actualizados).', 'success');
+          }
+        }
+
+        const now = Date.now();
+        state.lastSyncTimestamp = now;
+        state.nextSyncTimestamp = now + SYNC_INTERVAL_MS;
+        localStorage.setItem(STORAGE_KEYS.LAST_SYNC, String(now));
+
+        updateSyncUI();
+        renderApp();
+      } catch (err) {
+        showToast(err.message || 'Error al sincronizar los calendarios.', 'error');
+      } finally {
+        if (syncIcon) syncIcon.classList.remove('animate-spin');
+        if (syncBtn) syncBtn.disabled = false;
+      }
+    }
+
+    function updateSyncUI() {
+      const lastSyncEl = document.getElementById('last-sync-text');
+      const statusEl = document.getElementById('data-source-status');
+      const configuredCount = Object.values(state.calendarUrls).filter(u => u && u.trim()).length;
+
+      if (state.lastSyncTimestamp && lastSyncEl) {
+        const d = new Date(state.lastSyncTimestamp);
+        const timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        const isToday = formatDateISO(d) === formatDateISO(new Date());
+        lastSyncEl.textContent = isToday
+          ? `Hoy a las ${timeStr}`
+          : `${d.toLocaleDateString('es-ES')} ${timeStr}`;
+      }
+
+      if (statusEl) {
+        if (!state.useDemoMode && configuredCount > 0) {
+          statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Conectado en vivo a <strong>${configuredCount}</strong> calendario(s) iCal / Google Calendar</span>`;
+        } else {
+          statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500"></span><span>Modo demostración escolar activo (13 cursos listos · Conecta tus enlaces .ics en Configurar)</span>`;
+        }
+      }
+    }
+
+    function startAutoSyncTimer() {
+      setInterval(() => {
+        if (!state.nextSyncTimestamp) return;
+        const remaining = state.nextSyncTimestamp - Date.now();
+
+        if (remaining <= 0) {
+          // Han pasado 24 horas: sincronizar automáticamente
+          syncCalendars(false);
+          return;
+        }
+
+        const totalSec = Math.floor(remaining / 1000);
+        const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+        const secs = String(totalSec % 60).padStart(2, '0');
+
+        const badge = document.getElementById('countdown-badge');
+        if (badge) badge.textContent = `${hrs}:${mins}:${secs}`;
+      }, 1000);
+    }
+
+    // =========================================================================
+    // 6. FILTROS POR CURSO, ETAPA Y NAVEGACIÓN MENSUAL
+    // =========================================================================
+    function populateCourseDropdown() {
+      const dropdown = document.getElementById('course-dropdown');
+      if (!dropdown) return;
+      const prevValue = dropdown.value || 'ALL';
+
+      const stageGroups = [
+        { label: 'Bachillerato', stage: 'BACH' },
+        { label: '4º de ESO', stage: '4ESO' },
+        { label: '3º de ESO', stage: '3ESO' },
+        { label: '2º de ESO', stage: '2ESO' },
+        { label: '1º de ESO', stage: '1ESO' },
+      ];
+
+      let html = `<option value="ALL">📚 Todos los cursos (13)</option>`;
+      stageGroups.forEach(g => {
+        html += `<optgroup label="${g.label}">`;
+        COURSES.filter(c => c.stage === g.stage).forEach(c => {
+          const permIcon = canWriteCalendar(c.id) ? '✏️' : '🔒';
+          html += `<option value="${c.id}">${permIcon} ${c.name}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+
+      dropdown.innerHTML = html;
+      dropdown.value = prevValue;
+    }
+
+    function renderCourseChips() {
+      const container = document.getElementById('course-chips-container');
+      let writableCount = 0;
+
+      container.innerHTML = COURSES.map(course => {
+        const isSelected = state.selectedCourses.has(course.id);
+        const hasWrite = canWriteCalendar(course.id);
+        if (hasWrite) writableCount++;
+
+        return `
+          <button
+            onclick="toggleCourse('${course.id}')"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer select-none ${
+              isSelected
+                ? `${course.bg} ${course.text} ${course.border} shadow-2xs`
+                : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300 hover:text-slate-600 opacity-70'
+            }"
+            title="${course.name} — ${hasWrite ? 'Con derechos para crear eventos' : 'Solo lectura'}"
+          >
+            <span class="w-2 h-2 rounded-full ${isSelected ? course.dot : 'bg-slate-300'}"></span>
+            <span>${course.shortName}</span>
+            <i data-lucide="${hasWrite ? 'pen-line' : 'lock'}" class="w-3 h-3 ${isSelected ? (hasWrite ? 'opacity-90' : 'opacity-60') : 'opacity-50'}"></i>
+          </button>
+        `;
+      }).join('');
+
+      const wBadge = document.getElementById('writable-count-badge');
+      const rBadge = document.getElementById('readonly-count-badge');
+      if (wBadge) wBadge.textContent = String(writableCount);
+      if (rBadge) rBadge.textContent = String(COURSES.length - writableCount);
+    }
+
+    function toggleCourse(courseId) {
+      if (state.selectedCourses.has(courseId)) {
+        state.selectedCourses.delete(courseId);
+      } else {
+        state.selectedCourses.add(courseId);
+      }
+      state.activeStage = 'CUSTOM';
+      syncDropdownWithSelection();
+      updateStageButtonsUI();
+      renderCourseChips();
+      renderApp();
+    }
+
+    function handleDropdownCourseChange(value) {
+      if (value === 'ALL') {
+        selectStage('ALL');
+      } else {
+        state.selectedCourses = new Set([value]);
+        state.activeStage = 'CUSTOM';
+        updateStageButtonsUI();
+        renderCourseChips();
+        renderApp();
+      }
+    }
+
+    function selectStage(stage) {
+      state.activeStage = stage;
+      if (stage === 'ALL') {
+        state.selectedCourses = new Set(COURSES.map(c => c.id));
+      } else {
+        state.selectedCourses = new Set(COURSES.filter(c => c.stage === stage).map(c => c.id));
+      }
+      syncDropdownWithSelection();
+      updateStageButtonsUI();
+      renderCourseChips();
+      renderApp();
+    }
+
+    function clearAllCourses() {
+      state.selectedCourses.clear();
+      state.activeStage = 'NONE';
+      syncDropdownWithSelection();
+      updateStageButtonsUI();
+      renderCourseChips();
+      renderApp();
+    }
+
+    function syncDropdownWithSelection() {
+      const dropdown = document.getElementById('course-dropdown');
+      if (!dropdown) return;
+      if (state.selectedCourses.size === COURSES.length) {
+        dropdown.value = 'ALL';
+      } else if (state.selectedCourses.size === 1) {
+        dropdown.value = Array.from(state.selectedCourses)[0];
+      } else {
+        dropdown.value = 'ALL';
+      }
+    }
+
+    function updateStageButtonsUI() {
+      document.querySelectorAll('.stage-btn').forEach(btn => {
+        const st = btn.getAttribute('data-stage');
+        if (st === state.activeStage) {
+          btn.className = 'stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white transition cursor-pointer';
+        } else {
+          btn.className = 'stage-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer';
+        }
+      });
+    }
+
+    function populateYearSelector() {
+      const yearSelect = document.getElementById('select-year');
+      const currentY = today.getFullYear();
+      let options = '';
+      for (let y = currentY - 2; y <= currentY + 3; y++) {
+        options += `<option value="${y}">${y}</option>`;
+      }
+      yearSelect.innerHTML = options;
+    }
+
+    function syncDateSelectors() {
+      document.getElementById('select-month').value = String(state.currentMonth);
+      document.getElementById('select-year').value = String(state.currentYear);
+    }
+
+    function onMonthYearSelect() {
+      state.currentMonth = parseInt(document.getElementById('select-month').value, 10);
+      state.currentYear = parseInt(document.getElementById('select-year').value, 10);
+      renderApp();
+    }
+
+    function changeMonth(delta) {
+      const d = new Date(state.currentYear, state.currentMonth + delta, 1);
+      state.currentYear = d.getFullYear();
+      state.currentMonth = d.getMonth();
+      syncDateSelectors();
+      renderApp();
+    }
+
+    function goToToday() {
+      const now = new Date();
+      state.currentYear = now.getFullYear();
+      state.currentMonth = now.getMonth();
+      syncDateSelectors();
+      renderApp();
+    }
+
+    function setViewMode(mode) {
+      state.viewMode = mode;
+      const monthBtn = document.getElementById('view-btn-month');
+      const agendaBtn = document.getElementById('view-btn-agenda');
+      const monthSec = document.getElementById('month-view-container');
+      const agendaSec = document.getElementById('agenda-view-container');
+
+      if (mode === 'month') {
+        monthBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-blue-700 shadow-xs transition cursor-pointer';
+        agendaBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition cursor-pointer';
+        monthSec.classList.remove('hidden');
+        agendaSec.classList.add('hidden');
+      } else {
+        agendaBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-blue-700 shadow-xs transition cursor-pointer';
+        monthBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition cursor-pointer';
+        agendaSec.classList.remove('hidden');
+        monthSec.classList.add('hidden');
+      }
+      renderApp();
+    }
+
+    // =========================================================================
+    // 7. RENDERIZADO DEL CALENDARIO MENSUAL Y VISTA AGENDA
+    // =========================================================================
+    function getFilteredMonthEvents() {
+      const query = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+      const monthPrefix = `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}`;
+
+      return state.events
+        .filter(ev => {
+          if (!state.selectedCourses.has(ev.courseId)) return false;
+          if (!ev.date.startsWith(monthPrefix)) return false;
+          if (query) {
+            const course = COURSE_MAP[ev.courseId];
+            const haystack = `${ev.title} ${ev.description || ''} ${ev.location || ''} ${course?.name || ''} ${course?.shortName || ''}`.toLowerCase();
+            if (!haystack.includes(query)) return false;
+          }
+          return true;
+        })
+        .sort((a, b) => {
+          if (a.date !== b.date) return a.date.localeCompare(b.date);
+          return (a.time || '').localeCompare(b.time || '');
+        });
+    }
+
+    function renderApp() {
+      const monthEvents = getFilteredMonthEvents();
+      const counterEl = document.getElementById('month-event-counter');
+      if (counterEl) {
+        counterEl.textContent = `${monthEvents.length} ${monthEvents.length === 1 ? 'evento' : 'eventos'} en ${MONTH_NAMES[state.currentMonth]}`;
+      }
+
+      if (state.viewMode === 'month') {
+        renderMonthGrid(monthEvents);
+      } else {
+        renderAgendaList(monthEvents);
+      }
+      lucide.createIcons();
+    }
+
+    function renderMonthGrid(monthEvents) {
+      const grid = document.getElementById('calendar-grid');
+      const year = state.currentYear;
+      const month = state.currentMonth;
+
+      // Agrupar eventos por fecha ISO (YYYY-MM-DD)
+      const eventsByDate = {};
+      monthEvents.forEach(ev => {
+        if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
+        eventsByDate[ev.date].push(ev);
+      });
+
+      const firstDayOfMonth = new Date(year, month, 1);
+      // Convertir domingo (0) -> 6, lunes (1) -> 0 ... sábado (6) -> 5
+      const startWeekday = (firstDayOfMonth.getDay() + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+      const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+      const todayISO = formatDateISO(new Date());
+
+      let html = '';
+
+      for (let i = 0; i < totalCells; i++) {
+        let cellDate;
+        let isCurrentMonth = true;
+
+        if (i < startWeekday) {
+          const dayNum = daysInPrevMonth - startWeekday + i + 1;
+          cellDate = new Date(year, month - 1, dayNum);
+          isCurrentMonth = false;
+        } else if (i >= startWeekday + daysInMonth) {
+          const dayNum = i - (startWeekday + daysInMonth) + 1;
+          cellDate = new Date(year, month + 1, dayNum);
+          isCurrentMonth = false;
+        } else {
+          const dayNum = i - startWeekday + 1;
+          cellDate = new Date(year, month, dayNum);
+        }
+
+        const dateISO = formatDateISO(cellDate);
+        const isToday = dateISO === todayISO;
+        const isWeekend = (i % 7 === 5) || (i % 7 === 6);
+        const dayEvents = eventsByDate[dateISO] || [];
+
+        const cellBg = !isCurrentMonth
+          ? 'bg-slate-50/80 text-slate-400'
+          : isWeekend
+            ? 'bg-slate-50/40'
+            : 'bg-white';
+
+        const MAX_VISIBLE = 3;
+        const visibleEvents = dayEvents.slice(0, MAX_VISIBLE);
+        const hiddenCount = dayEvents.length - MAX_VISIBLE;
+
+        html += `
+          <div class="calendar-cell p-1.5 sm:p-2 flex flex-col justify-between transition hover:bg-blue-50/20 group/cell ${cellBg}">
+            <div>
+              <!-- Número de día, botón rápido + crear y contador -->
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1">
+                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
+                    isToday
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : isCurrentMonth
+                        ? 'text-slate-800'
+                        : 'text-slate-400'
+                  }">
+                    ${cellDate.getDate()}
+                  </span>
+                  <button
+                    onclick="openCreateEventModal('${dateISO}')"
+                    title="Crear evento el ${cellDate.getDate()} de ${MONTH_NAMES[cellDate.getMonth()]}"
+                    class="opacity-0 group-hover/cell:opacity-100 focus:opacity-100 inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 transition cursor-pointer"
+                  >
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+                ${dayEvents.length > 0 ? `
+                  <button onclick="openDayModal('${dateISO}')" class="text-[10px] font-semibold text-slate-400 hover:text-blue-600 px-1.5 py-0.5 rounded hover:bg-blue-50 transition cursor-pointer" title="Ver todos los eventos del día">
+                    ${dayEvents.length} ${dayEvents.length === 1 ? 'ev.' : 'evs.'}
+                  </button>
+                ` : ''}
+              </div>
+
+              <!-- Lista de eventos visibles en la celda -->
+              <div class="space-y-1">
+                ${visibleEvents.map(ev => {
+                  const c = COURSE_MAP[ev.courseId] || COURSES[0];
+                  return `
+                    <button
+                      onclick="openEventModal('${ev.id}')"
+                      class="w-full text-left px-1.5 py-1 rounded-md border ${c.bg} ${c.text} ${c.border} hover:brightness-95 transition flex items-center gap-1 text-[11px] leading-tight cursor-pointer truncate"
+                      title="[${c.shortName}] ${escapeHTML(ev.title)} (${escapeHTML(ev.time)})"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full ${c.dot} shrink-0"></span>
+                      <span class="font-extrabold shrink-0">${c.shortName.replace(' ', '')}:</span>
+                      <span class="truncate font-medium">${escapeHTML(ev.title)}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            ${hiddenCount > 0 ? `
+              <button
+                onclick="openDayModal('${dateISO}')"
+                class="mt-1 w-full text-left px-1.5 py-0.5 rounded text-[11px] font-bold text-blue-600 hover:bg-blue-50 transition cursor-pointer"
+              >
+                + ${hiddenCount} más...
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    function renderAgendaList(monthEvents) {
+      const container = document.getElementById('agenda-view-container');
+      if (monthEvents.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+              <i data-lucide="calendar-off" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-800">No hay eventos para los filtros seleccionados</h3>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">
+              Prueba seleccionando más cursos en la barra superior, cambiando de mes o creando un nuevo evento.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      // Agrupar eventos por fecha
+      const grouped = {};
+      monthEvents.forEach(ev => {
+        if (!grouped[ev.date]) grouped[ev.date] = [];
+        grouped[ev.date].push(ev);
+      });
+
+      container.innerHTML = Object.entries(grouped).map(([dateISO, events]) => {
+        const [y, m, d] = dateISO.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
+        const weekdayName = DAY_NAMES_FULL[dateObj.getDay()];
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="px-5 py-3 bg-slate-50 border-b border-slate-200/80 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-blue-600 text-white font-bold text-sm flex items-center justify-center">
+                  ${d}
+                </span>
+                <div>
+                  <div class="text-sm font-bold text-slate-900">${weekdayName}, ${d} de ${MONTH_NAMES[m - 1]}</div>
+                  <div class="text-[11px] text-slate-500">${events.length} ${events.length === 1 ? 'actividad programada' : 'actividades programadas'}</div>
+                </div>
+              </div>
+              <button onclick="openCreateEventModal('${dateISO}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 text-xs font-semibold transition cursor-pointer">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Añadir</span>
+              </button>
+            </div>
+            <div class="divide-y divide-slate-100">
+              ${events.map(ev => {
+                const c = COURSE_MAP[ev.courseId] || COURSES[0];
+                return `
+                  <div onclick="openEventModal('${ev.id}')" class="px-5 py-3.5 hover:bg-slate-50/90 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer">
+                    <div class="flex items-start sm:items-center gap-3">
+                      <span class="px-2.5 py-1 rounded-lg text-xs font-bold text-white shrink-0 ${c.badgeBg}">
+                        ${c.shortName}
+                      </span>
+                      <div>
+                        <div class="text-sm font-bold text-slate-900">${escapeHTML(ev.title)}</div>
+                        <div class="text-xs text-slate-500 flex flex-wrap items-center gap-3 mt-0.5">
+                          <span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${escapeHTML(ev.time)}</span>
+                          <span class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${escapeHTML(ev.location || 'Centro')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="text-xs font-semibold text-blue-600 hover:underline self-end sm:self-center">
+                      Ver detalle →
+                    </span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // 8. MODALES DE DETALLE DE EVENTO, DÍA Y CONFIGURACIÓN
+    // =========================================================================
+    function openEventModal(eventId) {
+      const ev = state.events.find(e => e.id === eventId);
+      if (!ev) return;
+
+      const c = COURSE_MAP[ev.courseId] || COURSES[0];
+      const hasWrite = canWriteCalendar(ev.courseId);
+      const [y, m, d] = ev.date.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const formattedDate = `${DAY_NAMES_FULL[dateObj.getDay()]}, ${d} de ${MONTH_NAMES[m - 1]} de ${y}`;
+
+      const badge = document.getElementById('detail-modal-badge');
+      badge.className = `px-2.5 py-1 rounded-lg text-xs font-bold text-white ${c.badgeBg}`;
+      badge.textContent = c.shortName;
+
+      document.getElementById('detail-modal-title').textContent = ev.title;
+
+      document.getElementById('detail-modal-body').innerHTML = `
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-2.5">
+          <div class="flex items-center justify-between gap-2 text-slate-700">
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-600 shrink-0"></i>
+              <span><strong>Curso:</strong> ${escapeHTML(c.name)}</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${hasWrite ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'}">
+              <i data-lucide="${hasWrite ? 'pen-line' : 'lock'}" class="w-3 h-3"></i>
+              ${hasWrite ? 'Editable' : 'Solo lectura'}
+            </span>
+          </div>
+          <div class="flex items-center gap-2.5 text-slate-700">
+            <i data-lucide="calendar" class="w-4 h-4 text-blue-600 shrink-0"></i>
+            <span><strong>Fecha:</strong> ${formattedDate}</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-slate-700">
+            <i data-lucide="clock" class="w-4 h-4 text-blue-600 shrink-0"></i>
+            <span><strong>Horario:</strong> ${escapeHTML(ev.time)}</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-slate-700">
+            <i data-lucide="map-pin" class="w-4 h-4 text-blue-600 shrink-0"></i>
+            <span><strong>Ubicación / Aula:</strong> ${escapeHTML(ev.location || 'No especificada')}</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Descripción y observaciones</h4>
+          <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line bg-white p-3.5 rounded-xl border border-slate-100">
+            ${escapeHTML(ev.description || 'Sin detalles adicionales.')}
+          </p>
+        </div>
+      `;
+
+      const actionsEl = document.getElementById('detail-modal-actions');
+      if (actionsEl) {
+        if (ev.source === 'custom' && hasWrite) {
+          actionsEl.innerHTML = `
+            <button onclick="deleteCustomEvent('${ev.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition cursor-pointer">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>Eliminar evento</span>
+            </button>
+          `;
+        } else {
+          actionsEl.innerHTML = '';
+        }
+      }
+
+      const modal = document.getElementById('detail-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function deleteCustomEvent(eventId) {
+      const ev = state.customEvents.find(e => e.id === eventId);
+      if (!ev) return;
+      if (!canWriteCalendar(ev.courseId)) {
+        showToast('No puedes modificar eventos en este calendario', 'error');
+        return;
+      }
+      state.customEvents = state.customEvents.filter(e => e.id !== eventId);
+      state.events = state.events.filter(e => e.id !== eventId);
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_EVENTS, JSON.stringify(state.customEvents));
+      closeDetailModal();
+      renderApp();
+      showToast('Evento eliminado correctamente.', 'info');
+    }
+
+    // =========================================================================
+    // 8B. MODAL DE CREACIÓN DE EVENTOS Y VALIDACIÓN DE PERMISOS
+    // =========================================================================
+    function openCreateEventModal(prefillDateISO = null) {
+      const courseSelect = document.getElementById('create-event-course');
+      courseSelect.innerHTML = COURSES.map(c => {
+        const hasWrite = canWriteCalendar(c.id);
+        return `<option value="${c.id}">
+          ${hasWrite ? '✏️' : '🔒'} ${c.name} — ${hasWrite ? '[Permiso de edición]' : '[Solo lectura]'}
+        </option>`;
+      }).join('');
+
+      // Preseleccionar curso si el usuario está filtrando un único curso (incluso si es solo lectura para que vea el mensaje)
+      if (state.selectedCourses.size === 1) {
+        courseSelect.value = Array.from(state.selectedCourses)[0];
+      } else {
+        const firstWritable = COURSES.find(c => canWriteCalendar(c.id));
+        courseSelect.value = firstWritable ? firstWritable.id : COURSES[0].id;
+      }
+
+      // Fecha por defecto
+      const dateInput = document.getElementById('create-event-date');
+      if (prefillDateISO) {
+        dateInput.value = prefillDateISO;
+      } else {
+        const defaultDate = (state.currentYear === today.getFullYear() && state.currentMonth === today.getMonth())
+          ? formatDateISO(today)
+          : formatDateISO(new Date(state.currentYear, state.currentMonth, 1));
+        dateInput.value = defaultDate;
+      }
+
+      // Limpiar campos previos
+      document.getElementById('create-event-title').value = '';
+      document.getElementById('create-event-location').value = '';
+      document.getElementById('create-event-desc').value = '';
+      document.getElementById('create-event-allday').checked = false;
+      toggleAllDayInputs();
+
+      onCreateCourseChange();
+
+      const modal = document.getElementById('create-event-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeCreateEventModal() {
+      const modal = document.getElementById('create-event-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function onCreateCourseChange() {
+      const courseId = document.getElementById('create-event-course').value;
+      const course = COURSE_MAP[courseId];
+      const hasWrite = canWriteCalendar(courseId);
+
+      const banner = document.getElementById('no-permission-banner');
+      const courseNameSpan = document.getElementById('no-perm-course-name');
+      const fieldset = document.getElementById('create-event-fields');
+      const submitBtn = document.getElementById('btn-submit-create-event');
+
+      if (!hasWrite) {
+        if (courseNameSpan && course) courseNameSpan.textContent = course.name;
+        banner.classList.remove('hidden');
+        fieldset.disabled = true;
+        fieldset.classList.add('opacity-50', 'pointer-events-none');
+        submitBtn.disabled = true;
+      } else {
+        banner.classList.add('hidden');
+        fieldset.disabled = false;
+        fieldset.classList.remove('opacity-50', 'pointer-events-none');
+        submitBtn.disabled = false;
+      }
+      lucide.createIcons();
+    }
+
+    function toggleAllDayInputs() {
+      const isAllDay = document.getElementById('create-event-allday').checked;
+      document.getElementById('create-event-start').disabled = isAllDay;
+      document.getElementById('create-event-end').disabled = isAllDay;
+    }
+
+    function handleCreateEventSubmit(e) {
+      e.preventDefault();
+      const courseId = document.getElementById('create-event-course').value;
+
+      // Comprobación estricta de derechos de escritura
+      if (!canWriteCalendar(courseId)) {
+        showToast('No puedes crear eventos en este calendario', 'error');
+        onCreateCourseChange();
+        return;
+      }
+
+      const titleRaw = document.getElementById('create-event-title').value.trim();
+      const category = document.getElementById('create-event-category').value;
+      const dateVal = document.getElementById('create-event-date').value;
+      const isAllDay = document.getElementById('create-event-allday').checked;
+      const startVal = document.getElementById('create-event-start').value;
+      const endVal = document.getElementById('create-event-end').value;
+      const locationVal = document.getElementById('create-event-location').value.trim();
+      const descVal = document.getElementById('create-event-desc').value.trim();
+
+      if (!titleRaw || !dateVal) {
+        showToast('Por favor, completa el título y la fecha del evento.', 'warning');
+        return;
+      }
+
+      let timeStr = 'Todo el día';
+      if (!isAllDay) {
+        timeStr = startVal && endVal ? `${startVal} - ${endVal}` : (startVal || '09:00');
+      }
+
+      const fullTitle = titleRaw.toLowerCase().startsWith(category.toLowerCase())
+        ? titleRaw
+        : `${category}: ${titleRaw}`;
+
+      const newEvent = {
+        id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        courseId,
+        date: dateVal,
+        time: timeStr,
+        title: fullTitle,
+        location: locationVal || 'Aula asignada',
+        description: descVal || `Evento de tipo ${category} creado en ${COURSE_MAP[courseId]?.name}.`,
+        source: 'custom'
+      };
+
+      state.customEvents.push(newEvent);
+      state.events.push(newEvent);
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_EVENTS, JSON.stringify(state.customEvents));
+
+      // Asegurar que el curso destino esté visible en los filtros y navegar al mes del evento
+      state.selectedCourses.add(courseId);
+      const [evY, evM] = dateVal.split('-').map(Number);
+      state.currentYear = evY;
+      state.currentMonth = evM - 1;
+
+      syncDateSelectors();
+      renderCourseChips();
+      closeCreateEventModal();
+      renderApp();
+
+      showToast(`Evento creado en ${COURSE_MAP[courseId]?.shortName} correctamente.`, 'success');
+    }
+
+    function openDayModal(dateISO) {
+      const dayEvents = getFilteredMonthEvents().filter(e => e.date === dateISO);
+      const [y, m, d] = dateISO.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const formattedDate = `${DAY_NAMES_FULL[dateObj.getDay()]}, ${d} de ${MONTH_NAMES[m - 1]} de ${y}`;
+
+      const badge = document.getElementById('detail-modal-badge');
+      badge.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-800';
+      badge.textContent = `${dayEvents.length} eventos`;
+
+      document.getElementById('detail-modal-title').textContent = formattedDate;
+
+      document.getElementById('detail-modal-body').innerHTML = dayEvents.length === 0
+        ? '<p class="text-slate-500">No hay eventos filtrados en esta fecha.</p>'
+        : `<div class="space-y-2.5">
+            ${dayEvents.map(ev => {
+              const c = COURSE_MAP[ev.courseId] || COURSES[0];
+              return `
+                <div onclick="openEventModal('${ev.id}')" class="p-3.5 rounded-xl border ${c.border} ${c.bg} hover:brightness-95 transition cursor-pointer">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold text-white ${c.badgeBg}">${c.shortName}</span>
+                    <span class="text-xs font-semibold ${c.text}">${escapeHTML(ev.time)}</span>
+                  </div>
+                  <div class="font-bold text-sm ${c.text}">${escapeHTML(ev.title)}</div>
+                  <div class="text-xs opacity-80 ${c.text} mt-0.5">${escapeHTML(ev.location || '')}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>`;
+
+      const actionsEl = document.getElementById('detail-modal-actions');
+      if (actionsEl) {
+        actionsEl.innerHTML = `
+          <button onclick="closeDetailModal(); openCreateEventModal('${dateISO}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition cursor-pointer">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Crear evento este día</span>
+          </button>
+        `;
+      }
+
+      const modal = document.getElementById('detail-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function openDayModal(dateISO) {
+      const dayEvents = getFilteredMonthEvents().filter(e => e.date === dateISO);
+      const [y, m, d] = dateISO.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const formattedDate = `${DAY_NAMES_FULL[dateObj.getDay()]}, ${d} de ${MONTH_NAMES[m - 1]} de ${y}`;
+
+      const badge = document.getElementById('detail-modal-badge');
+      badge.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-800';
+      badge.textContent = `${dayEvents.length} eventos`;
+
+      document.getElementById('detail-modal-title').textContent = formattedDate;
+
+      document.getElementById('detail-modal-body').innerHTML = dayEvents.length === 0
+        ? '<p class="text-slate-500">No hay eventos filtrados en esta fecha.</p>'
+        : `<div class="space-y-2.5">
+            ${dayEvents.map(ev => {
+              const c = COURSE_MAP[ev.courseId] || COURSES[0];
+              return `
+                <div onclick="openEventModal('${ev.id}')" class="p-3.5 rounded-xl border ${c.border} ${c.bg} hover:brightness-95 transition cursor-pointer">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold text-white ${c.badgeBg}">${c.shortName}</span>
+                    <span class="text-xs font-semibold ${c.text}">${escapeHTML(ev.time)}</span>
+                  </div>
+                  <div class="font-bold text-sm ${c.text}">${escapeHTML(ev.title)}</div>
+                  <div class="text-xs opacity-80 ${c.text} mt-0.5">${escapeHTML(ev.location || '')}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>`;
+
+      const modal = document.getElementById('detail-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeDetailModal() {
+      const modal = document.getElementById('detail-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openConfigModal() {
+      const listContainer = document.getElementById('config-courses-list');
+      listContainer.innerHTML = COURSES.map(c => {
+        const currentVal = state.calendarUrls[c.id] || '';
+        const hasWrite = canWriteCalendar(c.id);
+        return `
+          <div class="p-3.5 rounded-xl border ${hasWrite ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200 bg-slate-50/60'} space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <label for="input-url-${c.id}" class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                <span class="w-2.5 h-2.5 rounded-full ${c.dot}"></span>
+                <span>${c.name}</span>
+              </label>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.bg} ${c.text}">${c.shortName}</span>
+            </div>
+
+            <!-- Selector de Derechos / Permisos -->
+            <div class="flex items-center justify-between bg-white rounded-lg border border-slate-200 px-3 py-1.5">
+              <span class="text-[11px] font-medium text-slate-600">Derechos en este calendario:</span>
+              <select id="select-perm-${c.id}" class="text-xs font-bold rounded-md px-2 py-1 focus:outline-none cursor-pointer ${hasWrite ? 'text-emerald-700 bg-emerald-50' : 'text-slate-600 bg-slate-100'}">
+                <option value="true" ${hasWrite ? 'selected' : ''}>✏️ Con derechos de creación</option>
+                <option value="false" ${!hasWrite ? 'selected' : ''}>🔒 Solo lectura (sin derechos)</option>
+              </select>
+            </div>
+
+            <input
+              type="text"
+              id="input-url-${c.id}"
+              value="${escapeHTML(currentVal)}"
+              placeholder="URL iCal (.ics) o ID de Google Calendar (opcional)"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        `;
+      }).join('');
+
+      const modal = document.getElementById('config-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeConfigModal() {
+      const modal = document.getElementById('config-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function saveCalendarConfigs() {
+      const newUrls = {};
+      const newPermissions = {};
+      COURSES.forEach(c => {
+        const input = document.getElementById(`input-url-${c.id}`);
+        if (input && input.value.trim()) {
+          newUrls[c.id] = input.value.trim();
+        }
+        const permSelect = document.getElementById(`select-perm-${c.id}`);
+        newPermissions[c.id] = permSelect ? permSelect.value === 'true' : c.defaultCanWrite;
+      });
+      state.calendarUrls = newUrls;
+      state.calendarPermissions = newPermissions;
+      localStorage.setItem(STORAGE_KEYS.URLS, JSON.stringify(newUrls));
+      localStorage.setItem(STORAGE_KEYS.PERMISSIONS, JSON.stringify(newPermissions));
+
+      populateCourseDropdown();
+      renderCourseChips();
+      closeConfigModal();
+      syncCalendars(true);
+    }
+
+    function clearConfiguredUrls() {
+      COURSES.forEach(c => {
+        const input = document.getElementById(`input-url-${c.id}`);
+        if (input) input.value = '';
+      });
+      state.calendarUrls = {};
+      localStorage.removeItem(STORAGE_KEYS.URLS);
+      showToast('URLs limpiadas. Pulsa "Guardar y Sincronizar" para aplicar.', 'info');
+    }
+
+    function loadDemoDataAndClose() {
+      state.calendarUrls = {};
+      state.calendarPermissions = { ...DEFAULT_PERMISSIONS };
+      localStorage.removeItem(STORAGE_KEYS.URLS);
+      localStorage.setItem(STORAGE_KEYS.PERMISSIONS, JSON.stringify(state.calendarPermissions));
+
+      const demoBase = generateRealisticDemoEvents(today.getFullYear(), today.getMonth());
+      state.events = [...demoBase, ...state.customEvents];
+      state.useDemoMode = true;
+      const now = Date.now();
+      state.lastSyncTimestamp = now;
+      state.nextSyncTimestamp = now + SYNC_INTERVAL_MS;
+
+      localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(demoBase));
+      localStorage.setItem(STORAGE_KEYS.DEMO_MODE, 'true');
+      localStorage.setItem(STORAGE_KEYS.LAST_SYNC, String(now));
+
+      populateCourseDropdown();
+      renderCourseChips();
+      closeConfigModal();
+      updateSyncUI();
+      renderApp();
+      showToast('Datos y permisos predeterminados restaurados para los 13 cursos.', 'success');
+    }
+
+    // =========================================================================
+    // 9. UTILIDADES Y NOTIFICACIONES TOAST
+    // =========================================================================
+    function formatDateISO(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function escapeHTML(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+
+      const styles = {
+        success: 'bg-slate-900 text-white border-slate-700',
+        warning: 'bg-amber-600 text-white border-amber-500',
+        error: 'bg-rose-600 text-white border-rose-500',
+        info: 'bg-blue-600 text-white border-blue-500'
+      };
+
+      const icons = {
+        success: 'check-circle-2',
+        warning: 'alert-triangle',
+        error: 'x-circle',
+        info: 'info'
+      };
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-lg text-xs sm:text-sm font-medium transition-all duration-300 ${styles[type] || styles.success}`;
+      toast.innerHTML = `
+        <i data-lucide="${icons[type] || icons.success}" class="w-4 h-4 shrink-0"></i>
+        <span>${escapeHTML(message)}</span>
+      `;
+
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4200);
+    }
+
+    // Cerrar modales con tecla Escape o clic fuera
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDetailModal();
+        closeConfigModal();
+        closeCreateEventModal();
+      }
+    });
+
+    document.getElementById('detail-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'detail-modal') closeDetailModal();
+    });
+
+    document.getElementById('config-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'config-modal') closeConfigModal();
+    });
+
+    document.getElementById('create-event-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'create-event-modal') closeCreateEventModal();
+    });
+
+    // =========================================================================
+    // 10. INICIALIZACIÓN DE LA APLICACIÓN
+    // =========================================================================
+    function initApp() {
+      // Recuperar permisos, URLs y eventos personalizados guardados en localStorage
+      try {
+        const savedPerms = JSON.parse(localStorage.getItem(STORAGE_KEYS.PERMISSIONS) || 'null');
+        if (savedPerms && typeof savedPerms === 'object') {
+          state.calendarPermissions = { ...DEFAULT_PERMISSIONS, ...savedPerms };
+        }
+
+        const savedCustomEvents = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_EVENTS) || '[]');
+        if (Array.isArray(savedCustomEvents)) {
+          state.customEvents = savedCustomEvents;
+        }
+      } catch (e) {
+        state.calendarPermissions = { ...DEFAULT_PERMISSIONS };
+        state.customEvents = [];
+      }
+
+      populateYearSelector();
+      syncDateSelectors();
+      populateCourseDropdown();
+      renderCourseChips();
+
+      try {
+        const savedUrls = JSON.parse(localStorage.getItem(STORAGE_KEYS.URLS) || '{}');
+        state.calendarUrls = savedUrls;
+
+        const savedEvents = JSON.parse(localStorage.getItem(STORAGE_KEYS.EVENTS) || 'null');
+        const savedLastSync = parseInt(localStorage.getItem(STORAGE_KEYS.LAST_SYNC) || '0', 10);
+        const savedDemo = localStorage.getItem(STORAGE_KEYS.DEMO_MODE);
+
+        if (savedEvents && Array.isArray(savedEvents) && savedEvents.length > 0) {
+          state.events = [...savedEvents, ...state.customEvents];
+          state.useDemoMode = savedDemo !== 'false';
+          state.lastSyncTimestamp = savedLastSync || Date.now();
+          state.nextSyncTimestamp = state.lastSyncTimestamp + SYNC_INTERVAL_MS;
+
+          // Si ya pasaron más de 24 horas desde la última sincronización, sincronizar ahora automáticamente
+          if (Date.now() - state.lastSyncTimestamp >= SYNC_INTERVAL_MS) {
+            syncCalendars(false);
+          }
+        } else {
+          // Primera carga: generar datos de demostración realistas inmediatos
+          const demoBase = generateRealisticDemoEvents(today.getFullYear(), today.getMonth());
+          state.events = [...demoBase, ...state.customEvents];
+          state.useDemoMode = true;
+          state.lastSyncTimestamp = Date.now();
+          state.nextSyncTimestamp = state.lastSyncTimestamp + SYNC_INTERVAL_MS;
+          localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(demoBase));
+          localStorage.setItem(STORAGE_KEYS.LAST_SYNC, String(state.lastSyncTimestamp));
+        }
+      } catch (e) {
+        const demoBase = generateRealisticDemoEvents(today.getFullYear(), today.getMonth());
+        state.events = [...demoBase, ...state.customEvents];
+        state.lastSyncTimestamp = Date.now();
+        state.nextSyncTimestamp = state.lastSyncTimestamp + SYNC_INTERVAL_MS;
+      }
+
+      updateSyncUI();
+      startAutoSyncTimer();
+
+      // Soporte para parámetros URL al incrustar páginas específicas en Google Sites (ej: ?curso=1bachA&vista=agenda)
+      applyUrlEmbedParams();
+      renderApp();
+    }
+
+    function applyUrlEmbedParams() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const cursoParam = params.get('curso');
+        const etapaParam = params.get('etapa');
+        const vistaParam = params.get('vista');
+        const embedParam = params.get('embed');
+
+        if (cursoParam && COURSE_MAP[cursoParam]) {
+          handleDropdownCourseChange(cursoParam);
+        } else if (etapaParam) {
+          selectStage(etapaParam.toUpperCase());
+        }
+
+        if (vistaParam === 'agenda' || vistaParam === 'month') {
+          setViewMode(vistaParam);
+        }
+
+        if (embedParam === '1' || window.self !== window.top) {
+          document.body.classList.add('bg-white');
+        }
+      } catch (_) {}
+    }
+
+    function copyGoogleSitesEmbedCode() {
+      try {
+        const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const tempArea = document.createElement('textarea');
+        tempArea.value = fullHtml;
+        tempArea.style.position = 'fixed';
+        tempArea.style.opacity = '0';
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        const copied = document.execCommand('copy');
+        document.body.removeChild(tempArea);
+
+        if (copied) {
+          showToast('¡Código HTML copiado! En Google Sites ve a Insertar → Insertar código → Código HTML y pégalo.', 'success');
+        } else {
+          showToast('Selecciona el código del editor y cópialo con Ctrl+C / Cmd+C para pegarlo en Google Sites.', 'info');
+        }
+      } catch (e) {
+        showToast('Copia el archivo index.html desde el editor y pégalo en Google Sites → Insertar código.', 'info');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+
+  <!-- MÓDULO GEMINI LIVE API: INTERACCIÓN POR AUDIO EN TIEMPO REAL -->
+  <script type="module">
+    import { GoogleGenAI, Modality, Type } from 'https://esm.sh/@google/genai';
+
+    let liveSessionPromise = null;
+    let isLiveActive = false;
+    let isFallbackVoiceActive = false;
+    let inputAudioCtx = null;
+    let outputAudioCtx = null;
+    let mediaStream = null;
+    let speechRecognitionInstance = null;
+    let fallbackChatHistory = [];
+    let nextAudioStartTime = 0;
+    const activeAudioSources = new Set();
+
+    let currentUserSpeech = '';
+    let currentModelSpeech = '';
+
+    // Funciones manuales de codificación/decodificación Base64 y PCM
+    function encodeBytesToBase64(bytes) {
+      let binary = '';
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
+    function decodeBase64ToBytes(base64) {
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    async function decodePcmToAudioBuffer(dataBytes, ctx, sampleRate, numChannels) {
+      const dataInt16 = new Int16Array(dataBytes.buffer);
+      const frameCount = dataInt16.length / numChannels;
+      const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
+      for (let channel = 0; channel < numChannels; channel++) {
+        const channelData = buffer.getChannelData(channel);
+        for (let i = 0; i < frameCount; i++) {
+          channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+        }
+      }
+      return buffer;
+    }
+
+    function float32ToPcmBlob(float32Data) {
+      const len = float32Data.length;
+      const int16 = new Int16Array(len);
+      for (let i = 0; i < len; i++) {
+        const clamped = Math.max(-1, Math.min(1, float32Data[i]));
+        int16[i] = clamped * 32767;
+      }
+      return {
+        data: encodeBytesToBase64(new Uint8Array(int16.buffer)),
+        mimeType: 'audio/pcm;rate=16000'
+      };
+    }
+
+    function appendTranscriptBubble(role, text) {
+      if (!text || !text.trim()) return;
+      const box = document.getElementById('voice-transcript-box');
+      if (!box) return;
+      const item = document.createElement('div');
+      if (role === 'user') {
+        item.className = 'ml-6 bg-indigo-600 text-white rounded-xl px-3 py-2 leading-relaxed shadow-2xs';
+        item.innerHTML = `<div class="text-[10px] font-bold uppercase tracking-wider text-indigo-200 mb-0.5">Tú</div><div>${escapeHTML(text.trim())}</div>`;
+      } else if (role === 'model') {
+        item.className = 'mr-6 bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 leading-relaxed shadow-2xs';
+        item.innerHTML = `<div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 mb-0.5">Gemini</div><div>${escapeHTML(text.trim())}</div>`;
+      } else {
+        item.className = 'text-center text-[11px] text-slate-500 italic py-1';
+        item.textContent = text.trim();
+      }
+      box.appendChild(item);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function setVoiceUIState(connected, statusLabel) {
+      isLiveActive = connected;
+      const statusEl = document.getElementById('voice-status-text');
+      const connectBtn = document.getElementById('btn-voice-connect');
+      const disconnectBtn = document.getElementById('btn-voice-disconnect');
+      const headerDot = document.getElementById('voice-header-dot');
+
+      if (statusEl) statusEl.textContent = statusLabel;
+      if (connectBtn && disconnectBtn) {
+        connectBtn.classList.toggle('hidden', connected);
+        disconnectBtn.classList.toggle('hidden', !connected);
+      }
+      if (headerDot) {
+        headerDot.className = connected
+          ? 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping'
+          : 'w-2 h-2 rounded-full bg-indigo-200';
+      }
+    }
+
+    function getAssistantSystemPrompt() {
+      const todayStr = formatDateISO(new Date());
+      return `Eres el asistente de voz inteligente de "Sitios de Calendarios de Alumnos".
+Hoy es ${todayStr} y el calendario muestra actualmente ${MONTH_NAMES[state.currentMonth]} de ${state.currentYear}.
+Gestionas 13 calendarios escolares:
+- 1bachA: 1º de Bachillerato A (1 bach 1)
+- 1bachB: 1º de Bachillerato B
+- 4esoA: 4º de ESO A
+- 4esoB: 4º de ESO B
+- 3esoA: 3º de ESO A
+- 3esoB: 3º de ESO B
+- 3esoC: 3º de ESO C
+- 2esoA: 2º de ESO A
+- 2esoB: 2º de ESO B
+- 2esoC: 2º de ESO C
+- 1esoA: 1º de ESO A
+- 1esoB: 1º de ESO B
+- 1esoC: 1º de ESO C
+
+Reglas importantes:
+1. Responde siempre en español, de forma natural, breve y amable.
+2. Usa siempre las herramientas proporcionadas para consultar eventos reales, crear eventos o filtrar la vista.
+3. Si el usuario intenta crear un evento en un calendario sin permisos, la herramienta devolverá que es de solo lectura: indícale claramente "No puedes crear eventos en este calendario" y sugiere uno donde sí tenga derechos.`;
+    }
+
+    // =========================================================================
+    // HERRAMIENTAS (FUNCTION CALLING) PARA QUE GEMINI OPERE CON EL CALENDARIO
+    // =========================================================================
+    const calendarToolsDeclaration = [
+      {
+        name: 'consultarEventos',
+        description: 'Consulta los eventos del calendario escolar filtrando opcionalmente por curso (courseId), mes (1-12), año o palabra clave.',
+        parameters: {
+          type: Type.OBJECT,
+          properties: {
+            courseId: {
+              type: Type.STRING,
+              description: 'ID del curso: 1bachA, 1bachB, 4esoA, 4esoB, 3esoA, 3esoB, 3esoC, 2esoA, 2esoB, 2esoC, 1esoA, 1esoB, 1esoC. Dejar vacío para consultar todos.'
+            },
+            month: {
+              type: Type.NUMBER,
+              description: 'Número de mes (1 a 12). Si no se especifica, usa el mes actualmente visible en pantalla.'
+            },
+            year: {
+              type: Type.NUMBER,
+              description: 'Año (por ejemplo 2026). Si no se especifica, usa el año visible.'
+            },
+            query: {
+              type: Type.STRING,
+              description: 'Texto o asignatura para buscar (ej: Matemáticas, Examen, Excursión).'
+            }
+          }
+        }
+      },
+      {
+        name: 'crearEventoCalendario',
+        description: 'Crea un nuevo evento en un curso concreto si el usuario tiene derechos de edición en ese calendario.',
+        parameters: {
+          type: Type.OBJECT,
+          properties: {
+            courseId: {
+              type: Type.STRING,
+              description: 'ID exacto del curso destino: 1bachA, 1bachB, 4esoA, 4esoB, 3esoA, 3esoB, 3esoC, 2esoA, 2esoB, 2esoC, 1esoA, 1esoB, 1esoC.'
+            },
+            title: {
+              type: Type.STRING,
+              description: 'Título del evento (ej: Examen de Historia, Entrega de Física).'
+            },
+            date: {
+              type: Type.STRING,
+              description: 'Fecha en formato YYYY-MM-DD.'
+            },
+            time: {
+              type: Type.STRING,
+              description: 'Horario (ej: 09:25 - 10:20 o Todo el día).'
+            },
+            location: {
+              type: Type.STRING,
+              description: 'Aula o ubicación del evento.'
+            },
+            description: {
+              type: Type.STRING,
+              description: 'Descripción o temario del evento.'
+            }
+          },
+          required: ['courseId', 'title', 'date']
+        }
+      },
+      {
+        name: 'filtrarVistaCalendario',
+        description: 'Filtra la interfaz visual de la web por un curso concreto, por etapa (ALL, BACH, 4ESO, 3ESO, 2ESO, 1ESO) o navega a un mes/año.',
+        parameters: {
+          type: Type.OBJECT,
+          properties: {
+            courseId: {
+              type: Type.STRING,
+              description: 'ID del curso a mostrar en exclusiva (opcional).'
+            },
+            stage: {
+              type: Type.STRING,
+              description: 'Etapa educativa: ALL, BACH, 4ESO, 3ESO, 2ESO, 1ESO (opcional).'
+            },
+            month: {
+              type: Type.NUMBER,
+              description: 'Mes del 1 al 12 al que navegar (opcional).'
+            },
+            year: {
+              type: Type.NUMBER,
+              description: 'Año al que navegar (opcional).'
+            }
+          }
+        }
+      },
+      {
+        name: 'listarCursosYPermisos',
+        description: 'Devuelve la lista de los 13 cursos disponibles indicando en cuáles tiene el usuario derechos para crear eventos y cuáles son de solo lectura.',
+        parameters: {
+          type: Type.OBJECT,
+          properties: {}
+        }
+      }
+    ];
+
+    function executeCalendarTool(fc) {
+      const args = fc.args || {};
+
+      if (fc.name === 'listarCursosYPermisos') {
+        return {
+          cursos: COURSES.map(c => ({
+            id: c.id,
+            nombre: c.name,
+            abreviatura: c.shortName,
+            puedeCrearEventos: canWriteCalendar(c.id),
+            estadoPermiso: canWriteCalendar(c.id) ? 'Con derechos de creación' : 'Solo lectura'
+          }))
+        };
+      }
+
+      if (fc.name === 'consultarEventos') {
+        const targetYear = args.year || state.currentYear;
+        const targetMonth = args.month ? Number(args.month) : (state.currentMonth + 1);
+        const prefix = `${targetYear}-${String(targetMonth).padStart(2, '0')}`;
+        const q = (args.query || '').toLowerCase().trim();
+
+        const matches = state.events.filter(ev => {
+          if (args.courseId && ev.courseId !== args.courseId) return false;
+          if (!ev.date.startsWith(prefix)) return false;
+          if (q) {
+            const hay = `${ev.title} ${ev.description || ''} ${ev.location || ''}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        return {
+          mesConsultado: `${MONTH_NAMES[targetMonth - 1]} ${targetYear}`,
+          totalEncontrados: matches.length,
+          eventos: matches.slice(0, 25).map(ev => ({
+            curso: COURSE_MAP[ev.courseId]?.name || ev.courseId,
+            fecha: ev.date,
+            hora: ev.time,
+            titulo: ev.title,
+            lugar: ev.location
+          }))
+        };
+      }
+
+      if (fc.name === 'crearEventoCalendario') {
+        const course = COURSE_MAP[args.courseId];
+        if (!course) {
+          return { exito: false, error: 'Curso no reconocido. Usa un ID válido como 1bachA, 4esoA, 3esoB, etc.' };
+        }
+        if (!canWriteCalendar(args.courseId)) {
+          showToast(`No puedes crear eventos en este calendario (${course.shortName})`, 'error');
+          return {
+            exito: false,
+            mensaje: `No puedes crear eventos en este calendario (${course.name}) porque es de solo lectura.`
+          };
+        }
+
+        const newEvent = {
+          id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          courseId: args.courseId,
+          date: args.date,
+          time: args.time || '09:25 - 10:20',
+          title: args.title,
+          location: args.location || 'Aula asignada',
+          description: args.description || `Creado por voz con Gemini en ${course.name}.`,
+          source: 'custom'
+        };
+
+        state.customEvents.push(newEvent);
+        state.events.push(newEvent);
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_EVENTS, JSON.stringify(state.customEvents));
+
+        state.selectedCourses.add(args.courseId);
+        const [evY, evM] = args.date.split('-').map(Number);
+        if (evY && evM) {
+          state.currentYear = evY;
+          state.currentMonth = evM - 1;
+        }
+        syncDateSelectors();
+        renderCourseChips();
+        renderApp();
+        showToast(`Evento "${newEvent.title}" creado en ${course.shortName}`, 'success');
+
+        return {
+          exito: true,
+          eventoCreado: {
+            curso: course.name,
+            titulo: newEvent.title,
+            fecha: newEvent.date,
+            hora: newEvent.time
+          }
+        };
+      }
+
+      if (fc.name === 'filtrarVistaCalendario') {
+        if (args.courseId && COURSE_MAP[args.courseId]) {
+          handleDropdownCourseChange(args.courseId);
+        } else if (args.stage) {
+          selectStage(args.stage.toUpperCase());
+        }
+        if (args.year) state.currentYear = Number(args.year);
+        if (args.month) state.currentMonth = Number(args.month) - 1;
+        syncDateSelectors();
+        renderApp();
+        return {
+          exito: true,
+          vistaActual: `${MONTH_NAMES[state.currentMonth]} ${state.currentYear}`,
+          cursosVisibles: state.selectedCourses.size
+        };
+      }
+
+      return { error: 'Función desconocida' };
+    }
+
+    // =========================================================================
+    // MOTOR DE RESPALDO GEMINI (REST + VOZ DEL NAVEGADOR SI WEBSOCKET FALLA)
+    // =========================================================================
+    function speakTextInSpanish(text) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 1.05;
+        window.speechSynthesis.speak(utterance);
+      } catch (_) {}
+    }
+
+    async function processCommandViaGeminiREST(userText, speakResponse = true) {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      fallbackChatHistory.push({ role: 'user', parts: [{ text: userText }] });
+
+      const toolsSchema = [{
+        functionDeclarations: calendarToolsDeclaration.map(fn => ({
+          name: fn.name,
+          description: fn.description,
+          parameters: {
+            type: 'OBJECT',
+            properties: Object.fromEntries(
+              Object.entries(fn.parameters.properties || {}).map(([k, v]) => [
+                k,
+                { type: String(v.type).toUpperCase(), description: v.description }
+              ])
+            ),
+            ...(fn.parameters.required ? { required: fn.parameters.required } : {})
+          }
+        }))
+      }];
+
+      try {
+        for (let step = 0; step < 3; step++) {
+          const payload = {
+            contents: fallbackChatHistory,
+            systemInstruction: { parts: [{ text: getAssistantSystemPrompt() }] },
+            tools: toolsSchema
+          };
+
+          const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+          const candidate = data?.candidates?.[0];
+          const parts = candidate?.content?.parts || [];
+
+          if (candidate?.content) {
+            fallbackChatHistory.push(candidate.content);
+          }
+
+          const fnCallPart = parts.find(p => p.functionCall);
+          if (fnCallPart) {
+            const fc = fnCallPart.functionCall;
+            const toolOutput = executeCalendarTool(fc);
+            fallbackChatHistory.push({
+              role: 'function',
+              parts: [{
+                functionResponse: {
+                  name: fc.name,
+                  response: { result: toolOutput }
+                }
+              }]
+            });
+            continue;
+          }
+
+          const textReply = parts.map(p => p.text || '').join('').trim();
+          if (textReply) {
+            appendTranscriptBubble('model', textReply);
+            if (speakResponse) speakTextInSpanish(textReply);
+          }
+          break;
+        }
+      } catch (err) {
+        appendTranscriptBubble('system', 'No se pudo procesar la solicitud con Gemini.');
+      }
+    }
+
+    function startBrowserSpeechRecognitionFallback() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        setVoiceUIState(false, 'Usa el cuadro de texto inferior');
+        appendTranscriptBubble('system', 'Tu navegador o iframe restringe el micrófono directo. Escribe tu orden abajo y Gemini responderá con voz.');
+        return false;
+      }
+
+      try {
+        speechRecognitionInstance = new SpeechRec();
+        speechRecognitionInstance.lang = 'es-ES';
+        speechRecognitionInstance.continuous = true;
+        speechRecognitionInstance.interimResults = false;
+
+        speechRecognitionInstance.onstart = () => {
+          isFallbackVoiceActive = true;
+          setVoiceUIState(true, 'Escuchando por voz (Modo compatible)...');
+          appendTranscriptBubble('system', 'Micrófono conectado en modo compatible. Habla ahora.');
+        };
+
+        speechRecognitionInstance.onresult = async (event) => {
+          const last = event.results[event.results.length - 1];
+          if (last && last.isFinal) {
+            const spokenText = last[0].transcript.trim();
+            if (spokenText) {
+              appendTranscriptBubble('user', spokenText);
+              await processCommandViaGeminiREST(spokenText, true);
+            }
+          }
+        };
+
+        speechRecognitionInstance.onerror = (ev) => {
+          const reason = ev.error === 'not-allowed'
+            ? 'Permiso de micrófono denegado por el navegador/iframe. Puedes escribir tu orden abajo.'
+            : `Aviso de micrófono (${ev.error}). Puedes usar el cuadro de texto inferior.`;
+          appendTranscriptBubble('system', reason);
+          setVoiceUIState(false, 'Micrófono bloqueado · Usa texto');
+        };
+
+        speechRecognitionInstance.onend = () => {
+          if (isFallbackVoiceActive) {
+            try { speechRecognitionInstance.start(); } catch (_) {}
+          }
+        };
+
+        speechRecognitionInstance.start();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    // =========================================================================
+    // CONEXIÓN Y GESTIÓN DE SESIÓN GEMINI LIVE
+    // =========================================================================
+    window.toggleVoiceAssistantPanel = function () {
+      const panel = document.getElementById('voice-assistant-panel');
+      if (!panel) return;
+      const isHidden = panel.classList.contains('hidden');
+      if (isHidden) {
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        lucide.createIcons();
+      } else {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex');
+      }
+    };
+
+    window.startGeminiLiveSession = async function () {
+      if (isLiveActive || isFallbackVoiceActive) return;
+
+      // 1. Verificar soporte y permisos de micrófono
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        appendTranscriptBubble('system', 'El entorno actual no expone acceso al micrófono. Escribe tu consulta abajo para interactuar con Gemini.');
+        setVoiceUIState(false, 'Micrófono no disponible');
+        return;
+      }
+
+      try {
+        setVoiceUIState(false, 'Solicitando permiso de micrófono...');
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            channelCount: 1,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+      } catch (micErr) {
+        const isDenied = micErr?.name === 'NotAllowedError' || micErr?.name === 'PermissionDeniedError';
+        const msg = isDenied
+          ? 'Permiso de micrófono bloqueado en el navegador o vista previa. Habilita el micrófono o escribe tu orden abajo.'
+          : 'No se detectó ningún micrófono disponible. Puedes usar el cuadro de texto inferior.';
+        showToast(msg, 'warning');
+        appendTranscriptBubble('system', msg);
+        setVoiceUIState(false, 'Micrófono bloqueado');
+        return;
+      }
+
+      // 2. Intentar conectar con Gemini Live API (WebSocket nativo) con fallback automático
+      try {
+        setVoiceUIState(false, 'Conectando con Gemini Live...');
+        const apiKey = "";
+        const ai = new GoogleGenAI({ apiKey });
+
+        const workletCode = `
+          class RecorderProcessor extends AudioWorkletProcessor {
+            process(inputs) {
+              const input = inputs[0];
+              if (input && input.length > 0) {
+                this.port.postMessage(input[0]);
+              }
+              return true;
+            }
+          }
+          registerProcessor('recorder-processor', RecorderProcessor);
+        `;
+
+        inputAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+        outputAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (inputAudioCtx.state === 'suspended') await inputAudioCtx.resume();
+        if (outputAudioCtx.state === 'suspended') await outputAudioCtx.resume();
+        nextAudioStartTime = 0;
+
+        const workletBlob = new Blob([workletCode], { type: 'application/javascript' });
+        const workletUrl = URL.createObjectURL(workletBlob);
+        await inputAudioCtx.audioWorklet.addModule(workletUrl);
+
+        let liveOpened = false;
+
+        const sessionPromise = ai.live.connect({
+          model: 'gemini-3.1-flash-live-preview',
+          callbacks: {
+            onopen: () => {
+              liveOpened = true;
+              setVoiceUIState(true, 'Escuchando en vivo (Gemini Live)...');
+              appendTranscriptBubble('system', 'Sesión de voz Gemini Live conectada. Habla ahora.');
+
+              const source = inputAudioCtx.createMediaStreamSource(mediaStream);
+              const recorder = new AudioWorkletNode(inputAudioCtx, 'recorder-processor');
+
+              recorder.port.onmessage = (event) => {
+                const pcmBlob = float32ToPcmBlob(event.data);
+                sessionPromise.then((session) => {
+                  session.sendRealtimeInput({ audio: pcmBlob });
+                });
+              };
+
+              source.connect(recorder);
+              recorder.connect(inputAudioCtx.destination);
+            },
+            onmessage: async (message) => {
+              if (message.serverContent?.inputTranscription?.text) {
+                currentUserSpeech += message.serverContent.inputTranscription.text;
+              }
+              if (message.serverContent?.outputTranscription?.text) {
+                currentModelSpeech += message.serverContent.outputTranscription.text;
+              }
+              if (message.serverContent?.turnComplete) {
+                if (currentUserSpeech.trim()) appendTranscriptBubble('user', currentUserSpeech);
+                if (currentModelSpeech.trim()) appendTranscriptBubble('model', currentModelSpeech);
+                currentUserSpeech = '';
+                currentModelSpeech = '';
+              }
+
+              if (message.toolCall?.functionCalls) {
+                for (const fc of message.toolCall.functionCalls) {
+                  const toolResult = executeCalendarTool(fc);
+                  sessionPromise.then((session) => {
+                    session.sendToolResponse({
+                      functionResponses: {
+                        id: fc.id,
+                        name: fc.name,
+                        response: { result: toolResult }
+                      }
+                    });
+                  });
+                }
+              }
+
+              const parts = message.serverContent?.modelTurn?.parts || [];
+              for (const part of parts) {
+                const base64Audio = part?.inlineData?.data;
+                if (base64Audio && outputAudioCtx) {
+                  nextAudioStartTime = Math.max(nextAudioStartTime, outputAudioCtx.currentTime);
+                  const audioBuffer = await decodePcmToAudioBuffer(
+                    decodeBase64ToBytes(base64Audio),
+                    outputAudioCtx,
+                    24000,
+                    1
+                  );
+                  const bufferSource = outputAudioCtx.createBufferSource();
+                  bufferSource.buffer = audioBuffer;
+                  bufferSource.connect(outputAudioCtx.destination);
+                  bufferSource.addEventListener('ended', () => {
+                    activeAudioSources.delete(bufferSource);
+                  });
+                  bufferSource.start(nextAudioStartTime);
+                  nextAudioStartTime += audioBuffer.duration;
+                  activeAudioSources.add(bufferSource);
+                }
+              }
+
+              if (message.serverContent?.interrupted) {
+                for (const src of activeAudioSources.values()) {
+                  try { src.stop(); } catch (_) {}
+                  activeAudioSources.delete(src);
+                }
+                nextAudioStartTime = 0;
+              }
+            },
+            onerror: () => {
+              if (!liveOpened) {
+                cleanupLiveAudioResources();
+                startBrowserSpeechRecognitionFallback();
+              } else {
+                stopGeminiLiveSession(false);
+              }
+            },
+            onclose: () => {
+              if (isLiveActive) stopGeminiLiveSession(false);
+            }
+          },
+          config: {
+            responseModalities: [Modality.AUDIO],
+            speechConfig: {
+              voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } }
+            },
+            outputAudioTranscription: {},
+            inputAudioTranscription: {},
+            tools: [{ functionDeclarations: calendarToolsDeclaration }],
+            systemInstruction: getAssistantSystemPrompt()
+          }
+        });
+
+        liveSessionPromise = sessionPromise;
+      } catch (err) {
+        cleanupLiveAudioResources();
+        startBrowserSpeechRecognitionFallback();
+      }
+    };
+
+    function cleanupLiveAudioResources() {
+      liveSessionPromise = null;
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      if (inputAudioCtx) {
+        inputAudioCtx.close().catch(() => {});
+        inputAudioCtx = null;
+      }
+      for (const src of activeAudioSources.values()) {
+        try { src.stop(); } catch (_) {}
+      }
+      activeAudioSources.clear();
+      if (outputAudioCtx) {
+        outputAudioCtx.close().catch(() => {});
+        outputAudioCtx = null;
+      }
+    }
+
+    window.stopGeminiLiveSession = function (closeRemote = true) {
+      if (closeRemote && liveSessionPromise) {
+        liveSessionPromise.then((session) => {
+          try { session.close(); } catch (_) {}
+        }).catch(() => {});
+      }
+      cleanupLiveAudioResources();
+
+      if (speechRecognitionInstance) {
+        isFallbackVoiceActive = false;
+        try { speechRecognitionInstance.stop(); } catch (_) {}
+        speechRecognitionInstance = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (_) {}
+      }
+
+      if (isLiveActive || isFallbackVoiceActive) {
+        appendTranscriptBubble('system', 'Sesión de voz finalizada.');
+      }
+      isFallbackVoiceActive = false;
+      setVoiceUIState(false, 'Sesión desconectada');
+    };
+
+    window.sendVoiceTextFallback = async function (e) {
+      e.preventDefault();
+      const input = document.getElementById('voice-text-input');
+      const text = (input?.value || '').trim();
+      if (!text) return;
+      input.value = '';
+
+      appendTranscriptBubble('user', text);
+
+      if (isLiveActive && liveSessionPromise) {
+        liveSessionPromise.then((session) => {
+          session.sendRealtimeInput({ text });
+        });
+      } else {
+        await processCommandViaGeminiREST(text, true);
+      }
+    };
+  </script>
+</body>
+</html>
