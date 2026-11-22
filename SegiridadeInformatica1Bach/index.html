@@ -54,7 +54,9 @@ Control de acceso|Limita el acceso al personal autorizado con contraseñas, biom
 Encriptación|Codifica la información para que no se pueda descifrar si es interceptada
 SAI|Batería que mantiene el equipo funcionando si falla la corriente
 NAS|Almacenamiento al que se accede por la red para guardar y recuperar información
-Copias de seguridad|Restauran los datos con copias periódicas en soportes externos o en la nube`},
+Copias de seguridad|Restauran los datos con copias periódicas en soportes externos o en la nube
+Autenticación de doble factor (2FA)|Exige dos formas distintas de verificación, como una contraseña y un código enviado al móvil
+Copia incremental|Más rápida y ocupa menos espacio, porque solo copia los datos cambiados desde la última copia`},
 {n:"Software malicioso",l:1,c:0,p:`Malware|Programa o código diseñado para ejecutar acciones no deseadas
 Virus|Fragmento de código que altera el funcionamiento correcto de un dispositivo
 Secuestrador del navegador|Cambia la página de inicio para mostrar anuncios y generar ingresos
@@ -62,7 +64,8 @@ Gusano|Crea copias de sí mismo indefinidamente para colapsar el dispositivo o l
 Troyano|Software malicioso oculto en un archivo que no puede reproducirse por sí mismo
 Spyware|Recopila información del equipo y la envía al atacante por la red
 Ransomware|Cifra los datos del dispositivo y pide un rescate a cambio de la clave
-Rogue|Simula ser antimalware y muestra falsas infecciones para cobrar`},
+Rogue|Simula ser antimalware y muestra falsas infecciones para cobrar
+Rootkit|Malware que oculta su presencia y la de otros procesos maliciosos en el sistema operativo`},
 {n:"Ataques y engaños",l:2,c:1,p:`Phishing|Suplanta a alguien de confianza para obtener credenciales y datos bancarios
 Pharming|Aprovecha vulnerabilidades de los servidores DNS para redirigir a una web fraudulenta
 Inyección de código|Añade o borra información en sitios remotos mal protegidos, por ejemplo con SQL
@@ -73,7 +76,8 @@ Fuerza bruta|Prueba todas las combinaciones de usuario y contraseña
 Interrupción|Ataque a la disponibilidad que deja un recurso inutilizable
 Interceptación|Ataque a la confidencialidad: se accede a recursos sin autorización
 Modificación|Ataque a la integridad: se accede a un recurso y se manipula
-Suplantación|Ataque a la autenticación mediante la falsificación de IP, DNS, URL o correo`},
+Suplantación|Ataque a la autenticación mediante la falsificación de IP, DNS, URL o correo
+Man-in-the-Middle|Intercepta la comunicación entre dos interlocutores, sin que lo noten, para espiar o alterar los mensajes`},
 {n:"Antivirus e infecciones",l:2,c:0,p:`Política de seguridad|Normas y procedimientos que garantizan un cierto grado de seguridad
 Antivirus|Programa residente en memoria que previene, detecta y elimina ataques
 Punto de restauración|Estado seguro anterior al que Windows permite volver sin perder información
@@ -94,7 +98,17 @@ VPN|Conexión segura y cifrada entre dos redes privadas a través de Internet
 SSID|Nombre de la red wifi, que conviene cambiar por uno genérico
 WPA2|Estándar de cifrado recomendado para redes wifi
 WPS|Facilita añadir dispositivos con un botón, pero hace vulnerable la red wifi
-Filtrado MAC|Solo permite el acceso a los dispositivos añadidos por su dirección MAC`}];
+Filtrado MAC|Solo permite el acceso a los dispositivos añadidos por su dirección MAC
+DNS|Traduce nombres de dominio legibles, como google.com, en direcciones IP numéricas
+LAN|Red de área local: interconecta ordenadores en un área limitada, como una casa o un aula
+SSH|Permite gestionar un equipo de forma remota, segura y cifrada, por línea de comandos (puerto 22)
+HTTPS|Protocolo seguro basado en HTTP y SSL; usa el puerto estándar 443
+HTTP|Protocolo de transferencia de hipertexto no seguro; usa por defecto el puerto 80
+IDS|Sistema de detección de intrusos: analiza el tráfico de red para detectar patrones sospechosos
+WEP|Cifrado wifi antiguo y vulnerable: sus claves se descifran en pocos minutos
+WPA3|Cifrado wifi actual, junto con WPA2, para proteger redes domésticas
+Firmware|Software de bajo nivel que controla los circuitos del dispositivo; sus actualizaciones corrigen fallos
+Dirección MAC|Identificador físico único que el fabricante asigna a cada interfaz de red`}];
 const S0=[
 {m:0,q:"¿Qué principio de seguridad se ve afectado?",c:["Integridad","Disponibilidad","Confidencialidad","Autenticación"],i:`Un atacante altera un dato|0
 Se extravía parte de la información|0
@@ -196,7 +210,13 @@ Filtrar por dirección MAC|0
 Mantener activo el acceso por WPS|1
 Usar cifrado WEP|1
 Usar cifrado WPA|1
-Dejar la contraseña por defecto admin/admin|1`}];
+Dejar la contraseña por defecto admin/admin|1`},
+{m:7,q:"¿Qué protocolo corresponde?",c:["HTTP","HTTPS","SSH"],i:`Usa por defecto el puerto 80|0
+No cifra la comunicación|0
+Usa el puerto estándar 443|1
+Combina HTTP y SSL|1
+Usa el puerto 22|2
+Permite gestionar un equipo remoto por línea de comandos|2`}];
 const O=[
 {m:5,u:1,q:"Ordena las medidas ante una infección, de la menos a la más drástica.",s:["Restaurar el sistema a un estado anterior","Actualizar el antivirus y analizar el equipo","Arrancar con un Live CD o Live USB","Ejecutar utilidades de desinfección específicas","Formatear el equipo y reinstalar el sistema"]},
 {m:6,u:1,q:"Ordena el proceso de firma electrónica de Carla a David.",s:["Carla aplica una función hash al documento","Carla cifra el resumen hash con su clave privada: la firma","Se envía el documento firmado por Internet","David descifra la firma con la clave pública de Carla","David compara su propio hash con el resumen descifrado"]},
@@ -217,19 +237,14 @@ for(let n=0;a.length<2;n++)a.push(mkCls(ss[n%ss.length],r));return it.concat(a).
 const EX=(()=>{const r=rng(999),u=new Set(ALL.flat().filter(x=>x.p).map(x=>x.p));let ps=sh(P.filter(p=>!u.has(p)),r);if(ps.length<25)ps=ps.concat(sh(P.filter(p=>u.has(p)),r));
 let it=ps.slice(0,25).map(p=>mkTest(p,r)),q=[];O.filter(o=>!o.u).forEach(o=>it.push(mkOrd(o,r)));
 while(it.length<50){if(!q.length)q=sh(S,r);it.push(mkCls(q.pop(),r))}return sh(it,r).map((x,i)=>(x.k='e'+i,x))})();
-let St={name:'',em:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
-try{const o=JSON.parse(localStorage.getItem('segcurso'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
-// --- SUSTITUYE DESDE AQUÍ HASTA EL FINAL DEL ARCHIVO ---
-let St={name:'',em:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
+let St={name:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
 try{const o=JSON.parse(localStorage.getItem('segcurso'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
 const save=()=>{try{localStorage.setItem('segcurso',JSON.stringify(St))}catch(e){}};
 const done=l=>l.every(x=>x.k in R),sc=l=>l.filter(x=>R[x.k]).length;
 function theme(){const d=document.documentElement,dk=d.dataset.theme?d.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dk?'light':'dark';try{localStorage.setItem('segtheme',d.dataset.theme)}catch(e){}}
 const stats=()=>'<div class="stats">'+[[MODS.length,'módulos'],[4,'niveles'],[MODS.length,'bloques de actividades'],[EX.length,'preguntas de examen']].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')+'</div>';
 function head(){const t=ALL.flat().length+EX.length,n=Object.keys(R).length;return`<header><button class="pill" data-act="go" data-v="map">Mapa</button><button class="pill" data-act="go" data-v="exam"${ALL.every(done)?'':' disabled'}>Examen</button><button class="pill" data-act="go" data-v="dip"${done(EX)?'':' disabled'}>Diploma</button><button class="pill" data-act="theme">Claro u oscuro</button></header><div class="bar" title="Progreso total"><i style="width:${n/t*100}%"></i></div>`}
-
-function start(){return`<h1>Seguridad informática</h1><p class="lead">Un mapa de aprendizaje para evaluar tus competencias digitales de seguridad, con el temario de TIC I.</p>${stats()}<div class="card"><label for="nm"><b>Tu nombre</b> (aparecerá en el diploma)</label><br><input id="nm" value="${esc(St.name)}" autocomplete="name" placeholder="Ej. Ana García"><br><label for="em"><b>Tu correo electrónico</b></label><br><input id="em" type="email" value="${esc(St.em||'')}" autocomplete="email" placeholder="Ej. alumno@instituto.edu"><p class="mu">Cada prueba se responde una sola vez. No hay repeticiones: tu informe final reúne todos los resultados.</p><button class="pill p" data-act="start">Empezar</button></div>`}
-
+function start(){return`<h1>Seguridad informática</h1><p class="lead">Un mapa de aprendizaje para evaluar tus competencias digitales de seguridad, con el temario de TIC I.</p>${stats()}<div class="card"><label for="nm"><b>Tu nombre</b> (aparecerá en el diploma)</label><br><input id="nm" value="${esc(St.name)}" autocomplete="name"><p class="mu">Cada prueba se responde una sola vez. No hay repeticiones: tu informe final reúne todos los resultados.</p><button class="pill p" data-act="start">Empezar</button></div>`}
 function map(){let h=`<h1>Hola, ${esc(St.name)}</h1><p class="lead">Completa los módulos en orden. Todos puntúan en tu informe final.</p>${stats()}`;
 LV.forEach((L,l)=>{h+=`<section class="node"><h2>Nivel ${l+1}: ${L}</h2><div class="lv">`;MODS.forEach((M,i)=>{if(M.l!=l)return;const a=ALL[i],n=a.filter(x=>x.k in R).length,lk=i&&!done(ALL[i-1]);
 h+=`<div class="card"><h3>${M.n}</h3><p class="mu">Competencia DigComp ${CP[M.c][0]}. ${n} de ${a.length} respondidas${done(a)?', '+sc(a)+' aciertos':''}.</p><button class="pill p" data-act="mod" data-i="${i}"${lk?' disabled':''}>${lk?'Bloqueado':done(a)?'Ver resultado':n?'Continuar':'Empezar'}</button></div>`});h+='</div></section>'});
@@ -248,31 +263,16 @@ if(V.c>=l.length){const s=sc(l);return`<h1>${ti}</h1><div class="card"><p class=
 const x=l[V.c];return`<h2>${ti}</h2><p class="mu">${ex?'Pregunta':'Actividad'} ${V.c+1} de ${l.length}${x.y!='t'?', reto avanzado':''}</p><div class="card">${item(x,ex)}${x.k in R?`<p><button class="pill p" data-act="next">${V.c+1<l.length?'Continuar':'Ver resultado'}</button></p>`:''}</div>`}
 function rep(){const mods=MODS.map((M,i)=>{const a=ALL[i],e=EX.filter(x=>x.m==i);return{n:M.n,a:sc(a),at:a.length,e:sc(e),et:e.length,g:sc(a)+sc(e),t:a.length+e.length}});
 const cps=CP.map((c,ci)=>{let g=0,t=0;mods.forEach((m,i)=>{if(MODS[i].c==ci){g+=m.g;t+=m.t}});return{id:c[0],n:c[1],p:g/t}}),al=ALL.flat().concat(EX);return{mods,cps,ex:sc(EX)/EX.length*10,gl:sc(al)/al.length*10}}
-
 function dip(){const r=rep(),pc=v=>Math.round(v*100)+' %';
 return`<div class="card"><h1>Diploma</h1><p>Se certifica que <b>${esc(St.name)}</b> ha completado el curso de seguridad informática el ${new Date(St.fin||Date.now()).toLocaleDateString('es-ES')}.</p><div class="stats"><div><b>${r.ex.toFixed(1)}</b><span>Nota del examen sobre 10</span></div><div><b>${r.gl.toFixed(1)}</b><span>Nota global sobre 10</span></div></div>
 <h2>Competencias digitales (DigComp)</h2>${r.cps.map(c=>`<div class="row"><span>${c.id} ${c.n}</span><span class="fb ${c.p>=.6?'ok':'no'}">${c.p>=.6?'✓ Superada':'✗ No superada'}, ${pc(c.p)}</span></div>`).join('')}<p class="mu">Una competencia se supera con un 60 % o más de aciertos en todas sus pruebas.</p>
-<h2>Resultados por lección</h2>${r.mods.map(m=>`<div class="row"><span>${m.n}</span><span>Actividades ${m.a}/${m.at}, examen ${m.e}/${m.et}, total ${pc(m.g/m.t)}</span></div>`).join('')}</div><div class="g"><button class="pill p noprint" data-act="print">Descargar en PDF</button><button class="pill sel noprint" data-act="send">Enviar nota final al profesor</button></div>`}
+<h2>Resultados por lección</h2>${r.mods.map(m=>`<div class="row"><span>${m.n}</span><span>Actividades ${m.a}/${m.at}, examen ${m.e}/${m.et}, total ${pc(m.g/m.t)}</span></div>`).join('')}</div><button class="pill p noprint" data-act="print">Imprimir o guardar en PDF</button>`}
 function render(){$('#app').innerHTML=V.v=='start'?start():head()+(V.v=='map'?map():V.v=='dip'&&done(EX)?dip():mod())}
 const first=l=>{const c=l.findIndex(x=>!(x.k in R));return c<0?l.length:c};
 function fin(x,ok){R[x.k]=ok?1:0;if(done(EX)&&!St.fin)St.fin=Date.now();save()}
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset,a=d.act,x=V.v=='mod'?ALL[V.i][V.c]:V.v=='exam'?EX[V.c]:null;let up=0;
 if(a=='theme'){theme();return}if(a=='print'){print();return}
-if(a=='start'){
-    const n=$('#nm').value.trim(), em=$('#em').value.trim();
-    if(!n){$('#nm').focus();return} if(!em){$('#em').focus();return}
-    St.name=n; St.em=em; save(); V={v:'map'}; up=1
-}
-else if(a=='send'){
-    const r=rep(); b.innerText='Enviando...'; b.disabled=true;
-    // REEMPLAZA LA URL DE ABAJO POR LA QUE OBTUVISTE EN APPS SCRIPT
-    fetch('https://script.google.com/a/macros/vedruna.es/s/AKfycbzMLGaUCStWYHL0d-4lMEhOrEOdTDBbg3tWe1DlmTivWFf1PTYCoQIksLpu-au9DfDhYQ/exec', {
-        method:'POST',
-        body:JSON.stringify({email:St.em, nombre:St.name, modulos:r.mods.map(m=>m.n+': '+Math.round((m.g/m.t)*100)+'%').join(' | '), notaExamen:r.ex.toFixed(1), notaGlobal:r.gl.toFixed(1)})
-    }).then(()=> { b.innerText='¡Nota guardada!'; b.classList.replace('sel','ok'); })
-      .catch(()=> { b.innerText='Error. Reintentar'; b.disabled=false; });
-    return;
-}
+if(a=='start'){const n=$('#nm').value.trim();if(!n){$('#nm').focus();return}St.name=n;save();V={v:'map'};up=1}
 else if(a=='go'){V=d.v=='exam'?{v:'exam',c:first(EX)}:{v:d.v};up=1}
 else if(a=='mod'){V={v:'mod',i:+d.i,c:first(ALL[+d.i])};up=1}
 else if(a=='next'){V.c++;up=1}
