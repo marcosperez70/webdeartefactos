@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8">
+<html lang="gl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Seguridad informática: mapa de aprendizaje</title>
+<title>Seguridade informática: mapa de aprendizaxe</title>
 <style>
 :root{--bg:#f7f6f2;--card:#fff;--bd:#e4e1d8;--tx:#1d2330;--mu:#667085;--bl:#2563eb;--blb:#e8efff;--gr:#16a34a;--grb:#e6f6ec;--rd:#c2410c;--pc:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--bd:#2f3642;--tx:#eceff4;--mu:#9aa4b2;--bl:#6ea0ff;--blb:#1c2b4a;--gr:#4ade80;--grb:#163322;--rd:#fb923c;--pc:#0b1220;color-scheme:dark}}
@@ -38,177 +38,197 @@ input{font:inherit;border:1px solid var(--bd);background:var(--bg);color:var(--t
 </style></head><body><main id="app"></main>
 <script>
 const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const CP=[["4.1","Protección de dispositivos"],["4.2","Protección de datos personales y privacidad"],["2.6","Gestión de la identidad digital"]],LV=["Fundamentos","Defensa y malware","Ataques y respuesta","Cifrado y redes"];
+const CP=[["4.1","Protección de dispositivos"],["4.2","Protección de datos persoais e privacidade"],["2.6","Xestión da identidade dixital"]],LV=["Fundamentos","Defensa e malware","Ataques e resposta","Cifrado e redes"];
 const MODS=[
-{n:"Principios de seguridad",l:0,c:0,p:`Integridad|Información exacta, completa y modificable solo por personas autorizadas
-Disponibilidad|Información siempre accesible para las personas autorizadas y recuperable
-Confidencialidad|Información conocida solo por las personas autorizadas, también llamada privacidad
-Autenticación|Verificar que se intercambia información con personas o entidades autorizadas`},
-{n:"Amenazas e intrusos",l:0,c:0,p:`Ataque pasivo|Obtiene información sin alterarla y es muy difícil de detectar
-Ataque activo|Daña el objetivo o manipula la información para obtener beneficios
-Hacker|Experto que comprueba las vulnerabilidades de un sistema para corregirlas
-Vulnerabilidad del software|Error de programación que puede poner en peligro el sistema`},
-{n:"Seguridad activa y pasiva",l:1,c:0,p:`Seguridad activa|Medidas que previenen e intentan evitar los daños en los sistemas
-Seguridad pasiva|Medidas que minimizan o reparan los daños causados
-Control de acceso|Limita el acceso al personal autorizado con contraseñas, biometría...
-Encriptación|Codifica la información para que no se pueda descifrar si es interceptada
-SAI|Batería que mantiene el equipo funcionando si falla la corriente
-NAS|Almacenamiento al que se accede por la red para guardar y recuperar información
-Copias de seguridad|Restauran los datos con copias periódicas en soportes externos o en la nube`},
-{n:"Software malicioso",l:1,c:0,p:`Malware|Programa o código diseñado para ejecutar acciones no deseadas
-Virus|Fragmento de código que altera el funcionamiento correcto de un dispositivo
-Secuestrador del navegador|Cambia la página de inicio para mostrar anuncios y generar ingresos
-Gusano|Crea copias de sí mismo indefinidamente para colapsar el dispositivo o la red
-Troyano|Software malicioso oculto en un archivo que no puede reproducirse por sí mismo
-Spyware|Recopila información del equipo y la envía al atacante por la red
-Ransomware|Cifra los datos del dispositivo y pide un rescate a cambio de la clave
-Rogue|Simula ser antimalware y muestra falsas infecciones para cobrar`},
-{n:"Ataques y engaños",l:2,c:1,p:`Phishing|Suplanta a alguien de confianza para obtener credenciales y datos bancarios
-Pharming|Aprovecha vulnerabilidades de los servidores DNS para redirigir a una web fraudulenta
-Inyección de código|Añade o borra información en sitios remotos mal protegidos, por ejemplo con SQL
-Escaneo de puertos|Averigua qué puertos están abiertos para lanzar después el ataque
-Denegación de servicio|Satura un equipo o una red hasta que deja de responder
-Escucha de red|Captura e interpreta el tráfico de una red con programas sniffers
-Fuerza bruta|Prueba todas las combinaciones de usuario y contraseña
-Interrupción|Ataque a la disponibilidad que deja un recurso inutilizable
-Interceptación|Ataque a la confidencialidad: se accede a recursos sin autorización
-Modificación|Ataque a la integridad: se accede a un recurso y se manipula
-Suplantación|Ataque a la autenticación mediante la falsificación de IP, DNS, URL o correo`},
-{n:"Antivirus e infecciones",l:2,c:0,p:`Política de seguridad|Normas y procedimientos que garantizan un cierto grado de seguridad
-Antivirus|Programa residente en memoria que previene, detecta y elimina ataques
-Punto de restauración|Estado seguro anterior al que Windows permite volver sin perder información
-Live CD o Live USB|Permite analizar el equipo sin contaminar y rescatar archivos si no inicia
-Utilidades de desinfección|Actúan como antídotos de virus o eliminan amenazas concretas`},
-{n:"Cifrado, certificados y firma",l:3,c:2,p:`Criptografía simétrica|Misma clave para cifrar y descifrar: rápida pero insegura
-Criptografía asimétrica|Dos claves, una pública y una privada; ralentiza el cifrado
-Criptografía híbrida|Combina ambas para obtener plena garantía de confidencialidad
-Certificado digital|Documento electrónico que identifica en la Red con validez jurídica
-Autoridad de certificación|Entidad de confianza que expide certificados electrónicos
-Firma electrónica|Datos asociados a un documento que identifican al firmante y aseguran su integridad
-Función hash|Algoritmo que resume datos de cualquier tamaño en caracteres de tamaño fijo`},
-{n:"Privacidad y redes",l:3,c:1,p:`Navegación privada|El navegador no guarda cookies, historial ni contraseñas; solo afecta al equipo
-Proxy web|Intermediario entre los equipos y los sitios web que mantiene su anonimato
-Tor|Software libre de navegación anónima que oculta la dirección IP
-Cortafuegos|Dispositivo hardware o software que controla la comunicación entre un equipo y la red
-VPN|Conexión segura y cifrada entre dos redes privadas a través de Internet
-SSID|Nombre de la red wifi, que conviene cambiar por uno genérico
+{n:"Principios de seguridade",l:0,c:0,p:`Integridade|Información exacta, completa e modificable só por persoas autorizadas
+Dispoñibilidade|Información sempre accesible para as persoas autorizadas e recuperable
+Confidencialidade|Información coñecida só polas persoas autorizadas, tamén chamada privacidade
+Autenticación|Verificar que se intercambia información con persoas ou entidades autorizadas`},
+{n:"Ameazas e intrusos",l:0,c:0,p:`Ataque pasivo|Obtén información sen alterala e é moi difícil de detectar
+Ataque activo|Dana o obxectivo ou manipula a información para obter beneficios
+Hacker|Experto que comproba as vulnerabilidades dun sistema para corrixilas
+Vulnerabilidade do software|Erro de programación que pode poñer en perigo o sistema`},
+{n:"Seguridade activa e pasiva",l:1,c:0,p:`Seguridade activa|Medidas que prevén e tratan de evitar os danos nos sistemas
+Seguridade pasiva|Medidas que minimizan ou reparan os danos causados
+Control de acceso|Limita o acceso ao persoal autorizado con contrasinais, biometría...
+Encriptación|Codifica a información para que non se poida descifrar se é interceptada
+SAI|Batería que mantén o equipo funcionando se falla a corrente
+NAS|Almacenamento ao que se accede pola rede para gardar e recuperar información
+Copias de seguridade|Restauran os datos con copias periódicas en soportes externos ou na nube
+Autenticación de dobre factor (2FA)|Esixe dúas formas distintas de verificación, como un contrasinal e un código enviado ao móbil
+Copia incremental|Máis rápida e ocupa menos espazo, porque só copia os datos cambiados desde a última copia`},
+{n:"Software malicioso",l:1,c:0,p:`Malware|Programa ou código deseñado para executar accións non desexadas
+Virus|Fragmento de código que altera o funcionamento correcto dun dispositivo
+Secuestrador do navegador|Cambia a páxina de inicio para amosar anuncios e xerar ingresos
+Verme|Crea copias de si mesmo indefinidamente para colapsar o dispositivo ou a rede
+Troiano|Software malicioso agochado nun arquivo que non pode reproducirse por si mesmo
+Spyware|Recompila información do equipo e envíaa ao atacante pola rede
+Ransomware|Cifra os datos do dispositivo e pide un rescate a cambio da clave
+Rogue|Simula ser antimalware e amosa falsas infeccións para cobrar
+Rootkit|Malware que oculta a súa presenza e a doutros procesos maliciosos no sistema operativo`},
+{n:"Ataques e enganos",l:2,c:1,p:`Phishing|Suplanta a alguén de confianza para obter credenciais e datos bancarios
+Pharming|Aproveita vulnerabilidades dos servidores DNS para redirixir a unha web fraudulenta
+Inxección de código|Engade ou borra información en sitios remotos mal protexidos, por exemplo con SQL
+Escaneo de portos|Descobre que portos están abertos para lanzar despois o ataque
+Denegación de servizo|Satura un equipo ou unha rede ata que deixa de responder
+Escoita de rede|Captura e interpreta o tráfico dunha rede con programas sniffers
+Forza bruta|Proba todas as combinacións de usuario e contrasinal
+Interrupción|Ataque á dispoñibilidade que deixa un recurso inutilizable
+Interceptación|Ataque á confidencialidade: accédese a recursos sen autorización
+Modificación|Ataque á integridade: accédese a un recurso e manipúlase
+Suplantación|Ataque á autenticación mediante a falsificación de IP, DNS, URL ou correo
+Man-in-the-Middle|Intercepta a comunicación entre dous interlocutores, sen que o noten, para espiar ou alterar as mensaxes`},
+{n:"Antivirus e infeccións",l:2,c:0,p:`Política de seguridade|Normas e procedementos que garanten un certo grao de seguridade
+Antivirus|Programa residente en memoria que prevén, detecta e elimina ataques
+Punto de restauración|Estado seguro anterior ao que Windows permite volver sen perder información
+Live CD ou Live USB|Permite analizar o equipo sen contaminar e rescatar arquivos se non inicia
+Utilidades de desinfección|Actúan como antídotos de virus ou eliminan ameazas concretas`},
+{n:"Cifrado, certificados e sinatura",l:3,c:2,p:`Criptografía simétrica|Mesma clave para cifrar e descifrar: rápida pero insegura
+Criptografía asimétrica|Dúas claves, unha pública e unha privada; ralentiza o cifrado
+Criptografía híbrida|Combina ambas para obter plena garantía de confidencialidade
+Certificado dixital|Documento electrónico que identifica na Rede con validez xurídica
+Autoridade de certificación|Entidade de confianza que expide certificados electrónicos
+Sinatura electrónica|Datos asociados a un documento que identifican o asinante e aseguran a súa integridade
+Función hash|Algoritmo que resume datos de calquera tamaño en caracteres de tamaño fixo`},
+{n:"Privacidade e redes",l:3,c:1,p:`Navegación privada|O navegador non garda cookies, historial nin contrasinais; só afecta ao equipo
+Proxy web|Intermediario entre os equipos e os sitios web que mantén o seu anonimato
+Tor|Software libre de navegación anónima que agocha o enderezo IP
+Firewall|Dispositivo hardware ou software que controla a comunicación entre un equipo e a rede
+VPN|Conexión segura e cifrada entre dúas redes privadas a través de Internet
+SSID|Nome da rede wifi, que convén cambiar por un xenérico
 WPA2|Estándar de cifrado recomendado para redes wifi
-WPS|Facilita añadir dispositivos con un botón, pero hace vulnerable la red wifi
-Filtrado MAC|Solo permite el acceso a los dispositivos añadidos por su dirección MAC`}];
+WPS|Facilita engadir dispositivos cun botón, pero fai vulnerable a rede wifi
+Filtrado MAC|Só permite o acceso aos dispositivos engadidos polo seu enderezo MAC
+DNS|Traduce nomes de dominio lexibles, como google.com, en enderezos IP numéricos
+LAN|Rede de área local: interconecta ordenadores nunha área limitada, como unha casa ou unha aula
+SSH|Permite xestionar un equipo en remoto, de forma segura e cifrada, por liña de comandos (porto 22)
+HTTPS|Protocolo seguro baseado en HTTP e SSL; usa o porto estándar 443
+HTTP|Protocolo de transferencia de hipertexto non seguro; usa por defecto o porto 80
+IDS|Sistema de detección de intrusos: analiza o tráfico de rede para detectar patróns sospeitosos
+WEP|Cifrado wifi antigo e vulnerable: as súas claves descífranse en poucos minutos
+WPA3|Cifrado wifi actual, xunto con WPA2, para protexer redes domésticas
+Firmware|Software de baixo nivel que controla os circuítos do dispositivo; as súas actualizacións corrixen fallos
+Enderezo MAC|Identificador físico único que o fabricante asigna a cada interface de rede`}];
 const S0=[
-{m:0,q:"¿Qué principio de seguridad se ve afectado?",c:["Integridad","Disponibilidad","Confidencialidad","Autenticación"],i:`Un atacante altera un dato|0
-Se extravía parte de la información|0
-Las personas autorizadas no pueden acceder a la información|1
-No se puede recuperar la información tras un incidente|1
-Se revelan secretos empresariales|2
-Se atenta contra la privacidad de las personas|2
-No se verifica quién intercambia la información|3
-Alguien no autorizado intercambia información como si lo estuviera|3`},
-{m:1,q:"Clasifica cada amenaza según su origen.",c:["Humana","Lógica","Física"],i:`Una persona lee el correo de otra que dejó la sesión abierta|0
-Un miembro de la organización ataca por venganza|0
+{m:0,q:"Que principio de seguridade se ve afectado?",c:["Integridade","Dispoñibilidade","Confidencialidade","Autenticación"],i:`Un atacante altera un dato|0
+Extráviase parte da información|0
+As persoas autorizadas non poden acceder á información|1
+Non se pode recuperar a información tras un incidente|1
+Revélanse segredos empresariais|2
+Atenta contra a privacidade das persoas|2
+Non se verifica quen intercambia a información|3
+Alguén non autorizado intercambia información como se o estivese|3`},
+{m:1,q:"Clasifica cada ameaza segundo a súa orixe.",c:["Humana","Lóxica","Física"],i:`Unha persoa le o correo doutra que deixou a sesión aberta|0
+Un membro da organización ataca por vinganza|0
 Un pirata informático accede ilegalmente a un sistema|0
-Un virus o un troyano|1
-Un error de programación en el sistema operativo|1
+Un virus ou un troiano|1
+Un erro de programación no sistema operativo|1
 Un programa espía|1
-Una sobrecarga eléctrica|2
-Un líquido vertido sobre el equipo|2
-Una inundación|2
-La avería de un disco|2`},
-{m:2,q:"¿Es una medida de seguridad activa o pasiva?",c:["Activa","Pasiva"],i:`Control de acceso con contraseñas|0
-Encriptación de la información|0
-Antivirus y cortafuegos|0
-Firma digital|0
-Copia de seguridad en la nube|1
+Unha sobrecarga eléctrica|2
+Un líquido derramado sobre o equipo|2
+Unha inundación|2
+A avaría dun disco|2`},
+{m:2,q:"É unha medida de seguridade activa ou pasiva?",c:["Activa","Pasiva"],i:`Control de acceso con contrasinais|0
+Encriptación da información|0
+Antivirus e firewall|0
+Sinatura dixital|0
+Copia de seguridade na nube|1
 SAI|1
 Sistema RAID de discos|1
-Herramienta de limpieza de malware|1`},
-{m:3,q:"¿Virus, gusano o troyano?",c:["Virus","Gusano","Troyano"],i:`Se copia indefinidamente para colapsar la red|1
-Se oculta dentro de un archivo ejecutable|2
-Altera el funcionamiento correcto de un dispositivo|0
-No puede reproducirse por sí mismo ni infectar archivos|2
-Se aloja en el sistema creando copias de sí mismo|1
-Se incrusta en archivos ejecutables o programas|0`},
-{m:3,q:"¿Qué tipo de malware describe cada frase?",c:["Spyware","Ransomware","Adware","Rogue"],i:`Envía información del equipo al atacante|0
-Cifra los datos y pide un rescate|1
-Muestra ventanas emergentes de publicidad|2
-Simula ser antimalware con falsas infecciones|3
-Recopila información de forma ilícita|0
-Pide dinero a cambio de la clave de descifrado|1
-Muestra publicidad engañosa durante la ejecución|2
-Te cobra por una desinfección que no existe|3`},
-{m:4,q:"¿Qué técnica de engaño es?",c:["Phishing","Pharming","Spam","Hoax"],i:`Correo que imita a una empresa de confianza para robar credenciales|0
-Redirige una web de confianza a otra fraudulenta usando el DNS|1
-Correo no deseado enviado de forma masiva|2
-Cadena de correos con falsas alertas de virus|3
-Enlace a una web maliciosa para obtener datos de tarjetas|0
-Aprovecha vulnerabilidades de los servidores DNS|1
-Mensajes en cadena para realizar engaños masivos|3`},
-{m:4,q:"¿Qué tipo de ataque es según el daño que causa?",c:["Interrupción","Interceptación","Modificación","Suplantación"],i:`Cortar el cable de una red|0
-Destruir un disco duro|0
-Acceder a una base de datos sin autorización|1
-Acceder en remoto al equipo de otra persona|1
-Introducir errores o alterar programas|2
-Eliminar parte de la información|2
-Falsificar la dirección IP para hacerse pasar por otra persona|3
+Ferramenta de limpeza de malware|1`},
+{m:3,q:"Virus, verme ou troiano?",c:["Virus","Verme","Troiano"],i:`Cópiase indefinidamente para colapsar a rede|1
+Agóchase dentro dun arquivo executable|2
+Altera o funcionamento correcto dun dispositivo|0
+Non pode reproducirse por si mesmo nin infectar arquivos|2
+Aloxase no sistema creando copias de si mesmo|1
+Incrústase en arquivos executables ou programas|0`},
+{m:3,q:"Que tipo de malware describe cada frase?",c:["Spyware","Ransomware","Adware","Rogue"],i:`Envía información do equipo ao atacante|0
+Cifra os datos e pide un rescate|1
+Amosa xanelas emerxentes de publicidade|2
+Simula ser antimalware con falsas infeccións|3
+Recompila información de forma ilícita|0
+Pide cartos a cambio da clave de descifrado|1
+Amosa publicidade enganosa durante a execución|2
+Cóbrache por unha desinfección que non existe|3`},
+{m:4,q:"Que técnica de engano é?",c:["Phishing","Pharming","Spam","Hoax"],i:`Correo que imita unha empresa de confianza para roubar credenciais|0
+Redirixe unha web de confianza a outra fraudulenta usando o DNS|1
+Correo non desexado enviado de forma masiva|2
+Cadea de correos con falsas alertas de virus|3
+Ligazón a unha web maliciosa para obter datos de tarxetas|0
+Aproveita vulnerabilidades dos servidores DNS|1
+Mensaxes en cadea para realizar enganos masivos|3`},
+{m:4,q:"Que tipo de ataque é segundo o dano que causa?",c:["Interrupción","Interceptación","Modificación","Suplantación"],i:`Cortar o cable dunha rede|0
+Destruír un disco duro|0
+Acceder a unha base de datos sen autorización|1
+Acceder en remoto ao equipo doutra persoa|1
+Introducir erros ou alterar programas|2
+Eliminar parte da información|2
+Falsificar o enderezo IP para facerse pasar por outra persoa|3
 Falsificar un correo electrónico|3`},
-{m:4,q:"¿Qué ataque remoto es?",c:["Inyección de código","Escaneo de puertos","Denegación de servicio","Escucha de red","Fuerza bruta"],i:`Averigua qué puertos están abiertos|1
-Satura un servidor hasta que deja de responder|2
-Captura el tráfico con programas sniffers|3
-Prueba todas las combinaciones de usuario y contraseña|4
-Ejecuta una instrucción DROP en una base de datos mal filtrada|0
-Se lanza desde varios puntos de conexión (DDoS)|2`},
-{m:5,q:"¿Síntoma de infección o medida ante una infección?",c:["Síntoma","Medida"],i:`Aparecen barras de herramientas extrañas|0
-El ratón se mueve solo|0
-Se envían correos a tus contactos sin tu intención|0
-Cambia la página de inicio del navegador|0
-Restaurar el sistema a un estado anterior|1
-Arrancar con un Live USB|1
-Actualizar el antivirus y analizar el equipo|1
-Ejecutar una utilidad de desinfección específica|1`},
-{m:6,q:"¿Criptografía simétrica, asimétrica o híbrida?",c:["Simétrica","Asimétrica","Híbrida"],i:`Usa la misma clave para cifrar y descifrar|0
-Es muy rápida, pero hay que enviar la clave|0
-Usa una clave pública y otra privada|1
-Lo cifrado con tu clave pública solo se abre con tu clave privada|1
-Ralentiza el proceso de cifrado|1
-Combina ambas para garantizar la confidencialidad|2`},
-{m:6,q:"¿Certificado digital o firma electrónica?",c:["Certificado digital","Firma electrónica"],i:`Equivale a un documento de identidad en la Red|0
-Lo expide una autoridad de certificación|0
-Autentica la propiedad de un sitio web|0
-Asegura que el documento no ha sido alterado|1
-Evita que el firmante niegue haberlo firmado|1
-Identifica al firmante con una clave privada que solo él conoce|1`},
-{m:7,q:"¿Navegación privada, proxy o navegación anónima?",c:["Navegación privada","Proxy web","Navegación anónima"],i:`El navegador no guarda cookies ni historial|0
-Solo aleja a curiosos, no a atacantes expertos|0
-Actúa de intermediario entre el equipo y los sitios web|1
-Las páginas solo captan datos del servidor intermediario|1
-Oculta la dirección IP y asigna otra, como Tor|2
-Evita el seguimiento de sitios web|2`},
-{m:7,q:"¿Cortafuegos o VPN?",c:["Cortafuegos","VPN"],i:`Examina los mensajes que pasan por los puertos y bloquea los que incumplen las reglas|0
-Puede ser un dispositivo hardware o software|0
-Evita que un equipo infectado envíe datos fuera de la red|0
-Conexión cifrada entre dos redes a través de Internet|1
+{m:4,q:"Que ataque remoto é?",c:["Inxección de código","Escaneo de portos","Denegación de servizo","Escoita de rede","Forza bruta"],i:`Descobre que portos están abertos|1
+Satura un servidor ata que deixa de responder|2
+Captura o tráfico con programas sniffers|3
+Proba todas as combinacións de usuario e contrasinal|4
+Executa unha instrución DROP nunha base de datos mal filtrada|0
+Lánzase desde varios puntos de conexión (DDoS)|2`},
+{m:5,q:"Síntoma de infección ou medida ante unha infección?",c:["Síntoma","Medida"],i:`Aparecen barras de ferramentas estrañas|0
+O rato móvese só|0
+Envíanse correos aos teus contactos sen que o queiras|0
+Cambia a páxina de inicio do navegador|0
+Restaurar o sistema a un estado anterior|1
+Arrancar cun Live USB|1
+Actualizar o antivirus e analizar o equipo|1
+Executar unha utilidade de desinfección específica|1`},
+{m:6,q:"Criptografía simétrica, asimétrica ou híbrida?",c:["Simétrica","Asimétrica","Híbrida"],i:`Usa a mesma clave para cifrar e descifrar|0
+É moi rápida, pero hai que enviar a clave|0
+Usa unha clave pública e outra privada|1
+O cifrado coa túa clave pública só se abre coa túa clave privada|1
+Ralentiza o proceso de cifrado|1
+Combina ambas para garantir a confidencialidade|2`},
+{m:6,q:"Certificado dixital ou sinatura electrónica?",c:["Certificado dixital","Sinatura electrónica"],i:`Equivale a un documento de identidade na Rede|0
+Expídeo unha autoridade de certificación|0
+Autentica a propiedade dun sitio web|0
+Asegura que o documento non foi alterado|1
+Evita que o asinante negue ter asinado|1
+Identifica o asinante cunha clave privada que só el coñece|1`},
+{m:7,q:"Navegación privada, proxy ou navegación anónima?",c:["Navegación privada","Proxy web","Navegación anónima"],i:`O navegador non garda cookies nin historial|0
+Só afasta a curiosos, non a atacantes expertos|0
+Actúa de intermediario entre o equipo e os sitios web|1
+As páxinas só captan datos do servidor intermediario|1
+Agocha o enderezo IP e asigna outro, como Tor|2
+Evita o seguimento de sitios web|2`},
+{m:7,q:"Firewall ou VPN?",c:["Firewall","VPN"],i:`Examina as mensaxes que pasan polos portos e bloquea as que incumpren as regras|0
+Pode ser un dispositivo hardware ou software|0
+Evita que un equipo infectado envíe datos fóra da rede|0
+Conexión cifrada entre dúas redes a través de Internet|1
 Usa protocolos de túnel|1
-Permite a quien teletrabaja acceder a la red privada|1`},
-{m:7,q:"¿Medida recomendada o no recomendada en una red wifi?",c:["Recomendada","No recomendada"],i:`Cifrado WPA2|0
-Cambiar el SSID de fábrica|0
-Actualizar el firmware del rúter|0
-Filtrar por dirección MAC|0
-Mantener activo el acceso por WPS|1
+Permite a quen teletraballa acceder á rede privada|1`},
+{m:7,q:"Medida recomendada ou non recomendada nunha rede wifi?",c:["Recomendada","Non recomendada"],i:`Cifrado WPA2|0
+Cambiar o SSID de fábrica|0
+Actualizar o firmware do router|0
+Filtrar por enderezo MAC|0
+Manter activo o acceso por WPS|1
 Usar cifrado WEP|1
 Usar cifrado WPA|1
-Dejar la contraseña por defecto admin/admin|1`}];
+Deixar o contrasinal por defecto admin/admin|1`},
+{m:7,q:"Que protocolo corresponde?",c:["HTTP","HTTPS","SSH"],i:`Usa por defecto o porto 80|0
+Non cifra a comunicación|0
+Usa o porto estándar 443|1
+Combina HTTP e SSL|1
+Usa o porto 22|2
+Permite xestionar un equipo en remoto por liña de comandos|2`}];
 const O=[
-{m:5,u:1,q:"Ordena las medidas ante una infección, de la menos a la más drástica.",s:["Restaurar el sistema a un estado anterior","Actualizar el antivirus y analizar el equipo","Arrancar con un Live CD o Live USB","Ejecutar utilidades de desinfección específicas","Formatear el equipo y reinstalar el sistema"]},
-{m:6,u:1,q:"Ordena el proceso de firma electrónica de Carla a David.",s:["Carla aplica una función hash al documento","Carla cifra el resumen hash con su clave privada: la firma","Se envía el documento firmado por Internet","David descifra la firma con la clave pública de Carla","David compara su propio hash con el resumen descifrado"]},
-{m:6,q:"Ordena el envío de un mensaje con criptografía asimétrica.",s:["Carla cifra el mensaje con la clave pública de David","El mensaje cifrado viaja por Internet","David lo descifra con su clave privada"]},
-{m:6,q:"Ordena el cifrado híbrido de Carla a David.",s:["Carla cifra el mensaje con una clave de seguridad","Carla cifra esa clave con la clave pública de David","Se envían por Internet el mensaje y la clave cifrados","David descifra la clave de seguridad con su clave privada","David descifra el mensaje con la clave de seguridad"]},
-{m:7,u:1,q:"Ordena los rangos de puertos de menor a mayor.",s:["0–1023: protocolos conocidos como FTP, SMTP, HTTP y HTTPS","1024–49151: cualquier aplicación","49152–65535: dinámicos o privados, habituales en P2P"]}];
+{m:5,u:1,q:"Ordena as medidas ante unha infección, da menos á máis drástica.",s:["Restaurar o sistema a un estado anterior","Actualizar o antivirus e analizar o equipo","Arrancar cun Live CD ou Live USB","Executar utilidades de desinfección específicas","Formatear o equipo e reinstalar o sistema"]},
+{m:6,u:1,q:"Ordena o proceso de sinatura electrónica de Carla a David.",s:["Carla aplica unha función hash ao documento","Carla cifra o resumo hash coa súa clave privada: a sinatura","Envíase o documento asinado por Internet","David descifra a sinatura coa clave pública de Carla","David compara o seu propio hash co resumo descifrado"]},
+{m:6,q:"Ordena o envío dunha mensaxe con criptografía asimétrica.",s:["Carla cifra a mensaxe coa clave pública de David","A mensaxe cifrada viaxa por Internet","David descífraa coa súa clave privada"]},
+{m:6,q:"Ordena o cifrado híbrido de Carla a David.",s:["Carla cifra a mensaxe cunha clave de seguridade","Carla cifra esa clave coa clave pública de David","Envíanse por Internet a mensaxe e a clave cifradas","David descifra a clave de seguridade coa súa clave privada","David descifra a mensaxe coa clave de seguridade"]},
+{m:7,u:1,q:"Ordena os rangos de portos de menor a maior.",s:["0–1023: protocolos coñecidos como FTP, SMTP, HTTP e HTTPS","1024–49151: calquera aplicación","49152–65535: dinámicos ou privados, habituais en P2P"]}];
 const P=[];MODS.forEach((M,m)=>M.p.split('\n').forEach(s=>{const a=s.split('|');P.push({t:a[0],d:a[1],m})}));
 const S=S0.map(s=>({...s,i:s.i.split('\n').map(x=>{const a=x.split('|');return[a[0],+a[1]]})}));
 function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const sh=(a,r)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function mkTest(p,r){const rev=r()<.5,d=sh(P.filter(x=>x!==p&&x.m==p.m),r).concat(sh(P.filter(x=>x!==p&&x.m!=p.m),r)).slice(0,3),o=sh([p].concat(d),r);
-return{y:'t',m:p.m,p,q:rev?'¿A qué concepto corresponde esta descripción? «'+p.d+'»':'¿Cuál es la descripción de «'+p.t+'»?',o:o.map(x=>rev?x.t:x.d),a:o.indexOf(p)}}
+return{y:'t',m:p.m,p,q:rev?'A que concepto corresponde esta descrición? «'+p.d+'»':'Cal é a descrición de «'+p.t+'»?',o:o.map(x=>rev?x.t:x.d),a:o.indexOf(p)}}
 function mkCls(s,r){const it=sh(s.i,r),pk=[];it.forEach(x=>{if(pk.length<4&&!pk.some(y=>y[1]==x[1]))pk.push(x)});it.forEach(x=>{if(pk.length<4&&!pk.includes(x))pk.push(x)});
 const k=sh(pk,r);return{y:'c',m:s.m,q:s.q,it:k.map(x=>x[0]),a:k.map(x=>x[1]),cn:s.c,cs:s.c.length<=4?s.c.map((_,i)=>i):[...new Set(k.map(x=>x[1]))].sort()}}
 function mkOrd(o,r){let a=sh(o.s.map((_,i)=>i),r);while(a.every((v,i)=>v==i))a=sh(a,r);return{y:'o',m:o.m,q:o.q,st:o.s,sh:a}}
@@ -217,62 +237,42 @@ for(let n=0;a.length<2;n++)a.push(mkCls(ss[n%ss.length],r));return it.concat(a).
 const EX=(()=>{const r=rng(999),u=new Set(ALL.flat().filter(x=>x.p).map(x=>x.p));let ps=sh(P.filter(p=>!u.has(p)),r);if(ps.length<25)ps=ps.concat(sh(P.filter(p=>u.has(p)),r));
 let it=ps.slice(0,25).map(p=>mkTest(p,r)),q=[];O.filter(o=>!o.u).forEach(o=>it.push(mkOrd(o,r)));
 while(it.length<50){if(!q.length)q=sh(S,r);it.push(mkCls(q.pop(),r))}return sh(it,r).map((x,i)=>(x.k='e'+i,x))})();
-let St={name:'',em:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
-try{const o=JSON.parse(localStorage.getItem('segcurso'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
-// --- SUSTITUYE DESDE AQUÍ HASTA EL FINAL DEL ARCHIVO ---
-let St={name:'',em:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
-try{const o=JSON.parse(localStorage.getItem('segcurso'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
-const save=()=>{try{localStorage.setItem('segcurso',JSON.stringify(St))}catch(e){}};
+let St={name:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
+try{const o=JSON.parse(localStorage.getItem('segcurso_gl'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+const save=()=>{try{localStorage.setItem('segcurso_gl',JSON.stringify(St))}catch(e){}};
 const done=l=>l.every(x=>x.k in R),sc=l=>l.filter(x=>R[x.k]).length;
 function theme(){const d=document.documentElement,dk=d.dataset.theme?d.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dk?'light':'dark';try{localStorage.setItem('segtheme',d.dataset.theme)}catch(e){}}
-const stats=()=>'<div class="stats">'+[[MODS.length,'módulos'],[4,'niveles'],[MODS.length,'bloques de actividades'],[EX.length,'preguntas de examen']].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')+'</div>';
-function head(){const t=ALL.flat().length+EX.length,n=Object.keys(R).length;return`<header><button class="pill" data-act="go" data-v="map">Mapa</button><button class="pill" data-act="go" data-v="exam"${ALL.every(done)?'':' disabled'}>Examen</button><button class="pill" data-act="go" data-v="dip"${done(EX)?'':' disabled'}>Diploma</button><button class="pill" data-act="theme">Claro u oscuro</button></header><div class="bar" title="Progreso total"><i style="width:${n/t*100}%"></i></div>`}
-
-function start(){return`<h1>Seguridad informática</h1><p class="lead">Un mapa de aprendizaje para evaluar tus competencias digitales de seguridad, con el temario de TIC I.</p>${stats()}<div class="card"><label for="nm"><b>Tu nombre</b> (aparecerá en el diploma)</label><br><input id="nm" value="${esc(St.name)}" autocomplete="name" placeholder="Ej. Ana García"><br><label for="em"><b>Tu correo electrónico</b></label><br><input id="em" type="email" value="${esc(St.em||'')}" autocomplete="email" placeholder="Ej. alumno@instituto.edu"><p class="mu">Cada prueba se responde una sola vez. No hay repeticiones: tu informe final reúne todos los resultados.</p><button class="pill p" data-act="start">Empezar</button></div>`}
-
-function map(){let h=`<h1>Hola, ${esc(St.name)}</h1><p class="lead">Completa los módulos en orden. Todos puntúan en tu informe final.</p>${stats()}`;
+const stats=()=>'<div class="stats">'+[[MODS.length,'módulos'],[4,'niveis'],[MODS.length,'bloques de actividades'],[EX.length,'preguntas de exame']].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')+'</div>';
+function head(){const t=ALL.flat().length+EX.length,n=Object.keys(R).length;return`<header><button class="pill" data-act="go" data-v="map">Mapa</button><button class="pill" data-act="go" data-v="exam"${ALL.every(done)?'':' disabled'}>Exame</button><button class="pill" data-act="go" data-v="dip"${done(EX)?'':' disabled'}>Diploma</button><button class="pill" data-act="theme">Claro ou escuro</button></header><div class="bar" title="Progreso total"><i style="width:${n/t*100}%"></i></div>`}
+function start(){return`<h1>Seguridade informática</h1><p class="lead">Un mapa de aprendizaxe para avaliar as túas competencias dixitais de seguridade, co temario de TIC I.</p>${stats()}<div class="card"><label for="nm"><b>O teu nome</b> (aparecerá no diploma)</label><br><input id="nm" value="${esc(St.name)}" autocomplete="name"><p class="mu">Cada proba resposta unha soa vez. Non hai repeticións: o teu informe final reúne todos os resultados.</p><button class="pill p" data-act="start">Comezar</button></div>`}
+function map(){let h=`<h1>Ola, ${esc(St.name)}</h1><p class="lead">Completa os módulos en orde. Todos puntúan no teu informe final.</p>${stats()}`;
 LV.forEach((L,l)=>{h+=`<section class="node"><h2>Nivel ${l+1}: ${L}</h2><div class="lv">`;MODS.forEach((M,i)=>{if(M.l!=l)return;const a=ALL[i],n=a.filter(x=>x.k in R).length,lk=i&&!done(ALL[i-1]);
-h+=`<div class="card"><h3>${M.n}</h3><p class="mu">Competencia DigComp ${CP[M.c][0]}. ${n} de ${a.length} respondidas${done(a)?', '+sc(a)+' aciertos':''}.</p><button class="pill p" data-act="mod" data-i="${i}"${lk?' disabled':''}>${lk?'Bloqueado':done(a)?'Ver resultado':n?'Continuar':'Empezar'}</button></div>`});h+='</div></section>'});
-const am=ALL.every(done);return h+`<section class="node"><h2>Examen final</h2><div class="card"><p>${EX.length} preguntas: la mitad son retos avanzados de ordenar y clasificar. Una sola oportunidad.</p><button class="pill p" data-act="go" data-v="exam"${am?'':' disabled'}>${am?(done(EX)?'Ver resultado':'Comenzar examen'):'Termina antes los módulos'}</button></div></section>`}
-function fb(x,ex){if(ex)return'<p class="fb">Respuesta registrada. El resultado aparecerá en tu informe.</p>';const ok=R[x.k];let s='';
+h+=`<div class="card"><h3>${M.n}</h3><p class="mu">Competencia DigComp ${CP[M.c][0]}. ${n} de ${a.length} respondidas${done(a)?', '+sc(a)+' acertos':''}.</p><button class="pill p" data-act="mod" data-i="${i}"${lk?' disabled':''}>${lk?'Bloqueado':done(a)?'Ver resultado':n?'Continuar':'Comezar'}</button></div>`});h+='</div></section>'});
+const am=ALL.every(done);return h+`<section class="node"><h2>Exame final</h2><div class="card"><p>${EX.length} preguntas: a metade son retos avanzados de ordenar e clasificar. Unha soa oportunidade.</p><button class="pill p" data-act="go" data-v="exam"${am?'':' disabled'}>${am?(done(EX)?'Ver resultado':'Comezar exame'):'Remata antes os módulos'}</button></div></section>`}
+function fb(x,ex){if(ex)return'<p class="fb">Resposta rexistrada. O resultado aparecerá no teu informe.</p>';const ok=R[x.k];let s='';
 if(!ok)s=' Solución: '+(x.y=='t'?x.o[x.a]:x.y=='c'?x.it.map((v,i)=>v+' → '+x.cn[x.a[i]]).join('; '):x.st.join(' → '));return`<p class="fb ${ok?'ok':'no'}">${ok?'✓ Correcto':'✗ Incorrecto.'+s}</p>`}
 function item(x,ex){const an=x.k in R,t=T[x.k]||[];let h=`<p class="q">${x.q}</p>`;
 if(x.y=='t')h+='<div class="opts">'+x.o.map((o,j)=>`<button class="pill${an&&!ex&&j==x.a?' ok':''}" data-act="opt" data-j="${j}"${an?' disabled':''}>${o}</button>`).join('')+'</div>';
 else if(x.y=='c'){h+=x.it.map((v,r)=>`<div class="row"><span>${v}</span><span class="g">`+x.cs.map(c=>`<button class="pill${t[r]===c?' sel':''}" data-act="pick" data-r="${r}" data-c="${c}"${an?' disabled':''}>${x.cn[c]}</button>`).join('')+'</span></div>').join('');
 if(!an)h+=`<p><button class="pill p" data-act="chk"${x.it.some((_,r)=>t[r]==null)?' disabled':''}>Comprobar</button></p>`}
 else{h+='<div class="g">'+x.sh.map(j=>`<button class="pill" data-act="put" data-j="${j}"${an||t.includes(j)?' disabled':''}>${x.st[j]}</button>`).join('')+'</div><ol class="seq">'+t.map((j,p)=>`<li><button class="pill sel" data-act="rm" data-p="${p}"${an?' disabled':''}>${x.st[j]}</button></li>`).join('')+'</ol>';
-if(!an)h+=`<button class="pill p" data-act="chk"${t.length<x.st.length?' disabled':''}>Comprobar el orden</button>`}
+if(!an)h+=`<button class="pill p" data-act="chk"${t.length<x.st.length?' disabled':''}>Comprobar a orde</button>`}
 return h+(an?fb(x,ex):'')}
-function mod(){const ex=V.v=='exam',l=ex?EX:ALL[V.i],ti=ex?'Examen final':MODS[V.i].n;
-if(V.c>=l.length){const s=sc(l);return`<h1>${ti}</h1><div class="card"><p class="big">${s} de ${l.length} aciertos</p><p class="mu">${ex?'Nota del examen: '+(s/l.length*10).toFixed(1)+' sobre 10.':'Este resultado ya forma parte de tu informe final.'}</p><button class="pill p" data-act="go" data-v="${ex?'dip':'map'}">${ex?'Ver informe y diploma':'Volver al mapa'}</button></div>`}
-const x=l[V.c];return`<h2>${ti}</h2><p class="mu">${ex?'Pregunta':'Actividad'} ${V.c+1} de ${l.length}${x.y!='t'?', reto avanzado':''}</p><div class="card">${item(x,ex)}${x.k in R?`<p><button class="pill p" data-act="next">${V.c+1<l.length?'Continuar':'Ver resultado'}</button></p>`:''}</div>`}
+function mod(){const ex=V.v=='exam',l=ex?EX:ALL[V.i],ti=ex?'Exame final':MODS[V.i].n;
+if(V.c>=l.length){const s=sc(l);return`<h1>${ti}</h1><div class="card"><p class="big">${s} de ${l.length} acertos</p><p class="mu">${ex?'Nota do exame: '+(s/l.length*10).toFixed(1)+' sobre 10.':'Este resultado xa forma parte do teu informe final.'}</p><button class="pill p" data-act="go" data-v="${ex?'dip':'map'}">${ex?'Ver informe e diploma':'Volver ao mapa'}</button></div>`}
+const x=l[V.c];return`<h2>${ti}</h2><p class="mu">${ex?'Pregunta':'Actividade'} ${V.c+1} de ${l.length}${x.y!='t'?', reto avanzado':''}</p><div class="card">${item(x,ex)}${x.k in R?`<p><button class="pill p" data-act="next">${V.c+1<l.length?'Continuar':'Ver resultado'}</button></p>`:''}</div>`}
 function rep(){const mods=MODS.map((M,i)=>{const a=ALL[i],e=EX.filter(x=>x.m==i);return{n:M.n,a:sc(a),at:a.length,e:sc(e),et:e.length,g:sc(a)+sc(e),t:a.length+e.length}});
 const cps=CP.map((c,ci)=>{let g=0,t=0;mods.forEach((m,i)=>{if(MODS[i].c==ci){g+=m.g;t+=m.t}});return{id:c[0],n:c[1],p:g/t}}),al=ALL.flat().concat(EX);return{mods,cps,ex:sc(EX)/EX.length*10,gl:sc(al)/al.length*10}}
-
 function dip(){const r=rep(),pc=v=>Math.round(v*100)+' %';
-return`<div class="card"><h1>Diploma</h1><p>Se certifica que <b>${esc(St.name)}</b> ha completado el curso de seguridad informática el ${new Date(St.fin||Date.now()).toLocaleDateString('es-ES')}.</p><div class="stats"><div><b>${r.ex.toFixed(1)}</b><span>Nota del examen sobre 10</span></div><div><b>${r.gl.toFixed(1)}</b><span>Nota global sobre 10</span></div></div>
-<h2>Competencias digitales (DigComp)</h2>${r.cps.map(c=>`<div class="row"><span>${c.id} ${c.n}</span><span class="fb ${c.p>=.6?'ok':'no'}">${c.p>=.6?'✓ Superada':'✗ No superada'}, ${pc(c.p)}</span></div>`).join('')}<p class="mu">Una competencia se supera con un 60 % o más de aciertos en todas sus pruebas.</p>
-<h2>Resultados por lección</h2>${r.mods.map(m=>`<div class="row"><span>${m.n}</span><span>Actividades ${m.a}/${m.at}, examen ${m.e}/${m.et}, total ${pc(m.g/m.t)}</span></div>`).join('')}</div><div class="g"><button class="pill p noprint" data-act="print">Descargar en PDF</button><button class="pill sel noprint" data-act="send">Enviar nota final al profesor</button></div>`}
+return`<div class="card"><h1>Diploma</h1><p>Certifícase que <b>${esc(St.name)}</b> completou o curso de seguridade informática o ${new Date(St.fin||Date.now()).toLocaleDateString('gl-ES')}.</p><div class="stats"><div><b>${r.ex.toFixed(1)}</b><span>Nota do exame sobre 10</span></div><div><b>${r.gl.toFixed(1)}</b><span>Nota global sobre 10</span></div></div>
+<h2>Competencias dixitais (DigComp)</h2>${r.cps.map(c=>`<div class="row"><span>${c.id} ${c.n}</span><span class="fb ${c.p>=.6?'ok':'no'}">${c.p>=.6?'✓ Superada':'✗ Non superada'}, ${pc(c.p)}</span></div>`).join('')}<p class="mu">Unha competencia supérase cun 60 % ou máis de acertos en todas as súas probas.</p>
+<h2>Resultados por lección</h2>${r.mods.map(m=>`<div class="row"><span>${m.n}</span><span>Actividades ${m.a}/${m.at}, exame ${m.e}/${m.et}, total ${pc(m.g/m.t)}</span></div>`).join('')}</div><button class="pill p noprint" data-act="print">Imprimir ou gardar en PDF</button>`}
 function render(){$('#app').innerHTML=V.v=='start'?start():head()+(V.v=='map'?map():V.v=='dip'&&done(EX)?dip():mod())}
 const first=l=>{const c=l.findIndex(x=>!(x.k in R));return c<0?l.length:c};
 function fin(x,ok){R[x.k]=ok?1:0;if(done(EX)&&!St.fin)St.fin=Date.now();save()}
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset,a=d.act,x=V.v=='mod'?ALL[V.i][V.c]:V.v=='exam'?EX[V.c]:null;let up=0;
 if(a=='theme'){theme();return}if(a=='print'){print();return}
-if(a=='start'){
-    const n=$('#nm').value.trim(), em=$('#em').value.trim();
-    if(!n){$('#nm').focus();return} if(!em){$('#em').focus();return}
-    St.name=n; St.em=em; save(); V={v:'map'}; up=1
-}
-else if(a=='send'){
-    const r=rep(); b.innerText='Enviando...'; b.disabled=true;
-    // REEMPLAZA LA URL DE ABAJO POR LA QUE OBTUVISTE EN APPS SCRIPT
-    fetch('https://script.google.com/a/macros/vedruna.es/s/AKfycbzMLGaUCStWYHL0d-4lMEhOrEOdTDBbg3tWe1DlmTivWFf1PTYCoQIksLpu-au9DfDhYQ/exec', {
-        method:'POST',
-        body:JSON.stringify({email:St.em, nombre:St.name, modulos:r.mods.map(m=>m.n+': '+Math.round((m.g/m.t)*100)+'%').join(' | '), notaExamen:r.ex.toFixed(1), notaGlobal:r.gl.toFixed(1)})
-    }).then(()=> { b.innerText='¡Nota guardada!'; b.classList.replace('sel','ok'); })
-      .catch(()=> { b.innerText='Error. Reintentar'; b.disabled=false; });
-    return;
-}
+if(a=='start'){const n=$('#nm').value.trim();if(!n){$('#nm').focus();return}St.name=n;save();V={v:'map'};up=1}
 else if(a=='go'){V=d.v=='exam'?{v:'exam',c:first(EX)}:{v:d.v};up=1}
 else if(a=='mod'){V={v:'mod',i:+d.i,c:first(ALL[+d.i])};up=1}
 else if(a=='next'){V.c++;up=1}
