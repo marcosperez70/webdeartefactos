@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seguridad informática: mapa de aprendizaje</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--bd:#e4e1d8;--tx:#1d2330;--mu:#667085;--bl:#2563eb;--blb:#e8efff;--gr:#16a34a;--grb:#e6f6ec;--rd:#c2410c;--pc:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--bd:#2f3642;--tx:#eceff4;--mu:#9aa4b2;--bl:#6ea0ff;--blb:#1c2b4a;--gr:#4ade80;--grb:#163322;--rd:#fb923c;--pc:#0b1220;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--bd:#2f3642;--tx:#eceff4;--mu:#9aa4b2;--bl:#6ea0ff;--blb:#1c2b4a;--gr:#4ade80;--grb:#163322;--rd:#fb923c;--pc:#0b1220;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:clamp(2rem,7vw,3.2rem);line-height:1.08;letter-spacing:-.02em;margin:.2em 0 .3em}
+h2{font-size:1.3rem;margin:1.2em 0 .4em}h3{margin:0 0 4px;font-size:1.05rem}
+.mu{color:var(--mu)}.lead{font-size:1.1rem;color:var(--mu);max-width:60ch}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;margin:12px 0}
+.pill{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:9px 16px;cursor:pointer}
+.pill:hover:not(:disabled){border-color:var(--bl)}.pill:disabled{opacity:.55;cursor:default}
+.pill.p{background:var(--bl);border-color:var(--bl);color:var(--pc)}
+.pill.sel{background:var(--blb);border-color:var(--bl);color:var(--bl)}
+.pill.ok{background:var(--grb);border-color:var(--gr);color:var(--gr);opacity:1}
+:focus-visible{outline:3px solid var(--bl);outline-offset:2px}
+header{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.bar{height:10px;background:var(--bd);border-radius:99px;overflow:hidden;margin-bottom:20px}.bar i{display:block;height:100%;background:var(--gr);transition:width .3s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0}
+.stats div{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.stats b{display:block;font-size:2rem;line-height:1.1}.stats span{color:var(--mu);font-size:.9rem}
+.node{border-left:3px solid var(--bl);padding-left:14px;margin:18px 0}
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.lv .card{margin:0}
+.q{font-size:1.15rem;font-weight:600;margin-top:0}
+.opts{display:flex;flex-direction:column;gap:8px}.opts .pill{text-align:left;border-radius:18px}
+.row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--bd)}
+.g{display:flex;flex-wrap:wrap;gap:8px}
+.seq{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin:14px 0;counter-reset:s}
+.seq li{counter-increment:s;display:flex;gap:8px;align-items:center}.seq li:before{content:counter(s);color:var(--mu);min-width:1.2em}
+.fb{font-weight:600}.fb.ok{color:var(--gr)}.fb.no{color:var(--rd)}.big{font-size:1.6rem;font-weight:700;margin:0}
+input{font:inherit;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:999px;padding:10px 16px;width:100%;max-width:340px;margin:8px 0}
+@media print{header,.bar,.noprint{display:none!important}body{background:#fff}}
+</style></head><body><main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CP=[["4.1","Protección de dispositivos"],["4.2","Protección de datos personales y privacidad"],["2.6","Gestión de la identidad digital"]],LV=["Fundamentos","Defensa y malware","Ataques y respuesta","Cifrado y redes"];
+const MODS=[
+{n:"Principios de seguridad",l:0,c:0,p:`Integridad|Información exacta, completa y modificable solo por personas autorizadas
+Disponibilidad|Información siempre accesible para las personas autorizadas y recuperable
+Confidencialidad|Información conocida solo por las personas autorizadas, también llamada privacidad
+Autenticación|Verificar que se intercambia información con personas o entidades autorizadas`},
+{n:"Amenazas e intrusos",l:0,c:0,p:`Ataque pasivo|Obtiene información sin alterarla y es muy difícil de detectar
+Ataque activo|Daña el objetivo o manipula la información para obtener beneficios
+Hacker|Experto que comprueba las vulnerabilidades de un sistema para corregirlas
+Vulnerabilidad del software|Error de programación que puede poner en peligro el sistema`},
+{n:"Seguridad activa y pasiva",l:1,c:0,p:`Seguridad activa|Medidas que previenen e intentan evitar los daños en los sistemas
+Seguridad pasiva|Medidas que minimizan o reparan los daños causados
+Control de acceso|Limita el acceso al personal autorizado con contraseñas, biometría...
+Encriptación|Codifica la información para que no se pueda descifrar si es interceptada
+SAI|Batería que mantiene el equipo funcionando si falla la corriente
+NAS|Almacenamiento al que se accede por la red para guardar y recuperar información
+Copias de seguridad|Restauran los datos con copias periódicas en soportes externos o en la nube`},
+{n:"Software malicioso",l:1,c:0,p:`Malware|Programa o código diseñado para ejecutar acciones no deseadas
+Virus|Fragmento de código que altera el funcionamiento correcto de un dispositivo
+Secuestrador del navegador|Cambia la página de inicio para mostrar anuncios y generar ingresos
+Gusano|Crea copias de sí mismo indefinidamente para colapsar el dispositivo o la red
+Troyano|Software malicioso oculto en un archivo que no puede reproducirse por sí mismo
+Spyware|Recopila información del equipo y la envía al atacante por la red
+Ransomware|Cifra los datos del dispositivo y pide un rescate a cambio de la clave
+Rogue|Simula ser antimalware y muestra falsas infecciones para cobrar`},
+{n:"Ataques y engaños",l:2,c:1,p:`Phishing|Suplanta a alguien de confianza para obtener credenciales y datos bancarios
+Pharming|Aprovecha vulnerabilidades de los servidores DNS para redirigir a una web fraudulenta
+Inyección de código|Añade o borra información en sitios remotos mal protegidos, por ejemplo con SQL
+Escaneo de puertos|Averigua qué puertos están abiertos para lanzar después el ataque
+Denegación de servicio|Satura un equipo o una red hasta que deja de responder
+Escucha de red|Captura e interpreta el tráfico de una red con programas sniffers
+Fuerza bruta|Prueba todas las combinaciones de usuario y contraseña
+Interrupción|Ataque a la disponibilidad que deja un recurso inutilizable
+Interceptación|Ataque a la confidencialidad: se accede a recursos sin autorización
+Modificación|Ataque a la integridad: se accede a un recurso y se manipula
+Suplantación|Ataque a la autenticación mediante la falsificación de IP, DNS, URL o correo`},
+{n:"Antivirus e infecciones",l:2,c:0,p:`Política de seguridad|Normas y procedimientos que garantizan un cierto grado de seguridad
+Antivirus|Programa residente en memoria que previene, detecta y elimina ataques
+Punto de restauración|Estado seguro anterior al que Windows permite volver sin perder información
+Live CD o Live USB|Permite analizar el equipo sin contaminar y rescatar archivos si no inicia
+Utilidades de desinfección|Actúan como antídotos de virus o eliminan amenazas concretas`},
+{n:"Cifrado, certificados y firma",l:3,c:2,p:`Criptografía simétrica|Misma clave para cifrar y descifrar: rápida pero insegura
+Criptografía asimétrica|Dos claves, una pública y una privada; ralentiza el cifrado
+Criptografía híbrida|Combina ambas para obtener plena garantía de confidencialidad
+Certificado digital|Documento electrónico que identifica en la Red con validez jurídica
+Autoridad de certificación|Entidad de confianza que expide certificados electrónicos
+Firma electrónica|Datos asociados a un documento que identifican al firmante y aseguran su integridad
+Función hash|Algoritmo que resume datos de cualquier tamaño en caracteres de tamaño fijo`},
+{n:"Privacidad y redes",l:3,c:1,p:`Navegación privada|El navegador no guarda cookies, historial ni contraseñas; solo afecta al equipo
+Proxy web|Intermediario entre los equipos y los sitios web que mantiene su anonimato
+Tor|Software libre de navegación anónima que oculta la dirección IP
+Cortafuegos|Dispositivo hardware o software que controla la comunicación entre un equipo y la red
+VPN|Conexión segura y cifrada entre dos redes privadas a través de Internet
+SSID|Nombre de la red wifi, que conviene cambiar por uno genérico
+WPA2|Estándar de cifrado recomendado para redes wifi
+WPS|Facilita añadir dispositivos con un botón, pero hace vulnerable la red wifi
+Filtrado MAC|Solo permite el acceso a los dispositivos añadidos por su dirección MAC`}];
+const S0=[
+{m:0,q:"¿Qué principio de seguridad se ve afectado?",c:["Integridad","Disponibilidad","Confidencialidad","Autenticación"],i:`Un atacante altera un dato|0
+Se extravía parte de la información|0
+Las personas autorizadas no pueden acceder a la información|1
+No se puede recuperar la información tras un incidente|1
+Se revelan secretos empresariales|2
+Se atenta contra la privacidad de las personas|2
+No se verifica quién intercambia la información|3
+Alguien no autorizado intercambia información como si lo estuviera|3`},
+{m:1,q:"Clasifica cada amenaza según su origen.",c:["Humana","Lógica","Física"],i:`Una persona lee el correo de otra que dejó la sesión abierta|0
+Un miembro de la organización ataca por venganza|0
+Un pirata informático accede ilegalmente a un sistema|0
+Un virus o un troyano|1
+Un error de programación en el sistema operativo|1
+Un programa espía|1
+Una sobrecarga eléctrica|2
+Un líquido vertido sobre el equipo|2
+Una inundación|2
+La avería de un disco|2`},
+{m:2,q:"¿Es una medida de seguridad activa o pasiva?",c:["Activa","Pasiva"],i:`Control de acceso con contraseñas|0
+Encriptación de la información|0
+Antivirus y cortafuegos|0
+Firma digital|0
+Copia de seguridad en la nube|1
+SAI|1
+Sistema RAID de discos|1
+Herramienta de limpieza de malware|1`},
+{m:3,q:"¿Virus, gusano o troyano?",c:["Virus","Gusano","Troyano"],i:`Se copia indefinidamente para colapsar la red|1
+Se oculta dentro de un archivo ejecutable|2
+Altera el funcionamiento correcto de un dispositivo|0
+No puede reproducirse por sí mismo ni infectar archivos|2
+Se aloja en el sistema creando copias de sí mismo|1
+Se incrusta en archivos ejecutables o programas|0`},
+{m:3,q:"¿Qué tipo de malware describe cada frase?",c:["Spyware","Ransomware","Adware","Rogue"],i:`Envía información del equipo al atacante|0
+Cifra los datos y pide un rescate|1
+Muestra ventanas emergentes de publicidad|2
+Simula ser antimalware con falsas infecciones|3
+Recopila información de forma ilícita|0
+Pide dinero a cambio de la clave de descifrado|1
+Muestra publicidad engañosa durante la ejecución|2
+Te cobra por una desinfección que no existe|3`},
+{m:4,q:"¿Qué técnica de engaño es?",c:["Phishing","Pharming","Spam","Hoax"],i:`Correo que imita a una empresa de confianza para robar credenciales|0
+Redirige una web de confianza a otra fraudulenta usando el DNS|1
+Correo no deseado enviado de forma masiva|2
+Cadena de correos con falsas alertas de virus|3
+Enlace a una web maliciosa para obtener datos de tarjetas|0
+Aprovecha vulnerabilidades de los servidores DNS|1
+Mensajes en cadena para realizar engaños masivos|3`},
+{m:4,q:"¿Qué tipo de ataque es según el daño que causa?",c:["Interrupción","Interceptación","Modificación","Suplantación"],i:`Cortar el cable de una red|0
+Destruir un disco duro|0
+Acceder a una base de datos sin autorización|1
+Acceder en remoto al equipo de otra persona|1
+Introducir errores o alterar programas|2
+Eliminar parte de la información|2
+Falsificar la dirección IP para hacerse pasar por otra persona|3
+Falsificar un correo electrónico|3`},
+{m:4,q:"¿Qué ataque remoto es?",c:["Inyección de código","Escaneo de puertos","Denegación de servicio","Escucha de red","Fuerza bruta"],i:`Averigua qué puertos están abiertos|1
+Satura un servidor hasta que deja de responder|2
+Captura el tráfico con programas sniffers|3
+Prueba todas las combinaciones de usuario y contraseña|4
+Ejecuta una instrucción DROP en una base de datos mal filtrada|0
+Se lanza desde varios puntos de conexión (DDoS)|2`},
+{m:5,q:"¿Síntoma de infección o medida ante una infección?",c:["Síntoma","Medida"],i:`Aparecen barras de herramientas extrañas|0
+El ratón se mueve solo|0
+Se envían correos a tus contactos sin tu intención|0
+Cambia la página de inicio del navegador|0
+Restaurar el sistema a un estado anterior|1
+Arrancar con un Live USB|1
+Actualizar el antivirus y analizar el equipo|1
+Ejecutar una utilidad de desinfección específica|1`},
+{m:6,q:"¿Criptografía simétrica, asimétrica o híbrida?",c:["Simétrica","Asimétrica","Híbrida"],i:`Usa la misma clave para cifrar y descifrar|0
+Es muy rápida, pero hay que enviar la clave|0
+Usa una clave pública y otra privada|1
+Lo cifrado con tu clave pública solo se abre con tu clave privada|1
+Ralentiza el proceso de cifrado|1
+Combina ambas para garantizar la confidencialidad|2`},
+{m:6,q:"¿Certificado digital o firma electrónica?",c:["Certificado digital","Firma electrónica"],i:`Equivale a un documento de identidad en la Red|0
+Lo expide una autoridad de certificación|0
+Autentica la propiedad de un sitio web|0
+Asegura que el documento no ha sido alterado|1
+Evita que el firmante niegue haberlo firmado|1
+Identifica al firmante con una clave privada que solo él conoce|1`},
+{m:7,q:"¿Navegación privada, proxy o navegación anónima?",c:["Navegación privada","Proxy web","Navegación anónima"],i:`El navegador no guarda cookies ni historial|0
+Solo aleja a curiosos, no a atacantes expertos|0
+Actúa de intermediario entre el equipo y los sitios web|1
+Las páginas solo captan datos del servidor intermediario|1
+Oculta la dirección IP y asigna otra, como Tor|2
+Evita el seguimiento de sitios web|2`},
+{m:7,q:"¿Cortafuegos o VPN?",c:["Cortafuegos","VPN"],i:`Examina los mensajes que pasan por los puertos y bloquea los que incumplen las reglas|0
+Puede ser un dispositivo hardware o software|0
+Evita que un equipo infectado envíe datos fuera de la red|0
+Conexión cifrada entre dos redes a través de Internet|1
+Usa protocolos de túnel|1
+Permite a quien teletrabaja acceder a la red privada|1`},
+{m:7,q:"¿Medida recomendada o no recomendada en una red wifi?",c:["Recomendada","No recomendada"],i:`Cifrado WPA2|0
+Cambiar el SSID de fábrica|0
+Actualizar el firmware del rúter|0
+Filtrar por dirección MAC|0
+Mantener activo el acceso por WPS|1
+Usar cifrado WEP|1
+Usar cifrado WPA|1
+Dejar la contraseña por defecto admin/admin|1`}];
+const O=[
+{m:5,u:1,q:"Ordena las medidas ante una infección, de la menos a la más drástica.",s:["Restaurar el sistema a un estado anterior","Actualizar el antivirus y analizar el equipo","Arrancar con un Live CD o Live USB","Ejecutar utilidades de desinfección específicas","Formatear el equipo y reinstalar el sistema"]},
+{m:6,u:1,q:"Ordena el proceso de firma electrónica de Carla a David.",s:["Carla aplica una función hash al documento","Carla cifra el resumen hash con su clave privada: la firma","Se envía el documento firmado por Internet","David descifra la firma con la clave pública de Carla","David compara su propio hash con el resumen descifrado"]},
+{m:6,q:"Ordena el envío de un mensaje con criptografía asimétrica.",s:["Carla cifra el mensaje con la clave pública de David","El mensaje cifrado viaja por Internet","David lo descifra con su clave privada"]},
+{m:6,q:"Ordena el cifrado híbrido de Carla a David.",s:["Carla cifra el mensaje con una clave de seguridad","Carla cifra esa clave con la clave pública de David","Se envían por Internet el mensaje y la clave cifrados","David descifra la clave de seguridad con su clave privada","David descifra el mensaje con la clave de seguridad"]},
+{m:7,u:1,q:"Ordena los rangos de puertos de menor a mayor.",s:["0–1023: protocolos conocidos como FTP, SMTP, HTTP y HTTPS","1024–49151: cualquier aplicación","49152–65535: dinámicos o privados, habituales en P2P"]}];
+const P=[];MODS.forEach((M,m)=>M.p.split('\n').forEach(s=>{const a=s.split('|');P.push({t:a[0],d:a[1],m})}));
+const S=S0.map(s=>({...s,i:s.i.split('\n').map(x=>{const a=x.split('|');return[a[0],+a[1]]})}));
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const sh=(a,r)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function mkTest(p,r){const rev=r()<.5,d=sh(P.filter(x=>x!==p&&x.m==p.m),r).concat(sh(P.filter(x=>x!==p&&x.m!=p.m),r)).slice(0,3),o=sh([p].concat(d),r);
+return{y:'t',m:p.m,p,q:rev?'¿A qué concepto corresponde esta descripción? «'+p.d+'»':'¿Cuál es la descripción de «'+p.t+'»?',o:o.map(x=>rev?x.t:x.d),a:o.indexOf(p)}}
+function mkCls(s,r){const it=sh(s.i,r),pk=[];it.forEach(x=>{if(pk.length<4&&!pk.some(y=>y[1]==x[1]))pk.push(x)});it.forEach(x=>{if(pk.length<4&&!pk.includes(x))pk.push(x)});
+const k=sh(pk,r);return{y:'c',m:s.m,q:s.q,it:k.map(x=>x[0]),a:k.map(x=>x[1]),cn:s.c,cs:s.c.length<=4?s.c.map((_,i)=>i):[...new Set(k.map(x=>x[1]))].sort()}}
+function mkOrd(o,r){let a=sh(o.s.map((_,i)=>i),r);while(a.every((v,i)=>v==i))a=sh(a,r);return{y:'o',m:o.m,q:o.q,st:o.s,sh:a}}
+const ALL=MODS.map((M,i)=>{const r=rng(100+i),it=sh(P.filter(p=>p.m==i),r).slice(0,3).map(p=>mkTest(p,r)),ss=S.filter(s=>s.m==i),a=O.filter(o=>o.m==i&&o.u).map(o=>mkOrd(o,r));
+for(let n=0;a.length<2;n++)a.push(mkCls(ss[n%ss.length],r));return it.concat(a).map((x,j)=>(x.k='m'+i+'_'+j,x))});
+const EX=(()=>{const r=rng(999),u=new Set(ALL.flat().filter(x=>x.p).map(x=>x.p));let ps=sh(P.filter(p=>!u.has(p)),r);if(ps.length<25)ps=ps.concat(sh(P.filter(p=>u.has(p)),r));
+let it=ps.slice(0,25).map(p=>mkTest(p,r)),q=[];O.filter(o=>!o.u).forEach(o=>it.push(mkOrd(o,r)));
+while(it.length<50){if(!q.length)q=sh(S,r);it.push(mkCls(q.pop(),r))}return sh(it,r).map((x,i)=>(x.k='e'+i,x))})();
+let St={name:'',em:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
+try{const o=JSON.parse(localStorage.getItem('segcurso'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+// --- SUSTITUYE DESDE AQUÍ HASTA EL FINAL DEL ARCHIVO ---
+let St={name:'',em:'',res:{},fin:0},R=St.res,V={v:'start'},T={};
+try{const o=JSON.parse(localStorage.getItem('segcurso'));if(o){St=Object.assign(St,o);R=St.res}const t=localStorage.getItem('segtheme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+const save=()=>{try{localStorage.setItem('segcurso',JSON.stringify(St))}catch(e){}};
+const done=l=>l.every(x=>x.k in R),sc=l=>l.filter(x=>R[x.k]).length;
+function theme(){const d=document.documentElement,dk=d.dataset.theme?d.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dk?'light':'dark';try{localStorage.setItem('segtheme',d.dataset.theme)}catch(e){}}
+const stats=()=>'<div class="stats">'+[[MODS.length,'módulos'],[4,'niveles'],[MODS.length,'bloques de actividades'],[EX.length,'preguntas de examen']].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')+'</div>';
+function head(){const t=ALL.flat().length+EX.length,n=Object.keys(R).length;return`<header><button class="pill" data-act="go" data-v="map">Mapa</button><button class="pill" data-act="go" data-v="exam"${ALL.every(done)?'':' disabled'}>Examen</button><button class="pill" data-act="go" data-v="dip"${done(EX)?'':' disabled'}>Diploma</button><button class="pill" data-act="theme">Claro u oscuro</button></header><div class="bar" title="Progreso total"><i style="width:${n/t*100}%"></i></div>`}
+
+function start(){return`<h1>Seguridad informática</h1><p class="lead">Un mapa de aprendizaje para evaluar tus competencias digitales de seguridad, con el temario de TIC I.</p>${stats()}<div class="card"><label for="nm"><b>Tu nombre</b> (aparecerá en el diploma)</label><br><input id="nm" value="${esc(St.name)}" autocomplete="name" placeholder="Ej. Ana García"><br><label for="em"><b>Tu correo electrónico</b></label><br><input id="em" type="email" value="${esc(St.em||'')}" autocomplete="email" placeholder="Ej. alumno@instituto.edu"><p class="mu">Cada prueba se responde una sola vez. No hay repeticiones: tu informe final reúne todos los resultados.</p><button class="pill p" data-act="start">Empezar</button></div>`}
+
+function map(){let h=`<h1>Hola, ${esc(St.name)}</h1><p class="lead">Completa los módulos en orden. Todos puntúan en tu informe final.</p>${stats()}`;
+LV.forEach((L,l)=>{h+=`<section class="node"><h2>Nivel ${l+1}: ${L}</h2><div class="lv">`;MODS.forEach((M,i)=>{if(M.l!=l)return;const a=ALL[i],n=a.filter(x=>x.k in R).length,lk=i&&!done(ALL[i-1]);
+h+=`<div class="card"><h3>${M.n}</h3><p class="mu">Competencia DigComp ${CP[M.c][0]}. ${n} de ${a.length} respondidas${done(a)?', '+sc(a)+' aciertos':''}.</p><button class="pill p" data-act="mod" data-i="${i}"${lk?' disabled':''}>${lk?'Bloqueado':done(a)?'Ver resultado':n?'Continuar':'Empezar'}</button></div>`});h+='</div></section>'});
+const am=ALL.every(done);return h+`<section class="node"><h2>Examen final</h2><div class="card"><p>${EX.length} preguntas: la mitad son retos avanzados de ordenar y clasificar. Una sola oportunidad.</p><button class="pill p" data-act="go" data-v="exam"${am?'':' disabled'}>${am?(done(EX)?'Ver resultado':'Comenzar examen'):'Termina antes los módulos'}</button></div></section>`}
+function fb(x,ex){if(ex)return'<p class="fb">Respuesta registrada. El resultado aparecerá en tu informe.</p>';const ok=R[x.k];let s='';
+if(!ok)s=' Solución: '+(x.y=='t'?x.o[x.a]:x.y=='c'?x.it.map((v,i)=>v+' → '+x.cn[x.a[i]]).join('; '):x.st.join(' → '));return`<p class="fb ${ok?'ok':'no'}">${ok?'✓ Correcto':'✗ Incorrecto.'+s}</p>`}
+function item(x,ex){const an=x.k in R,t=T[x.k]||[];let h=`<p class="q">${x.q}</p>`;
+if(x.y=='t')h+='<div class="opts">'+x.o.map((o,j)=>`<button class="pill${an&&!ex&&j==x.a?' ok':''}" data-act="opt" data-j="${j}"${an?' disabled':''}>${o}</button>`).join('')+'</div>';
+else if(x.y=='c'){h+=x.it.map((v,r)=>`<div class="row"><span>${v}</span><span class="g">`+x.cs.map(c=>`<button class="pill${t[r]===c?' sel':''}" data-act="pick" data-r="${r}" data-c="${c}"${an?' disabled':''}>${x.cn[c]}</button>`).join('')+'</span></div>').join('');
+if(!an)h+=`<p><button class="pill p" data-act="chk"${x.it.some((_,r)=>t[r]==null)?' disabled':''}>Comprobar</button></p>`}
+else{h+='<div class="g">'+x.sh.map(j=>`<button class="pill" data-act="put" data-j="${j}"${an||t.includes(j)?' disabled':''}>${x.st[j]}</button>`).join('')+'</div><ol class="seq">'+t.map((j,p)=>`<li><button class="pill sel" data-act="rm" data-p="${p}"${an?' disabled':''}>${x.st[j]}</button></li>`).join('')+'</ol>';
+if(!an)h+=`<button class="pill p" data-act="chk"${t.length<x.st.length?' disabled':''}>Comprobar el orden</button>`}
+return h+(an?fb(x,ex):'')}
+function mod(){const ex=V.v=='exam',l=ex?EX:ALL[V.i],ti=ex?'Examen final':MODS[V.i].n;
+if(V.c>=l.length){const s=sc(l);return`<h1>${ti}</h1><div class="card"><p class="big">${s} de ${l.length} aciertos</p><p class="mu">${ex?'Nota del examen: '+(s/l.length*10).toFixed(1)+' sobre 10.':'Este resultado ya forma parte de tu informe final.'}</p><button class="pill p" data-act="go" data-v="${ex?'dip':'map'}">${ex?'Ver informe y diploma':'Volver al mapa'}</button></div>`}
+const x=l[V.c];return`<h2>${ti}</h2><p class="mu">${ex?'Pregunta':'Actividad'} ${V.c+1} de ${l.length}${x.y!='t'?', reto avanzado':''}</p><div class="card">${item(x,ex)}${x.k in R?`<p><button class="pill p" data-act="next">${V.c+1<l.length?'Continuar':'Ver resultado'}</button></p>`:''}</div>`}
+function rep(){const mods=MODS.map((M,i)=>{const a=ALL[i],e=EX.filter(x=>x.m==i);return{n:M.n,a:sc(a),at:a.length,e:sc(e),et:e.length,g:sc(a)+sc(e),t:a.length+e.length}});
+const cps=CP.map((c,ci)=>{let g=0,t=0;mods.forEach((m,i)=>{if(MODS[i].c==ci){g+=m.g;t+=m.t}});return{id:c[0],n:c[1],p:g/t}}),al=ALL.flat().concat(EX);return{mods,cps,ex:sc(EX)/EX.length*10,gl:sc(al)/al.length*10}}
+
+function dip(){const r=rep(),pc=v=>Math.round(v*100)+' %';
+return`<div class="card"><h1>Diploma</h1><p>Se certifica que <b>${esc(St.name)}</b> ha completado el curso de seguridad informática el ${new Date(St.fin||Date.now()).toLocaleDateString('es-ES')}.</p><div class="stats"><div><b>${r.ex.toFixed(1)}</b><span>Nota del examen sobre 10</span></div><div><b>${r.gl.toFixed(1)}</b><span>Nota global sobre 10</span></div></div>
+<h2>Competencias digitales (DigComp)</h2>${r.cps.map(c=>`<div class="row"><span>${c.id} ${c.n}</span><span class="fb ${c.p>=.6?'ok':'no'}">${c.p>=.6?'✓ Superada':'✗ No superada'}, ${pc(c.p)}</span></div>`).join('')}<p class="mu">Una competencia se supera con un 60 % o más de aciertos en todas sus pruebas.</p>
+<h2>Resultados por lección</h2>${r.mods.map(m=>`<div class="row"><span>${m.n}</span><span>Actividades ${m.a}/${m.at}, examen ${m.e}/${m.et}, total ${pc(m.g/m.t)}</span></div>`).join('')}</div><div class="g"><button class="pill p noprint" data-act="print">Descargar en PDF</button><button class="pill sel noprint" data-act="send">Enviar nota final al profesor</button></div>`}
+function render(){$('#app').innerHTML=V.v=='start'?start():head()+(V.v=='map'?map():V.v=='dip'&&done(EX)?dip():mod())}
+const first=l=>{const c=l.findIndex(x=>!(x.k in R));return c<0?l.length:c};
+function fin(x,ok){R[x.k]=ok?1:0;if(done(EX)&&!St.fin)St.fin=Date.now();save()}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset,a=d.act,x=V.v=='mod'?ALL[V.i][V.c]:V.v=='exam'?EX[V.c]:null;let up=0;
+if(a=='theme'){theme();return}if(a=='print'){print();return}
+if(a=='start'){
+    const n=$('#nm').value.trim(), em=$('#em').value.trim();
+    if(!n){$('#nm').focus();return} if(!em){$('#em').focus();return}
+    St.name=n; St.em=em; save(); V={v:'map'}; up=1
+}
+else if(a=='send'){
+    const r=rep(); b.innerText='Enviando...'; b.disabled=true;
+    // REEMPLAZA LA URL DE ABAJO POR LA QUE OBTUVISTE EN APPS SCRIPT
+    fetch('https://script.google.com/a/macros/vedruna.es/s/AKfycbzMLGaUCStWYHL0d-4lMEhOrEOdTDBbg3tWe1DlmTivWFf1PTYCoQIksLpu-au9DfDhYQ/exec', {
+        method:'POST',
+        body:JSON.stringify({email:St.em, nombre:St.name, modulos:r.mods.map(m=>m.n+': '+Math.round((m.g/m.t)*100)+'%').join(' | '), notaExamen:r.ex.toFixed(1), notaGlobal:r.gl.toFixed(1)})
+    }).then(()=> { b.innerText='¡Nota guardada!'; b.classList.replace('sel','ok'); })
+      .catch(()=> { b.innerText='Error. Reintentar'; b.disabled=false; });
+    return;
+}
+else if(a=='go'){V=d.v=='exam'?{v:'exam',c:first(EX)}:{v:d.v};up=1}
+else if(a=='mod'){V={v:'mod',i:+d.i,c:first(ALL[+d.i])};up=1}
+else if(a=='next'){V.c++;up=1}
+else if(a=='opt')fin(x,+d.j==x.a);
+else if(a=='chk'){const t=T[x.k]||[];fin(x,x.y=='c'?x.a.every((v,i)=>t[i]===v):t.every((j,p)=>j===p))}
+else if(a=='pick')(T[x.k]=T[x.k]||[])[+d.r]=+d.c;
+else if(a=='put')(T[x.k]=T[x.k]||[]).push(+d.j);
+else if(a=='rm')T[x.k].splice(+d.p,1);
+render();if(up)scrollTo(0,0)});
+if(St.name)V={v:'map'};render();
+</script></body></html>
